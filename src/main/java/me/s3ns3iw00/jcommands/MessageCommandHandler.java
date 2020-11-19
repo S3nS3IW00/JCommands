@@ -58,7 +58,7 @@ public class MessageCommandHandler {
             if (event.getMessageAuthor().isBotUser()) return;
             String[] raw = event.getMessageContent().split(" ");
             if (raw[0].startsWith(commandChar)) {
-                handleCommand(event.getMessage(), raw[0].substring(1), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
+                handleCommand(event.getMessage(), raw[0].substring(commandChar.length()), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
             }
         }));
     }

@@ -1,4 +1,4 @@
-# JCommands
+# JCommands [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)
 With this Javacord extension you can create commands within 1 minute that are only working in the specified channels and categories or just in private, with the specified roles and with the specified arguments.
 
 ## Code example
@@ -20,7 +20,7 @@ MessageCommandHandler.setOnError((type, cmd, sender, msg) -> {
             break;
         case BAD_CATEGORY:
         case BAD_CHANNEL:
-            errorMessage = "I'm not sure about that this is the best place to use command. :face_with_raised_eyebrow:";
+            errorMessage = "I'm not sure about that this is the best place to use this command. :face_with_raised_eyebrow:";
             break;
     }
     if (msg.isPrivateMessage()) {
@@ -61,7 +61,7 @@ Command example: `/iam Steve male 20` or `/iam Isabel female 25`
 
 ## Dependencies
 As you can see in the description, this is a Javacord extension. Javacord is a framework of JDA and it so much easier to create bots with it.
-- (Javacord)[https://github.com/Javacord/Javacord]
+- [Javacord](https://github.com/Javacord/Javacord)
 
 ## Usage
 1. Clone this repository
@@ -72,5 +72,5 @@ git clone https://github.com/S3nS3IW00/JCommands.git JCommands
 ```java
 MessageCommandHandler.setServer(server);
 ```
-3. Create an error listener and commands as many as you want.
+3. Create an error listener and as many commands as you want.
 4. Enjoy!
