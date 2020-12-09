@@ -140,7 +140,7 @@ public class MessageCommandHandler {
                     List<Argument> arguments = command.getArguments().get(i);
                     String arg = args[i];
                     int j = 0;
-                    while (j < arguments.size() && ((!(arguments.get(j) instanceof RegexArgument) && !arguments.get(j).getName().equalsIgnoreCase(arg)) || ((arguments.get(j) instanceof RegexArgument) && !((RegexArgument) arguments.get(j)).validate(arg).matches()))) {
+                    while (j < arguments.size() && ((!(arguments.get(j) instanceof RegexArgument) && !arguments.get(j).getName().equalsIgnoreCase(arg)) || ((arguments.get(j) instanceof RegexArgument) && !((RegexArgument) arguments.get(j)).validate(arg).lookingAt()))) {
                         j++;
                     }
                     if (j == arguments.size()) {
