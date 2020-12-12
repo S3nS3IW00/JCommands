@@ -53,6 +53,7 @@ public class RegexArgument extends Argument {
      * Validates the input by the specified regex code
      *
      * @param input the string what needs to be validated
+     * @return validated input
      */
     public Matcher validate(String input) {
         return (matcher = Pattern.compile(regex).matcher(this.input = input));
