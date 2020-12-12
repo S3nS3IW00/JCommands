@@ -73,7 +73,7 @@ As you can see in the description, this is a Javacord extension. Javacord is a f
 - [Javacord](https://github.com/Javacord/Javacord)
   
 ## Usage  
-1. Download the [latest release](https://github.com/S3nS3IW00/releases/latest) or clone repository  
+1. Download the [latest release](https://github.com/S3nS3IW00/JCommands/releases/latest) or clone repository  
 ```
 git clone https://github.com/S3nS3IW00/JCommands.git  
 ```  
