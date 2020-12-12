@@ -26,7 +26,7 @@ package me.s3ns3iw00.jcommands.argument.type;
 public class ChannelArgument extends RegexArgument {
 
     public ChannelArgument(String name) {
-        super(name, "\\<#\\d+\\>");
+        super(name, "\\<#\\d+\\>", String.class);
     }
 
 }

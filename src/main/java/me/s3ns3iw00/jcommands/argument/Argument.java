@@ -30,4 +30,12 @@ public class Argument {
         return name;
     }
 
+    public String getValue() {
+        return name;
+    }
+
+    public Class<?> getResultType() {
+        return String.class;
+    }
+
 }

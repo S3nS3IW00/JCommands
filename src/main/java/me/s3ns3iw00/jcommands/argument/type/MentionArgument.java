@@ -26,7 +26,7 @@ package me.s3ns3iw00.jcommands.argument.type;
 public class MentionArgument extends RegexArgument {
 
     public MentionArgument(String name) {
-        super(name, "\\<@!?\\d+\\>");
+        super(name, "\\<@!?\\d+\\>", String.class);
     }
 
 }

@@ -30,21 +30,46 @@ import java.util.regex.Pattern;
  */
 public class RegexArgument extends Argument {
 
-    private Pattern pattern;
+    private String regex, input;
+    private Matcher matcher;
+    private Class<?> type = Matcher.class;
 
     public RegexArgument(String name, String regex) {
         super(name);
-        pattern = Pattern.compile(regex);
+        this.regex = regex;
+    }
+
+    /**
+     * This constructor modifies the argument's result type.
+     *
+     * @param type a non-primitive class
+     */
+    public RegexArgument(String name, String regex, Class<?> type) {
+        this(name, regex);
+        this.type = type;
     }
 
     /**
      * Validates the input by the specified regex code
      *
      * @param input the string what needs to be validated
-     * @return the parsed result
      */
     public Matcher validate(String input) {
-        return pattern.matcher(input);
+        return (matcher = Pattern.compile(regex).matcher(this.input = input));
+    }
+
+    public Matcher getMatcher() {
+        return matcher;
+    }
+
+    @Override
+    public String getValue() {
+        return input;
+    }
+
+    @Override
+    public Class<?> getResultType() {
+        return type;
     }
 
 }

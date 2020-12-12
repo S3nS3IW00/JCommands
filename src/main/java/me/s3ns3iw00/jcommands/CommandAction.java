@@ -18,12 +18,12 @@
  */
 package me.s3ns3iw00.jcommands;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 
 public interface CommandAction {
 
-    void onCommand(User sender, String[] raw, Argument[] args, Message msg);
+    void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg);
 
 }

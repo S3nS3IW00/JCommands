@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannel;
@@ -130,7 +131,7 @@ public class MessageCommandHandler {
         }
 
         //Argument validation
-        Argument[] appliedArguments = new Argument[command.getArguments().size()];
+        ArgumentResult[] argumentResults = new ArgumentResult[command.getArguments().size()];
         if (command.getArguments() != null && command.getArguments().size() > 0) {
             boolean argsValid = true;
             if (args.length < command.getArguments().size()) {
@@ -147,7 +148,7 @@ public class MessageCommandHandler {
                         argsValid = false;
                         break;
                     } else {
-                        appliedArguments[i] = arguments.get(j);
+                        argumentResults[i] = new ArgumentResult(arguments.get(j));
                     }
                 }
             }
@@ -157,7 +158,7 @@ public class MessageCommandHandler {
             }
         }
 
-        if (command.getAction() != null) command.getAction().onCommand(sender, args, appliedArguments, msg);
+        if (command.getAction() != null) command.getAction().onCommand(sender, args, argumentResults, msg);
     }
 
     /**
