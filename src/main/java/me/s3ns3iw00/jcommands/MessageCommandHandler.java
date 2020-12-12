@@ -21,6 +21,7 @@ package me.s3ns3iw00.jcommands;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
+import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
@@ -28,10 +29,7 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A simple class filled with valuable code
@@ -43,23 +41,24 @@ public class MessageCommandHandler {
     /**
      * Some cool and obvious stuff here
      */
-    private static Server server;
+    private static DiscordApi api;
     private static List<Command> commands = new ArrayList<>();
+    private static Map<Server, List<Command>> serverCommands = new HashMap<>();
     private static CommandError error;
     private static String commandChar = "/";
 
     /**
      * Initiates the command listener
      *
-     * @param server is the instance of the current server
+     * @param api is the instance of the Discord api
      */
-    public static void setServer(Server server) {
-        MessageCommandHandler.server = server;
-        server.getApi().addMessageCreateListener((event -> {
+    public static void setApi(DiscordApi api) {
+        MessageCommandHandler.api = api;
+        api.addMessageCreateListener((event -> {
             if (event.getMessageAuthor().isBotUser()) return;
             String[] raw = event.getMessageContent().split(" ");
             if (raw[0].startsWith(commandChar)) {
-                handleCommand(event.getMessage(), raw[0].substring(commandChar.length()), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
+                handleCommand(event.getServer().isPresent() ? event.getServer().get() : null, event.getMessage(), raw[0].substring(commandChar.length()), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
             }
         }));
     }
@@ -67,53 +66,36 @@ public class MessageCommandHandler {
     /**
      * Handles the command inputs
      *
-     * @param msg the message what contains the command
-     * @param cmd the command
-     * @param args the list of the parameters of the command
+     * @param msg  the message what contains the command
+     * @param cmd  the command
+     * @param args the list of the command's parameters
      */
-    private static void handleCommand(Message msg, String cmd, String[] args) {
-        if (!msg.getAuthor().asUser().isPresent()) return;
+    private static void handleCommand(Server server, Message msg, String cmd, String[] args) {
+        if (!msg.getAuthor().asUser().isPresent() || msg.getAuthor().isBotUser() || (server != null && !serverCommands.containsKey(server)))
+            return;
         User sender = msg.getAuthor().asUser().get();
-        Command commandI = commands.get(0);
+
+        //Command checker
+        List<Command> commandList = server == null ? commands : serverCommands.get(server);
+        Command commandI = commandList.get(0);
         int cmdI = 0;
-        while (cmdI < commands.size() && !(commandI = commands.get(cmdI)).getName().equalsIgnoreCase(cmd)) {
+        while (cmdI < commandList.size() && (!(commandI = commandList.get(cmdI)).getName().equalsIgnoreCase(cmd))) {
             cmdI++;
         }
-        if (cmdI >= commands.size()) {
-            if(error != null) error.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg);
+        if (cmdI >= commandList.size()) {
+            if (error != null) error.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg);
             return;
         }
         final Command command = commandI;
 
-        //Category and channel validation
-        if (command.getType() == CommandType.PM && !msg.isPrivateMessage()) {
+        // User validation
+        if (command.getNotAllowedUserList().contains(sender) || (command.getAllowedUserList().size() > 0 && !command.getAllowedUserList().contains(sender))) {
+            if (error != null) error.onError(CommandErrorType.NO_PERMISSION, command, sender, msg);
             return;
-        } else if (command.getType() == CommandType.BOTH || command.getType() == CommandType.SERVER) {
-            if (!msg.isPrivateMessage()) {
-                Optional<ServerTextChannel> serverTextChannel = server.getApi().getServerTextChannelById(msg.getChannel().getId());
-                if (serverTextChannel.isPresent()) {
-                    Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
-                    if (category.isPresent()) {
-                        if (command.getNotAllowedCategories().contains(category.get()) || (command.getAllowedCategories().size() > 0 && !command.getAllowedCategories().contains(category.get()))) {
-                            if(error != null) error.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg);
-                            return;
-                        } else {
-                            if (command.getNotAllowed().contains(msg.getChannel()) || (command.getAllowed().size() > 0 && !command.getAllowed().contains(msg.getChannel()))) {
-                                if(error != null) error.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg);
-                                return;
-                            }
-                        }
-                    } else {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
         }
 
         //Role validation
-        if (command.getRoles() != null && command.getRoles().length > 0) {
+        if (server != null && command.getRoles() != null && command.getRoles().length > 0) {
             int needCount = command.isNeedAllRole() ? command.getRoles().length : 1;
             List<Role> userRoles = sender.getRoles(server);
 
@@ -125,8 +107,35 @@ public class MessageCommandHandler {
             }
 
             if (count < needCount) {
-                if(error != null) error.onError(CommandErrorType.NO_PERMISSION, command, sender, msg);
+                if (error != null) error.onError(CommandErrorType.NO_PERMISSION, command, sender, msg);
                 return;
+            }
+        }
+
+        //Category and channel validation
+        if (command.getType() == CommandType.PM && !msg.isPrivateMessage() || command.getType() == CommandType.SERVER && msg.isPrivateMessage()) {
+            return;
+        } else if (command.getType() == CommandType.BOTH || command.getType() == CommandType.SERVER) {
+            if (!msg.isPrivateMessage()) {
+                Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
+                if (serverTextChannel.isPresent()) {
+                    Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
+                    if (category.isPresent()) {
+                        if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
+                            if (error != null) error.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg);
+                            return;
+                        } else {
+                            if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
+                                if (error != null) error.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg);
+                                return;
+                            }
+                        }
+                    } else {
+                        return;
+                    }
+                } else {
+                    return;
+                }
             }
         }
 
@@ -162,12 +171,19 @@ public class MessageCommandHandler {
     }
 
     /**
-     * Registers the command for the listener
+     * Registers the command for the listener on the specified servers
      *
      * @param command the command
+     * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(Command command) {
+    public static void registerCommand(Command command, Server... servers) {
         commands.add(command);
+        for (Server server : servers) {
+            if (!serverCommands.containsKey(server)) {
+                serverCommands.put(server, new ArrayList<>());
+            }
+            serverCommands.get(server).add(command);
+        }
     }
 
     /**
@@ -189,11 +205,18 @@ public class MessageCommandHandler {
     }
 
     /**
-     *
      * @return the list of the commands
      */
     public static List<Command> getCommands() {
         return commands;
+    }
+
+    /**
+     * @param server server
+     * @return the list of the commands on the specified server
+     */
+    public static List<Command> getCommands(Server server) {
+        return serverCommands.get(server);
     }
 
     /**
@@ -204,6 +227,20 @@ public class MessageCommandHandler {
      */
     public static boolean isCommandExist(String cmd) {
         for (Command command : commands) {
+            if (command.getName().equalsIgnoreCase(cmd)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determines that a command with the given name is already exist or not on the specified server
+     *
+     * @param server server
+     * @param cmd    the command's name
+     * @return exist or not
+     */
+    public static boolean isCommandExist(Server server, String cmd) {
+        for (Command command : serverCommands.get(server)) {
             if (command.getName().equalsIgnoreCase(cmd)) return true;
         }
         return false;

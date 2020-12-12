@@ -23,6 +23,7 @@ import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.user.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,8 +41,9 @@ public class Command {
     private String name;
     private CommandType type;
     private LinkedList<List<Argument>> arguments = new LinkedList<>();
-    private List<ChannelCategory> allowedCategories = new ArrayList<>(), notAllowedCategories = new ArrayList<>();
-    private List<TextChannel> allowed = new ArrayList<>(), notAllowed = new ArrayList<>();
+    private List<User> allowedUserList = new ArrayList<>(), notAllowedUserList = new ArrayList<>();
+    private List<ChannelCategory> allowedCategoryList = new ArrayList<>(), notAllowedCategoryList = new ArrayList<>();
+    private List<TextChannel> allowedChannelList = new ArrayList<>(), notAllowedChannelList = new ArrayList<>();
     private Role[] roles;
     private boolean needAllRole;
     private CommandAction action;
@@ -63,14 +65,38 @@ public class Command {
     }
 
     /**
+     * Sets the users who can use this command<br>
+     * If the not allowed users has been set this will not take any effect.
+     *
+     * @param users the list of the users
+     * @return this class
+     */
+    public Command allowedUsers(User... users) {
+        allowedUserList = new ArrayList<>(Arrays.asList(users));
+        return this;
+    }
+
+    /**
+     * Sets the users who cannot use this command<br>
+     * If the allowed users has been set this will not take any effect
+     *
+     * @param users the list of the users
+     * @return this class
+     */
+    public Command notAllowedUsers(User... users) {
+        notAllowedUserList = new ArrayList<>(Arrays.asList(users));
+        return this;
+    }
+
+    /**
      * Sets the categories where the command will be allowed<br>
      * If the not allowed categories has been set this will not take any effect.
      *
-     * @param category the list of the categories
+     * @param categories the list of the categories
      * @return this class
      */
-    public Command allowedCategory(ChannelCategory category) {
-        allowedCategories.add(category);
+    public Command allowedCategories(ChannelCategory... categories) {
+        allowedCategoryList = new ArrayList<>(Arrays.asList(categories));
         return this;
     }
 
@@ -78,11 +104,11 @@ public class Command {
      * Sets the categories where the command will not be allowed<br>
      * If the allowed categories has been set this will not take any effect
      *
-     * @param category the list of the categories
+     * @param categories the list of the categories
      * @return this class
      */
-    public Command notAllowedCategory(ChannelCategory category) {
-        notAllowedCategories.add(category);
+    public Command notAllowedCategories(ChannelCategory... categories) {
+        notAllowedCategoryList = new ArrayList<>(Arrays.asList(categories));
         return this;
     }
 
@@ -93,8 +119,8 @@ public class Command {
      * @param channels the list of the channels
      * @return this class
      */
-    public Command allowed(TextChannel... channels) {
-        allowed.addAll(Arrays.asList(channels));
+    public Command allowedChannels(TextChannel... channels) {
+        allowedChannelList = new ArrayList<>(Arrays.asList(channels));
         return this;
     }
 
@@ -105,16 +131,17 @@ public class Command {
      * @param channels the list of the channels
      * @return this class
      */
-    public Command notAllowed(TextChannel... channels) {
-        notAllowed.addAll(Arrays.asList(channels));
+    public Command notAllowedChannels(TextChannel... channels) {
+        notAllowedChannelList = new ArrayList<>(Arrays.asList(channels));
         return this;
     }
 
     /**
-     * Sets the roles which can use this command with
+     * Sets the roles which can use this command with<br>
+     * Does not take any effect when the command sent in private
      *
      * @param needAllRole if true all roles will needed to use this command
-     * @param roles the list of the roles
+     * @param roles       the list of the roles
      * @return this class
      */
     public Command roles(boolean needAllRole, Role... roles) {
@@ -175,20 +202,28 @@ public class Command {
         return arguments;
     }
 
-    List<ChannelCategory> getAllowedCategories() {
-        return allowedCategories;
+    List<User> getAllowedUserList() {
+        return allowedUserList;
     }
 
-    List<ChannelCategory> getNotAllowedCategories() {
-        return notAllowedCategories;
+    List<User> getNotAllowedUserList() {
+        return notAllowedUserList;
     }
 
-    List<TextChannel> getAllowed() {
-        return allowed;
+    List<ChannelCategory> getAllowedCategoryList() {
+        return allowedCategoryList;
     }
 
-    List<TextChannel> getNotAllowed() {
-        return notAllowed;
+    List<ChannelCategory> getNotAllowedCategoryList() {
+        return notAllowedCategoryList;
+    }
+
+    List<TextChannel> getAllowedChannelList() {
+        return allowedChannelList;
+    }
+
+    List<TextChannel> getNotAllowedChannelList() {
+        return notAllowedChannelList;
     }
 
     Role[] getRoles() {
