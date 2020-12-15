@@ -23,12 +23,10 @@ import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author S3nS3IW00
@@ -46,7 +44,8 @@ public class Command {
     private List<TextChannel> allowedChannelList = new ArrayList<>(), notAllowedChannelList = new ArrayList<>();
     private Role[] roles;
     private boolean needAllRole;
-    private CommandAction action;
+    private Optional<Server> roleSourceServer;
+    private Optional<CommandAction> action = Optional.empty();
 
     public Command(String name, CommandType type) {
         this.name = name;
@@ -151,13 +150,27 @@ public class Command {
     }
 
     /**
+     * Sets the server where the roles will be fetched from<br>
+     * This is useful when we want to check the roles at a private command
+     * <p>
+     * Safe to use when the command is registered in only one server
+     *
+     * @param server the server
+     * @return this class
+     */
+    public Command roleSource(Server server) {
+        roleSourceServer = Optional.of(server);
+        return this;
+    }
+
+    /**
      * Sets the action listener of the command
      *
      * @param action is the listener object
      * @return this class
      */
     public Command action(CommandAction action) {
-        this.action = action;
+        this.action = Optional.of(action);
         return this;
     }
 
@@ -234,7 +247,11 @@ public class Command {
         return needAllRole;
     }
 
-    CommandAction getAction() {
+    Optional<Server> getRoleSource() {
+        return roleSourceServer;
+    }
+
+    Optional<CommandAction> getAction() {
         return action;
     }
 

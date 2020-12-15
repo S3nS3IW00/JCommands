@@ -1,4 +1,4 @@
-# JCommands [![](https://img.shields.io/badge/Version-1.3.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
+# JCommands [![](https://img.shields.io/badge/Version-1.3.1-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
 With this Javacord extension you can create commands within 1 minute that are only working in private or in the specified channels and categories with the specified roles and arguments.  There are so many useful prewritten argument types that can be used while creating a command.
   
 ## Code example  

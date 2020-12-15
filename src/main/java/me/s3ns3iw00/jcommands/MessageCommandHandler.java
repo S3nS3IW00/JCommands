@@ -44,7 +44,7 @@ public class MessageCommandHandler {
     private static DiscordApi api;
     private static List<Command> commands = new ArrayList<>();
     private static Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static CommandError error;
+    private static Optional<CommandError> error = Optional.empty();
     private static String commandChar = "/";
 
     /**
@@ -71,7 +71,7 @@ public class MessageCommandHandler {
      * @param args the list of the command's parameters
      */
     private static void handleCommand(Server server, Message msg, String cmd, String[] args) {
-        if (!msg.getAuthor().asUser().isPresent() || msg.getAuthor().isBotUser() || (server != null && !serverCommands.containsKey(server)))
+        if (!msg.getAuthor().asUser().isPresent() || (server != null && !serverCommands.containsKey(server)))
             return;
         User sender = msg.getAuthor().asUser().get();
 
@@ -83,21 +83,21 @@ public class MessageCommandHandler {
             cmdI++;
         }
         if (cmdI >= commandList.size()) {
-            if (error != null) error.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg);
+            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg));
             return;
         }
         final Command command = commandI;
 
         // User validation
         if (command.getNotAllowedUserList().contains(sender) || (command.getAllowedUserList().size() > 0 && !command.getAllowedUserList().contains(sender))) {
-            if (error != null) error.onError(CommandErrorType.NO_PERMISSION, command, sender, msg);
+            error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg));
             return;
         }
 
         //Role validation
-        if (server != null && command.getRoles() != null && command.getRoles().length > 0) {
+        if ((server != null || command.getRoleSource().isPresent()) && command.getRoles() != null && command.getRoles().length > 0) {
             int needCount = command.isNeedAllRole() ? command.getRoles().length : 1;
-            List<Role> userRoles = sender.getRoles(server);
+            List<Role> userRoles = sender.getRoles(command.getRoleSource().orElse(server));
 
             int count = 0;
             int i = 0;
@@ -107,7 +107,7 @@ public class MessageCommandHandler {
             }
 
             if (count < needCount) {
-                if (error != null) error.onError(CommandErrorType.NO_PERMISSION, command, sender, msg);
+                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg));
                 return;
             }
         }
@@ -122,11 +122,11 @@ public class MessageCommandHandler {
                     Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
                     if (category.isPresent()) {
                         if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
-                            if (error != null) error.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg);
+                            error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg));
                             return;
                         } else {
                             if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
-                                if (error != null) error.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg);
+                                error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg));
                                 return;
                             }
                         }
@@ -162,12 +162,12 @@ public class MessageCommandHandler {
                 }
             }
             if (!argsValid) {
-                if(error != null) error.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg);
+                error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg));
                 return;
             }
         }
 
-        if (command.getAction() != null) command.getAction().onCommand(sender, args, argumentResults, msg);
+        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg));
     }
 
     /**
@@ -192,7 +192,7 @@ public class MessageCommandHandler {
      * @param error the listener interface
      */
     public static void setOnError(CommandError error) {
-        MessageCommandHandler.error = error;
+        MessageCommandHandler.error = Optional.of(error);
     }
 
     /**
@@ -247,7 +247,6 @@ public class MessageCommandHandler {
     }
 
     /**
-     *
      * @return the command sign
      */
     public static String getCommandChar() {
