@@ -19,10 +19,10 @@ public class TestMain {
         System.out.println("Invite the bot with the following url: " + api.createBotInvite());
 
         // Initiate the listener.
-        // -- DON'T FORGET TO REPLACE THIS WITH YOUR SERVER ID --
         MessageCommandHandler.setApi(api);
 
         // Creating instance of the servers where the bot on
+        // -- DON'T FORGET TO REPLACE THIS WITH YOUR SERVER ID --
         Server myServer = api.getServerById(787364551598407700L).get();
 
         // Registering the error listener
@@ -51,7 +51,7 @@ public class TestMain {
         });
 
         // Creating a command
-        // -- DON'T FORGET TO REPLACE CATEGORY AND CHANNEL IDs WITH YOURS --
+        // -- DON'T FORGET TO REPLACE CATEGORY, CHANNEL AND ROLE IDs WITH YOURS --
 
         // Create the command what is will only be available in the server
         Command introduceCommand = new Command("iam", CommandType.SERVER);
