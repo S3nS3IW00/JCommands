@@ -56,19 +56,19 @@ public class TestMain {
         // Create the command what is will only be available in the server
         Command introduceCommand = new Command("iam", CommandType.SERVER);
         // We want to make this command available in only one category
-        introduceCommand.allowedCategories(api.getChannelCategoryById(787365901552451595L).get());
+        introduceCommand.setAllowedCategories(api.getChannelCategoryById(787365901552451595L).get());
         // But we have two channels in that category where the command should not to work
-        introduceCommand.notAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());
+        introduceCommand.setNotAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());
         // This command is only for users who has this role
-        introduceCommand.roles(false, api.getRoleById(787366309561368606L).get());
+        introduceCommand.setRoles(false, api.getRoleById(787366309561368606L).get());
         // Let's create our command's first argument. This argument only accepts letters separated with comma and started with capitalized letter.
-        introduceCommand.arguments(new RegexArgument("Firstname,Lastname", "(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)"));
+        introduceCommand.addArguments(new RegexArgument("Firstname,Lastname", "(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)"));
         // We want to know the user's gender so make an argument that has two acceptable values. (One of them or both could be a regex argument or something else too)
-        introduceCommand.arguments(new Argument("male"), new Argument("female"));
+        introduceCommand.addArguments(new Argument("male"), new Argument("female"));
         // And lastly the age. The user can give numbers from 0 to 99.
-        introduceCommand.arguments(new RegexArgument("your age", "([0-9]|[1-9][0-9])", Integer.class));
+        introduceCommand.addArguments(new RegexArgument("your age", "([0-9]|[1-9][0-9])", Integer.class));
         // Let's make an action listener where we can listen for inputs. The raw array contains the inputs from the user. You can get the converted results from the args array.
-        introduceCommand.action((sender, raw, args, msg) -> {
+        introduceCommand.setAction((sender, raw, args, msg) -> {
             Matcher fullName = args[0].get();
             String firstName = fullName.group("first");
             String lastName = fullName.group("last");

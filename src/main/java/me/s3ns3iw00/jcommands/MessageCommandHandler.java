@@ -113,30 +113,27 @@ public class MessageCommandHandler {
         }
 
         //Category and channel validation
-        if (command.getType() == CommandType.PM && !msg.isPrivateMessage() || command.getType() == CommandType.SERVER && msg.isPrivateMessage()) {
+        if ((command.getType() == CommandType.PM && !msg.isPrivateMessage()) || (command.getType() == CommandType.SERVER && msg.isPrivateMessage())) {
             return;
-        } else if (command.getType() == CommandType.BOTH || command.getType() == CommandType.SERVER) {
-            if (!msg.isPrivateMessage()) {
-                Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
-                if (serverTextChannel.isPresent()) {
-                    Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
-                    if (category.isPresent()) {
-                        if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
-                            error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg));
-                            return;
-                        } else {
-                            if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
-                                error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg));
-                                return;
-                            }
-                        }
-                    } else {
+        }
+        Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
+        if (serverTextChannel.isPresent()) {
+            Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
+            if (category.isPresent()) {
+                if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg));
+                    return;
+                } else {
+                    if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg));
                         return;
                     }
-                } else {
-                    return;
                 }
+            } else {
+                return;
             }
+        } else {
+            return;
         }
 
         //Argument validation
