@@ -75,7 +75,7 @@ As you can see in the description, this is a Javacord extension. Javacord is a f
 ## Usage  
 1. Download
    - [Latest release](https://github.com/S3nS3IW00/JCommands/releases/latest)
-   - [Jitpack](https://jitpack.io/)
+   - [![](https://jitpack.io/v/S3nS3IW00/JCommands.svg)](https://jitpack.io/#S3nS3IW00/JCommands)
    - Clone repository
    ```
    git clone https://github.com/S3nS3IW00/JCommands.git  
