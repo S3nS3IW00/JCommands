@@ -61,19 +61,22 @@ public class TestMain {
         introduceCommand.setNotAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());
         // This command is only for users who has this role
         introduceCommand.setRoles(false, api.getRoleById(787366309561368606L).get());
-        // Let's create our command's first argument. This argument only accepts letters separated with comma and started with capitalized letter.
+        // Let's create our command's first argument. This argument only accepts two word separated with comma and started with capitalized letter.
         introduceCommand.addArguments(new RegexArgument("Firstname,Lastname", "(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)"));
-        // We want to know the user's gender so make an argument that has two acceptable values. (One of them or both could be a regex argument or something else too)
+        // We want to know the user's gender so make an argument that has two acceptable values.
         introduceCommand.addArguments(new Argument("male"), new Argument("female"));
-        // And lastly the age. The user can give numbers from 0 to 99.
+        // And lastly the age. The user can give numbers from 0 to 99. The input will be converted into Integer.
         introduceCommand.addArguments(new RegexArgument("your age", "([0-9]|[1-9][0-9])", Integer.class));
-        // Let's make an action listener where we can listen for inputs. The raw array contains the inputs from the user. You can get the converted results from the args array.
+        // Let's make an action listener where we can listen for inputs. The raw array contains the inputs from the user, and the args array contains the converted ones.
         introduceCommand.setAction((sender, raw, args, msg) -> {
+            // The RegexArgument return as a Matcher by default
             Matcher fullName = args[0].get();
             String firstName = fullName.group("first");
             String lastName = fullName.group("last");
 
+            // The age is can be decleared as an integer without parsing because it has been converted
             int age = args[2].get();
+
             msg.getChannel().sendMessage("Hi " + firstName + " " + lastName + "! As I can see you are " + (age >= 10 && age < 20 ? "" : "not ") + "a teenager.");
         });
         // And don't forget to register the command on the server(s). (I always forget it and never know what's wrong :D)
