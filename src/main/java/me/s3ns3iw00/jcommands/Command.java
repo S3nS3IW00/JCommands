@@ -23,12 +23,10 @@ import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author S3nS3IW00
@@ -46,7 +44,8 @@ public class Command {
     private List<TextChannel> allowedChannelList = new ArrayList<>(), notAllowedChannelList = new ArrayList<>();
     private Role[] roles;
     private boolean needAllRole;
-    private CommandAction action;
+    private Optional<Server> roleSourceServer = Optional.empty();
+    private Optional<CommandAction> action = Optional.empty();
 
     public Command(String name, CommandType type) {
         this.name = name;
@@ -57,11 +56,9 @@ public class Command {
      * Adds a list of argument which at least one of are acceptable at the current index
      *
      * @param arguments the list of the arguments
-     * @return this class
      */
-    public Command arguments(Argument... arguments) {
+    public void addArguments(Argument... arguments) {
         this.arguments.add(new ArrayList<>(Arrays.asList(arguments)));
-        return this;
     }
 
     /**
@@ -69,11 +66,9 @@ public class Command {
      * If the not allowed users has been set this will not take any effect.
      *
      * @param users the list of the users
-     * @return this class
      */
-    public Command allowedUsers(User... users) {
+    public void setAllowedUsers(User... users) {
         allowedUserList = new ArrayList<>(Arrays.asList(users));
-        return this;
     }
 
     /**
@@ -81,11 +76,9 @@ public class Command {
      * If the allowed users has been set this will not take any effect
      *
      * @param users the list of the users
-     * @return this class
      */
-    public Command notAllowedUsers(User... users) {
+    public void setNotAllowedUsers(User... users) {
         notAllowedUserList = new ArrayList<>(Arrays.asList(users));
-        return this;
     }
 
     /**
@@ -93,11 +86,9 @@ public class Command {
      * If the not allowed categories has been set this will not take any effect.
      *
      * @param categories the list of the categories
-     * @return this class
      */
-    public Command allowedCategories(ChannelCategory... categories) {
+    public void setAllowedCategories(ChannelCategory... categories) {
         allowedCategoryList = new ArrayList<>(Arrays.asList(categories));
-        return this;
     }
 
     /**
@@ -105,11 +96,9 @@ public class Command {
      * If the allowed categories has been set this will not take any effect
      *
      * @param categories the list of the categories
-     * @return this class
      */
-    public Command notAllowedCategories(ChannelCategory... categories) {
+    public void setNotAllowedCategories(ChannelCategory... categories) {
         notAllowedCategoryList = new ArrayList<>(Arrays.asList(categories));
-        return this;
     }
 
     /**
@@ -117,11 +106,9 @@ public class Command {
      * If the not allowed commands has been set this will not take any effect.
      *
      * @param channels the list of the channels
-     * @return this class
      */
-    public Command allowedChannels(TextChannel... channels) {
+    public void setAllowedChannels(TextChannel... channels) {
         allowedChannelList = new ArrayList<>(Arrays.asList(channels));
-        return this;
     }
 
     /**
@@ -129,11 +116,9 @@ public class Command {
      * If the allowed commands has been set this will not take any effect
      *
      * @param channels the list of the channels
-     * @return this class
      */
-    public Command notAllowedChannels(TextChannel... channels) {
+    public void setNotAllowedChannels(TextChannel... channels) {
         notAllowedChannelList = new ArrayList<>(Arrays.asList(channels));
-        return this;
     }
 
     /**
@@ -142,23 +127,31 @@ public class Command {
      *
      * @param needAllRole if true all roles will needed to use this command
      * @param roles       the list of the roles
-     * @return this class
      */
-    public Command roles(boolean needAllRole, Role... roles) {
+    public void setRoles(boolean needAllRole, Role... roles) {
         this.roles = roles;
         this.needAllRole = needAllRole;
-        return this;
+    }
+
+    /**
+     * Sets the server where the roles will be fetched from<br>
+     * This is useful when we want to check the roles at a private command
+     * <p>
+     * Safe to use when the command is registered in only one server
+     *
+     * @param server the server
+     */
+    public void setRoleSource(Server server) {
+        roleSourceServer = Optional.of(server);
     }
 
     /**
      * Sets the action listener of the command
      *
      * @param action is the listener object
-     * @return this class
      */
-    public Command action(CommandAction action) {
-        this.action = action;
-        return this;
+    public void setAction(CommandAction action) {
+        this.action = Optional.of(action);
     }
 
     /**
@@ -234,7 +227,11 @@ public class Command {
         return needAllRole;
     }
 
-    CommandAction getAction() {
+    Optional<Server> getRoleSource() {
+        return roleSourceServer;
+    }
+
+    Optional<CommandAction> getAction() {
         return action;
     }
 

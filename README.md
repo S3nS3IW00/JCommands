@@ -1,4 +1,4 @@
-# JCommands [![](https://img.shields.io/badge/Version-1.3.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
+# JCommands [![](https://img.shields.io/badge/Version-1.4.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
 With this Javacord extension you can create commands within 1 minute that are only working in private or in the specified channels and categories with the specified roles and arguments.  There are so many useful prewritten argument types that can be used while creating a command.
   
 ## Code example  
@@ -27,7 +27,7 @@ MessageCommandHandler.setOnError((type, cmd, sender, msg) -> {
         sender.sendMessage(errorMessage);  
     } else {  
         msg.getChannel().sendMessage(errorMessage);  
-    }  
+    }
 });  
 ```  
   
@@ -37,19 +37,19 @@ It has never been so easy to create a command like the following example shows.
 // Create the command what is will only be available in the server  
 Command introduceCommand = new Command("iam", CommandType.SERVER);  
 // We want to make this command available in only one category  
-introduceCommand.allowedCategories(api.getChannelCategoryById(787365901552451595L).get());  
+introduceCommand.setAllowedCategories(api.getChannelCategoryById(787365901552451595L).get());  
 // But we have two channels in that category where the command should not to work  
-introduceCommand.notAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());  
+introduceCommand.setNotAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());  
 // This command is only for users who has this role  
-introduceCommand.roles(false, api.getRoleById(787366309561368606L).get());  
+introduceCommand.setRoles(false, api.getRoleById(787366309561368606L).get());  
 // Let's create our command's first argument. This argument only accepts letters separated with comma and started with capitalized letter.  
-introduceCommand.arguments(new RegexArgument("Firstname,Lastname", "(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)"));  
+introduceCommand.addArguments(new RegexArgument("Firstname,Lastname", "(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)"));  
 // We want to know the user's gender so make an argument that has two acceptable values.
-introduceCommand.arguments(new Argument("male"), new Argument("female"));  
+introduceCommand.addArguments(new Argument("male"), new Argument("female"));  
 // And lastly the age. The user can give numbers from 0 to 99.  
-introduceCommand.arguments(new RegexArgument("your age", "([0-9]|[1-9][0-9])", Integer.class));  
+introduceCommand.addArguments(new RegexArgument("your age", "([0-9]|[1-9][0-9])", Integer.class));  
 // Let's make an action listener where we can listen for inputs. The raw array contains the inputs from the user. You can get the converted results from the args array.  
-introduceCommand.action((sender, raw, args, msg) -> {  
+introduceCommand.setAction((sender, raw, args, msg) -> {  
   Matcher fullName = args[0].get();  
   String firstName = fullName.group("first");  
   String lastName = fullName.group("last");  
