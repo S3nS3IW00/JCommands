@@ -44,7 +44,7 @@ public class Command {
     private List<TextChannel> allowedChannelList = new ArrayList<>(), notAllowedChannelList = new ArrayList<>();
     private Role[] roles;
     private boolean needAllRole;
-    private Optional<Server> roleSourceServer;
+    private Optional<Server> roleSourceServer = Optional.empty();
     private Optional<CommandAction> action = Optional.empty();
 
     public Command(String name, CommandType type) {
