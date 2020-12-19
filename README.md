@@ -73,13 +73,16 @@ As you can see in the description, this is a Javacord extension. Javacord is a f
 - [Javacord](https://github.com/Javacord/Javacord)
   
 ## Usage  
-1. Download the [latest release](https://github.com/S3nS3IW00/JCommands/releases/latest) or clone repository  
-```
-git clone https://github.com/S3nS3IW00/JCommands.git  
-```  
+1. Download
+   - [Latest release](https://github.com/S3nS3IW00/JCommands/releases/latest)
+   - [Jitpack](https://jitpack.io/)
+   - Clone repository
+   ```
+   git clone https://github.com/S3nS3IW00/JCommands.git  
+   ```  
 2. Initiate the listener  
-```java  
-MessageCommandHandler.setApi(DiscordApi);  
-```  
+   ```java  
+   MessageCommandHandler.setApi(DiscordApi);  
+   ```  
 3. Create an error listener and as many commands as you want.  
 4. Enjoy!
