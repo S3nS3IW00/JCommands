@@ -24,7 +24,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedUsers(User...)} setAllowedUsers}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedUsers(User...) setAllowedUsers}
      *
      * @return this class
      */
@@ -34,7 +34,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedUsers(User...)} setNotAllowedUsers}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedUsers(User...) setNotAllowedUsers}
      *
      * @return this class
      */
@@ -44,7 +44,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedCategories(ChannelCategory...)} setAllowedCategories}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedCategories(ChannelCategory...) setAllowedCategories}
      *
      * @return this class
      */
@@ -54,7 +54,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedCategories(ChannelCategory...)} setNotAllowedCategories}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedCategories(ChannelCategory...) setNotAllowedCategories}
      *
      * @return this class
      */
@@ -64,7 +64,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedChannels(TextChannel...)} setAllowedChannels}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setAllowedChannels(TextChannel...) setAllowedChannels}
      *
      * @return this class
      */
@@ -74,7 +74,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedChannels(TextChannel...)} setNotAllowedChannels}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setNotAllowedChannels(TextChannel...) setNotAllowedChannels}
      *
      * @return this class
      */
@@ -84,7 +84,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setRoles(boolean, Role...)} setRoles}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setRoles(boolean, Role...) setRoles}
      *
      * @return this class
      */
@@ -94,7 +94,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setRoleSource(Server)} setRoleSource}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setRoleSource(Server) setRoleSource}
      *
      * @return this class
      */
@@ -104,7 +104,7 @@ public class CommandBuilder extends Command {
     }
 
     /**
-     * Extends {@link me.s3ns3iw00.jcommands.Command#setAction(CommandAction)} setAction}
+     * Extends {@link me.s3ns3iw00.jcommands.Command#setAction(CommandAction) setAction}
      *
      * @return this class
      */
