@@ -43,7 +43,7 @@ public class RegexArgument extends Argument {
     /**
      * This constructor modifies the argument's result type.
      *
-     * @param type a non-primitive class
+     * @param type a non-primitive data type
      */
     public RegexArgument(String name, String regex, Class<?> type) {
         this(name, regex);
