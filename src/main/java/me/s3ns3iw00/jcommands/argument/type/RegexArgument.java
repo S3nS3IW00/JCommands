@@ -30,13 +30,14 @@ import java.util.regex.Pattern;
  */
 public class RegexArgument extends Argument {
 
-    private String regex, input;
+    private String input;
+    private Pattern pattern;
     private Matcher matcher;
     private Class<?> type = Matcher.class;
 
     public RegexArgument(String name, String regex) {
         super(name);
-        this.regex = regex;
+        pattern = Pattern.compile(regex);
     }
 
     /**
@@ -53,10 +54,11 @@ public class RegexArgument extends Argument {
      * Validates the input by the specified regex code
      *
      * @param input the string what needs to be validated
-     * @return validated input
+     * @return true if the input is valid or false if is not
      */
-    public Matcher validate(String input) {
-        return (matcher = Pattern.compile(regex).matcher(this.input = input));
+    @Override
+    public boolean isValid(String input) {
+        return (matcher = pattern.matcher(this.input = input)).lookingAt();
     }
 
     public Matcher getMatcher() {

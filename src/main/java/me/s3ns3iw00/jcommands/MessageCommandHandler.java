@@ -20,7 +20,6 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
-import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannel;
@@ -153,7 +152,7 @@ public class MessageCommandHandler {
                     List<Argument> arguments = command.getArguments().get(i);
                     String arg = args[i];
                     int j = 0;
-                    while (j < arguments.size() && ((!(arguments.get(j) instanceof RegexArgument) && !arguments.get(j).getName().equalsIgnoreCase(arg)) || ((arguments.get(j) instanceof RegexArgument) && !((RegexArgument) arguments.get(j)).validate(arg).lookingAt()))) {
+                    while (j < arguments.size() && !arguments.get(j).isValid(arg)) {
                         j++;
                     }
                     if (j == arguments.size()) {

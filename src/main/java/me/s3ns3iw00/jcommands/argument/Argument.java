@@ -34,6 +34,10 @@ public class Argument {
         return name;
     }
 
+    public boolean isValid(String input) {
+        return name.equals(input);
+    }
+
     public Class<?> getResultType() {
         return String.class;
     }
