@@ -22,6 +22,11 @@ import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 
+/**
+ * The action listener
+ *
+ * @author S3nS3IW00
+ */
 public interface CommandAction {
 
     void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg);

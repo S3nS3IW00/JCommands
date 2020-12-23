@@ -29,6 +29,8 @@ import org.javacord.api.entity.user.User;
 import java.util.*;
 
 /**
+ * A class that represents a command
+ *
  * @author S3nS3IW00
  */
 public class Command {

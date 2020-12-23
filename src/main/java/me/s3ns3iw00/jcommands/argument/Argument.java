@@ -18,6 +18,12 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+/**
+ * This is the superclass of the arguments<br>
+ * Only accepts inputs that are exactly the same as its name
+ *
+ * @author S3nS3IW00
+ */
 public class Argument {
 
     private String name;

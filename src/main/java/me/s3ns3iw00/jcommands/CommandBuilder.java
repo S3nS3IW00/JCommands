@@ -25,6 +25,11 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
+/**
+ * Useful class that makes command creations more comfortable
+ *
+ * @author S3nS3IW00
+ */
 public class CommandBuilder extends Command {
 
     public CommandBuilder(String name, CommandType type) {

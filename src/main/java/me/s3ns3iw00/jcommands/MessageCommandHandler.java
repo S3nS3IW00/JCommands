@@ -31,7 +31,7 @@ import org.javacord.api.entity.user.User;
 import java.util.*;
 
 /**
- * A simple class filled with valuable code
+ * The main class of the API
  *
  * @author S3nS3IW00
  */
