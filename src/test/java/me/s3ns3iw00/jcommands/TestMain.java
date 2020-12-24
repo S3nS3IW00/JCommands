@@ -29,7 +29,7 @@ public class TestMain {
         Server myServer = api.getServerById(787364551598407700L).get();
 
         // Registering the error listener
-        MessageCommandHandler.setOnError((type, cmd, sender, msg) -> {
+        MessageCommandHandler.setOnError((type, cmd, sender, msg, source) -> {
             String errorMessage = null;
             switch (type) {
                 case INVALID_COMMAND:

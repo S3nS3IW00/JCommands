@@ -6,7 +6,7 @@ The following examples might help you. Don't hesitate to use them!
 ### Registering the error listener  
 Error listener allows you to create custom functions for every error type.  
 ```java  
-MessageCommandHandler.setOnError((type, cmd, sender, msg) -> {  
+MessageCommandHandler.setOnError((type, cmd, sender, msg, source) -> {  
     String errorMessage = null;  
     switch (type) {  
         case INVALID_COMMAND:  

@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.Messageable;
 import org.javacord.api.entity.user.User;
 
 /**
@@ -28,6 +29,16 @@ import org.javacord.api.entity.user.User;
  */
 public interface CommandError {
 
-    void onError(CommandErrorType type, Command cmd, User sender, Message msg);
+    /**
+     * A method signature that represents an error
+     *
+     * @param type   of the error
+     * @param cmd    the command
+     * @param sender of the command
+     * @param msg    the message that contains the command
+     * @param source the message's source<br>
+     *               If the message is private the source is the User or else the source is the channel where the message is.
+     */
+    void onError(CommandErrorType type, Command cmd, User sender, Message msg, Messageable source);
 
 }
