@@ -38,7 +38,7 @@ public interface CommandAction {
      * @param args   is the array that contains the converted results
      * @param msg    is the message that contains the command
      * @param source the message's source<br>
-     *               Is the message is private the source is the User or else the source is the channel where the message is.
+     *               If the message is private the source is the User or else the source is the channel where the message is.
      */
     void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg, Messageable source);
 
