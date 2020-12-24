@@ -18,6 +18,11 @@
  */
 package me.s3ns3iw00.jcommands;
 
+/**
+ * Enum with command type constants
+ *
+ * @author S3nS3IW00
+ */
 public enum CommandType {
 
     SERVER, PM, BOTH

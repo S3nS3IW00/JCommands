@@ -18,8 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,21 +26,22 @@ import java.util.regex.Pattern;
  *
  * @author S3nS3IW00
  */
-public class RegexArgument extends Argument {
+public class RegexArgument extends ConstantArgument {
 
-    private String regex, input;
+    private String input;
+    private Pattern pattern;
     private Matcher matcher;
     private Class<?> type = Matcher.class;
 
     public RegexArgument(String name, String regex) {
         super(name);
-        this.regex = regex;
+        pattern = Pattern.compile(regex);
     }
 
     /**
      * This constructor modifies the argument's result type.
      *
-     * @param type a non-primitive class
+     * @param type a non-primitive data type
      */
     public RegexArgument(String name, String regex, Class<?> type) {
         this(name, regex);
@@ -53,10 +52,11 @@ public class RegexArgument extends Argument {
      * Validates the input by the specified regex code
      *
      * @param input the string what needs to be validated
-     * @return validated input
+     * @return true if the input is valid or false if is not
      */
-    public Matcher validate(String input) {
-        return (matcher = Pattern.compile(regex).matcher(this.input = input));
+    @Override
+    public boolean isValid(String input) {
+        return (matcher = pattern.matcher(this.input = input)).lookingAt();
     }
 
     public Matcher getMatcher() {

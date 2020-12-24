@@ -21,6 +21,11 @@ package me.s3ns3iw00.jcommands;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 
+/**
+ * The error listener
+ *
+ * @author S3nS3IW00
+ */
 public interface CommandError {
 
     void onError(CommandErrorType type, Command cmd, User sender, Message msg);

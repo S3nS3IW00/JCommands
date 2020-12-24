@@ -20,10 +20,26 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.Messageable;
 import org.javacord.api.entity.user.User;
 
+/**
+ * The action listener
+ *
+ * @author S3nS3IW00
+ */
 public interface CommandAction {
 
-    void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg);
+    /**
+     * A method signature that represents an action
+     *
+     * @param sender is the User who sent the message
+     * @param raw    is the array that contains the user's inputs
+     * @param args   is the array that contains the converted results
+     * @param msg    is the message that contains the command
+     * @param source the message's source<br>
+     *               Is the message is private the source is the User or else the source is the channel where the message is.
+     */
+    void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg, Messageable source);
 
 }

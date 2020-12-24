@@ -18,30 +18,35 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.Argument;
+
 /**
- * An argument that only accepts number inputs
+ * Only accepts inputs that are exactly the same as its name
  *
  * @author S3nS3IW00
  */
-public class NumberArgument extends RegexArgument {
+public class ConstantArgument implements Argument {
 
-    private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
+    private String name;
 
-    public NumberArgument(String name) {
-        super(name, "\\d+", Integer.class);
+    public ConstantArgument(String name) {
+        this.name = name;
     }
 
-    public void setRange(int min, int max) {
-        this.min = min;
-        this.max = max;
+    public String getName() {
+        return name;
     }
 
-    @Override
+    public String getValue() {
+        return name;
+    }
+
     public boolean isValid(String input) {
-        if (super.isValid(input)) {
-            int value = Integer.parseInt(input);
-            return value >= min && value <= max;
-        }
-        return false;
+        return name.equals(input);
     }
+
+    public Class<?> getResultType() {
+        return String.class;
+    }
+
 }

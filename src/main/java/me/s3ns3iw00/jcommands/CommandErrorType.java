@@ -18,6 +18,11 @@
  */
 package me.s3ns3iw00.jcommands;
 
+/**
+ * Enum with error type constants
+ *
+ * @author S3nS3IW00
+ */
 public enum CommandErrorType {
 
     INVALID_COMMAND, BAD_ARGUMENTS, BAD_CATEGORY, BAD_CHANNEL, NO_PERMISSION

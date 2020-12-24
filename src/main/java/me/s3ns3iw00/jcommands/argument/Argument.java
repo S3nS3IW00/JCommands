@@ -18,24 +18,19 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
-public class Argument {
+/**
+ * Represents an argument
+ *
+ * @author S3nS3IW00
+ */
+public interface Argument {
 
-    private String name;
+    String getName();
 
-    public Argument(String name) {
-        this.name = name;
-    }
+    String getValue();
 
-    public String getName() {
-        return name;
-    }
+    boolean isValid(String input);
 
-    public String getValue() {
-        return name;
-    }
-
-    public Class<?> getResultType() {
-        return String.class;
-    }
+    Class<?> getResultType();
 
 }
