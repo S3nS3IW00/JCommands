@@ -107,17 +107,13 @@ public class MessageCommandHandler {
             Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
             if (serverTextChannel.isPresent()) {
                 Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
-                if (category.isPresent()) {
-                    if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
-                        return;
-                    } else {
-                        if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
-                            error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
-                            return;
-                        }
-                    }
-                } else {
+                if (category.isPresent() && (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get())))
+                        || (!category.isPresent() && command.getAllowedCategoryList().size() > 0)) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
+                    return;
+                }
+                if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
                     return;
                 }
             } else {
