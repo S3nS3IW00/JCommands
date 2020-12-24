@@ -32,25 +32,27 @@ public class TestMain {
         MessageCommandHandler.setOnError((type, cmd, sender, msg, source) -> {
             String errorMessage = null;
             switch (type) {
+                // Occurs when no command is registered at the source with the given name.
+                // NOTE: In this case the cmd is null.
                 case INVALID_COMMAND:
                     errorMessage = "No such command! :face_with_raised_eyebrow:";
                     break;
+                // Occurs when one or more of the arguments are missing or not matching the pattern.
                 case BAD_ARGUMENTS:
                     errorMessage = "Something went wrong! :face_with_raised_eyebrow: Usage: " + cmd.getUsage();
                     break;
+                // Occurs when the sender is not allowed to use this command or the sender does not have one of or all the roles that need to use the command.
                 case NO_PERMISSION:
                     errorMessage = "Sorry but you don't have the power to use this command! :face_with_raised_eyebrow:";
                     break;
+                // Occurs when the sender wants to use the command in a category where it is not allowed.
                 case BAD_CATEGORY:
+                    // Occurs when the sender wants to use the command in a channel where it is not allowed.
                 case BAD_CHANNEL:
                     errorMessage = "I'm not sure about that this is the best place to use this command. :face_with_raised_eyebrow:";
                     break;
             }
-            if (msg.isPrivateMessage()) {
-                sender.sendMessage(errorMessage);
-            } else {
-                msg.getChannel().sendMessage(errorMessage);
-            }
+            source.sendMessage(errorMessage);
         });
 
         // Creating a command
