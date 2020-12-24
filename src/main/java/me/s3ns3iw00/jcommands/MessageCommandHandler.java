@@ -169,7 +169,7 @@ public class MessageCommandHandler {
             }
         }
 
-        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg));
+        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg, msg.isPrivateMessage() ? sender : msg.getChannel()));
     }
 
     /**
@@ -253,5 +253,9 @@ public class MessageCommandHandler {
      */
     public static String getCommandChar() {
         return commandChar;
+    }
+
+    public static DiscordApi getApi() {
+        return api;
     }
 }

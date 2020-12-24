@@ -19,33 +19,18 @@
 package me.s3ns3iw00.jcommands.argument;
 
 /**
- * This is the superclass of the arguments<br>
- * Only accepts inputs that are exactly the same as its name
+ * Represents an argument
  *
  * @author S3nS3IW00
  */
-public class Argument {
+public interface Argument {
 
-    private String name;
+    String getName();
 
-    public Argument(String name) {
-        this.name = name;
-    }
+    String getValue();
 
-    public String getName() {
-        return name;
-    }
+    boolean isValid(String input);
 
-    public String getValue() {
-        return name;
-    }
-
-    public boolean isValid(String input) {
-        return name.equals(input);
-    }
-
-    public Class<?> getResultType() {
-        return String.class;
-    }
+    Class<?> getResultType();
 
 }

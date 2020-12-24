@@ -18,6 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.entity.user.User;
+
 /**
  * An argument that has a regex that only accepts inputs what are mention tags
  *
@@ -26,7 +28,12 @@ package me.s3ns3iw00.jcommands.argument.type;
 public class MentionArgument extends RegexArgument {
 
     public MentionArgument(String name) {
-        super(name, "\\<@!?\\d+\\>", String.class);
+        super(name, "\\<@!?\\d+\\>", User.class);
+    }
+
+    @Override
+    public String getValue() {
+        return super.getValue().substring(super.getValue().toCharArray()[2] == '!' ? 3 : 2, super.getValue().length() - 1);
     }
 
 }

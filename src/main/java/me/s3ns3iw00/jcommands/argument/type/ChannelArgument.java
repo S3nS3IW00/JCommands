@@ -18,6 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.entity.channel.ServerChannel;
+
 /**
  * An argument that has a regex that only accepts inputs what are channel tags
  *
@@ -26,7 +28,11 @@ package me.s3ns3iw00.jcommands.argument.type;
 public class ChannelArgument extends RegexArgument {
 
     public ChannelArgument(String name) {
-        super(name, "\\<#\\d+\\>", String.class);
+        super(name, "\\<#\\d+\\>", ServerChannel.class);
     }
 
+    @Override
+    public String getValue() {
+        return super.getValue().substring(2, super.getValue().length() - 1);
+    }
 }

@@ -18,8 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +26,7 @@ import java.util.regex.Pattern;
  *
  * @author S3nS3IW00
  */
-public class RegexArgument extends Argument {
+public class RegexArgument extends ConstantArgument {
 
     private String input;
     private Pattern pattern;
