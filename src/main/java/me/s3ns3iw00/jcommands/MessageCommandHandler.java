@@ -189,6 +189,16 @@ public class MessageCommandHandler {
     }
 
     /**
+     * Calls the {@link me.s3ns3iw00.jcommands.MessageCommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
+     *
+     * @param builder the builder
+     * @param servers the list of the servers where the command will be registered
+     */
+    public static void registerCommand(CommandBuilder builder, Server... servers) {
+        registerCommand(builder.getCommand(), servers);
+    }
+
+    /**
      * Registers an error listener where the errors will be managed
      *
      * @param error the listener interface
