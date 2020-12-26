@@ -70,7 +70,6 @@ public class ArgumentResult {
         } else if (ServerChannel.class == clazz) {
             o = MessageCommandHandler.getApi().getServerChannelById(argument.getValue()).orElse(null);
         } else if (User.class == clazz) {
-            System.out.println(argument.getValue());
             CompletableFuture<User> userFuture = MessageCommandHandler.getApi().getUserById(argument.getValue());
             userFuture.join();
             try {
