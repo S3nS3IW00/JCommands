@@ -116,6 +116,7 @@ public class MessageCommandHandler {
 
         //Category and channel validation
         if ((command.getType() == CommandType.PM && !msg.isPrivateMessage()) || (command.getType() == CommandType.SERVER && msg.isPrivateMessage())) {
+            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
             return;
         }
         if (!msg.isPrivateMessage()) {
