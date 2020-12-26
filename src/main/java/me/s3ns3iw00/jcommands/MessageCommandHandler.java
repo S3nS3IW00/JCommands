@@ -20,8 +20,13 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
+import me.s3ns3iw00.jcommands.argument.converter.type.ChannelConverter;
+import me.s3ns3iw00.jcommands.argument.converter.type.MentionConverter;
+import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
+import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.Messageable;
@@ -29,6 +34,7 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -46,6 +52,15 @@ public class MessageCommandHandler {
     private static Map<Server, List<Command>> serverCommands = new HashMap<>();
     private static Optional<CommandError> error = Optional.empty();
     private static String commandChar = "/";
+
+    /**
+     * HasMap that contains the converters initiated with default converters
+     */
+    private static Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
+        put(URL.class, new URLConverter());
+        put(ServerChannel.class, new ChannelConverter());
+        put(User.class, new MentionConverter());
+    }};
 
     /**
      * Initiates the command listener
@@ -272,6 +287,29 @@ public class MessageCommandHandler {
             if (command.getName().equalsIgnoreCase(cmd)) return true;
         }
         return false;
+    }
+
+    /**
+     * Registers a converter for the given type
+     *
+     * @param clazz     the class of the type
+     * @param converter the converter
+     */
+    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {
+        converters.put(clazz, converter);
+    }
+
+    /**
+     * Gets the registered converter by the type
+     *
+     * @param clazz the class of the type
+     * @return an {@code Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
+     */
+    public static Optional<ArgumentResultConverter> getArgumentConverter(Class<?> clazz) {
+        if (converters.containsKey(clazz)) {
+            return Optional.of(converters.get(clazz));
+        }
+        return Optional.empty();
     }
 
     /**
