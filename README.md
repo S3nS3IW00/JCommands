@@ -1,4 +1,4 @@
-# JCommands [![](https://img.shields.io/badge/Version-2.0.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
+# JCommands [![](https://img.shields.io/badge/Version-2.0.1-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/)  
 With this Javacord extension you can create commands within 1 minute that are only working in private or in the specified channels and categories with the specified roles and arguments.  There are so many useful prewritten argument types that can be used while creating a command.
   
 ## Code example  
@@ -6,28 +6,30 @@ The following examples might help you. Don't hesitate to use them!
 ### Registering the error listener  
 Error listener allows you to create custom functions for every error type.  
 ```java  
-MessageCommandHandler.setOnError((type, cmd, sender, msg) -> {  
+MessageCommandHandler.setOnError((type, cmd, sender, msg, source) -> {  
     String errorMessage = null;  
     switch (type) {  
+        // Occurs when no command is registered at the source with the given name.
+        // NOTE: In this case the cmd is null.
         case INVALID_COMMAND:  
             errorMessage = "No such command! :face_with_raised_eyebrow:";  
             break;  
+        // Occurs when one or more of the arguments are missing or not matching the pattern.
         case BAD_ARGUMENTS:  
             errorMessage = "Something went wrong! :face_with_raised_eyebrow: Usage: " + cmd.getUsage();  
             break;  
+        // Occurs when the sender is not allowed to use this command or the sender does not have one of or all the roles that need to use the command.
         case NO_PERMISSION:  
             errorMessage = "Sorry but you don't have the power to use this command! :face_with_raised_eyebrow:";  
-            break;  
-        case BAD_CATEGORY:  
+            break;
+        // Occurs when the sender wants to use the command in a category where it is not allowed.
+        case BAD_CATEGORY:
+        // Occurs when the sender wants to use the command in a channel where it is not allowed.
         case BAD_CHANNEL:  
             errorMessage = "I'm not sure about that this is the best place to use this command. :face_with_raised_eyebrow:";  
             break;  
     }  
-    if (msg.isPrivateMessage()) {  
-        sender.sendMessage(errorMessage);  
-    } else {  
-        msg.getChannel().sendMessage(errorMessage);  
-    }
+    source.sendMessage(errorMessage);
 });  
 ```  
   

@@ -25,6 +25,19 @@ package me.s3ns3iw00.jcommands;
  */
 public enum CommandType {
 
-    SERVER, PM, BOTH
+    /**
+     * The command will only be available on the servers where the command have been registered.
+     */
+    SERVER,
+
+    /**
+     * The command will only be available in private.
+     */
+    PM,
+
+    /**
+     * The command will be available in private and also on the servers where the command have been registered.
+     */
+    BOTH
 
 }

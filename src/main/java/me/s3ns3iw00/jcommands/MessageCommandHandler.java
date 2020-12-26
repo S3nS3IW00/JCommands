@@ -24,6 +24,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.Messageable;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
@@ -73,11 +74,12 @@ public class MessageCommandHandler {
         if (!msg.getAuthor().asUser().isPresent())
             return;
         User sender = msg.getAuthor().asUser().get();
+        Messageable source = msg.isPrivateMessage() ? sender : msg.getChannel();
 
         //Command checker
         List<Command> commandList = server == null ? commands : serverCommands.get(server);
         if (commandList == null) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg));
+            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
             return;
         }
         Command commandI = commandList.get(0);
@@ -86,14 +88,14 @@ public class MessageCommandHandler {
             cmdI++;
         }
         if (cmdI >= commandList.size()) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg));
+            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
             return;
         }
         final Command command = commandI;
 
         // User validation
         if (command.getNotAllowedUserList().contains(sender) || (command.getAllowedUserList().size() > 0 && !command.getAllowedUserList().contains(sender))) {
-            error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg));
+            error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
             return;
         }
 
@@ -105,17 +107,13 @@ public class MessageCommandHandler {
             Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
             if (serverTextChannel.isPresent()) {
                 Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
-                if (category.isPresent()) {
-                    if (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg));
-                        return;
-                    } else {
-                        if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
-                            error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg));
-                            return;
-                        }
-                    }
-                } else {
+                if (category.isPresent() && (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get())))
+                        || (!category.isPresent() && command.getAllowedCategoryList().size() > 0)) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
+                    return;
+                }
+                if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
                     return;
                 }
             } else {
@@ -136,7 +134,7 @@ public class MessageCommandHandler {
             }
 
             if (count < needCount) {
-                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg));
+                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
                 return;
             }
         }
@@ -164,12 +162,12 @@ public class MessageCommandHandler {
                 }
             }
             if (!argsValid) {
-                error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg));
+                error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg, source));
                 return;
             }
         }
 
-        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg, msg.isPrivateMessage() ? sender : msg.getChannel()));
+        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg, source));
     }
 
     /**
@@ -186,6 +184,16 @@ public class MessageCommandHandler {
             }
             serverCommands.get(server).add(command);
         }
+    }
+
+    /**
+     * Calls the {@link me.s3ns3iw00.jcommands.MessageCommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
+     *
+     * @param builder the builder
+     * @param servers the list of the servers where the command will be registered
+     */
+    public static void registerCommand(CommandBuilder builder, Server... servers) {
+        registerCommand(builder.getCommand(), servers);
     }
 
     /**
