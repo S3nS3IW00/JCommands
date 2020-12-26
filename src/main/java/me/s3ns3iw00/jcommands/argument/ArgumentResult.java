@@ -19,13 +19,10 @@
 package me.s3ns3iw00.jcommands.argument;
 
 import me.s3ns3iw00.jcommands.MessageCommandHandler;
+import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
-import org.javacord.api.entity.channel.ServerChannel;
-import org.javacord.api.entity.user.User;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 /**
@@ -61,25 +58,13 @@ public class ArgumentResult {
             o = Double.parseDouble(argument.getValue());
         } else if (Matcher.class == clazz) {
             o = ((RegexArgument) argument).getMatcher();
-        } else if (URL.class == clazz) {
-            try {
-                o = new URL(argument.getValue());
-            } catch (MalformedURLException e) {
-                o = null;
-            }
-        } else if (ServerChannel.class == clazz) {
-            o = MessageCommandHandler.getApi().getServerChannelById(argument.getValue()).orElse(null);
-        } else if (User.class == clazz) {
-            System.out.println(argument.getValue());
-            CompletableFuture<User> userFuture = MessageCommandHandler.getApi().getUserById(argument.getValue());
-            userFuture.join();
-            try {
-                o = userFuture.get();
-            } catch (Exception e) {
-                o = null;
-            }
         } else {
-            o = argument.getValue();
+            Optional<ArgumentResultConverter> converter = MessageCommandHandler.getArgumentConverter(clazz);
+            if (converter.isPresent()) {
+                o = converter.get().convertTo(argument.getValue());
+            } else {
+                throw new NullPointerException("No converter found for type: " + clazz.getName());
+            }
         }
     }
 
