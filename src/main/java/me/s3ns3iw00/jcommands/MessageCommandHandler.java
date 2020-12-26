@@ -197,6 +197,24 @@ public class MessageCommandHandler {
     }
 
     /**
+     * Registers the command on all the servers where the bot on
+     *
+     * @param command the command
+     */
+    public static void registerCommandOnAllServer(Command command) {
+        registerCommand(command, (Server[]) api.getServers().toArray());
+    }
+
+    /**
+     * Calls the {@link me.s3ns3iw00.jcommands.MessageCommandHandler#registerCommandOnAllServer(Command)} method with the command contained by the {@code CommandBuilder} class
+     *
+     * @param builder the builder
+     */
+    public static void registerCommandOnAllServer(CommandBuilder builder) {
+        registerCommandOnAllServer(builder.getCommand());
+    }
+
+    /**
      * Registers an error listener where the errors will be managed
      *
      * @param error the listener interface
