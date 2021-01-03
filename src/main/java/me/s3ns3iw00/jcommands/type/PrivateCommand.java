@@ -57,7 +57,7 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
 
     /**
      * Sets the roles which can use this command with<br>
-     * Does not take any effect when the command sent in private
+     * Does not take any effect if the {@code roleSourceServer} is not set
      *
      * @param needAllRoles if true all roles will needed to use this command
      * @param roles        the list of the roles

@@ -60,8 +60,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     }
 
     /**
-     * Sets the roles which can use this command with<br>
-     * Does not take any effect when the command sent in private
+     * Sets the roles which can use this command with
      *
      * @param needAllRoles if true all roles will needed to use this command
      * @param roles        the list of the roles
