@@ -16,36 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument;
+package me.s3ns3iw00.jcommands.limitation;
+
+import org.javacord.api.entity.user.User;
+
+import java.util.List;
 
 /**
- * Represents an argument
- *
- * @author S3nS3IW00
+ * Commands that implements this interface will be able to limited for users
  */
-public interface Argument {
+public interface UserLimitable {
 
     /**
-     * @return the argument's name
-     */
-    String getName();
-
-    /**
-     * @return the argument's raw value
-     */
-    String getValue();
-
-    /**
-     * Checks the user input if its valid for the argument or not
+     * Sets the users who can use this command
      *
-     * @param input the user input
-     * @return true or false depends on the validation process result
+     * @param users the list of the users
      */
-    boolean isValid(String input);
+    void setUsers(boolean allowed, User... users);
 
     /**
-     * @return the class of the result's type
+     * @return the list of the users
      */
-    Class<?> getResultType();
+    List<User> getUsers();
+
+    /**
+     * @return true or false depends on if the user limitation is allowing or disallowing
+     */
+    boolean isAllowedUsers();
 
 }

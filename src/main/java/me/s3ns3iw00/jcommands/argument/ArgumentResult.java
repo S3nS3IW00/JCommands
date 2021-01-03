@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
-import me.s3ns3iw00.jcommands.MessageCommandHandler;
+import me.s3ns3iw00.jcommands.CommandHandler;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 
@@ -58,8 +58,10 @@ public class ArgumentResult {
             o = Double.parseDouble(argument.getValue());
         } else if (Matcher.class == clazz) {
             o = ((RegexArgument) argument).getMatcher();
+        } else if (String.class == clazz) {
+            o = argument.getValue();
         } else {
-            Optional<ArgumentResultConverter> converter = MessageCommandHandler.getArgumentConverter(clazz);
+            Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
             if (converter.isPresent()) {
                 o = converter.get().convertTo(argument.getValue());
             } else {

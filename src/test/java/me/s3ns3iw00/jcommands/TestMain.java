@@ -1,6 +1,7 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.type.*;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.Channel;
@@ -22,14 +23,14 @@ public class TestMain {
         System.out.println("Invite the bot with the following url: " + api.createBotInvite());
 
         // Initiate the listener.
-        MessageCommandHandler.setApi(api);
+        CommandHandler.setApi(api);
 
         // Creating instance of the servers where the bot on
         // -- DON'T FORGET TO REPLACE THIS WITH YOUR SERVER ID --
         Server myServer = api.getServerById(787364551598407700L).get();
 
         // Registering the error listener
-        MessageCommandHandler.setOnError((type, cmd, sender, msg, source) -> {
+        CommandHandler.setOnError((type, cmd, sender, msg, source) -> {
             String errorMessage = null;
             switch (type) {
                 // Occurs when no command is registered at the source with the given name.
@@ -59,11 +60,11 @@ public class TestMain {
         // -- DON'T FORGET TO REPLACE CATEGORY, CHANNEL AND ROLE IDs WITH YOURS --
 
         // Create the command that is will only be available in the server
-        Command introduceCommand = new Command("iam", CommandType.SERVER);
+        ServerCommand introduceCommand = new ServerCommand("iam");
         // We want to make this command available in only one category
-        introduceCommand.setAllowedCategories(api.getChannelCategoryById(787365901552451595L).get());
+        introduceCommand.setCategories(true, api.getChannelCategoryById(787365901552451595L).get());
         // But we have two channels in that category where the command should not to work
-        introduceCommand.setNotAllowedChannels(api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());
+        introduceCommand.setChannels(false, api.getTextChannelById(787366035207618573L).get(), api.getTextChannelById(787366059643502644L).get());
         // This command is only for users who has this role
         introduceCommand.setRoles(false, api.getRoleById(787366309561368606L).get());
         // Let's create our command's first argument. This argument only accepts two word separated with comma and started with capitalized letter.
@@ -113,7 +114,7 @@ public class TestMain {
             responseMessage.send(source);
         });
         // And don't forget to register the command on the server(s). (I always forget it and never know what's wrong :D)
-        MessageCommandHandler.registerCommand(introduceCommand, myServer);
+        CommandHandler.registerServerCommand(introduceCommand, myServer);
     }
 
 }

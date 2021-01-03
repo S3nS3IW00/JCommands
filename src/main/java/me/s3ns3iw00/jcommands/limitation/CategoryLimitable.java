@@ -16,36 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument;
+package me.s3ns3iw00.jcommands.limitation;
+
+import org.javacord.api.entity.channel.ChannelCategory;
+
+import java.util.List;
 
 /**
- * Represents an argument
- *
- * @author S3nS3IW00
+ * Commands that implements this interface will be able to limited for categories
  */
-public interface Argument {
+public interface CategoryLimitable {
 
     /**
-     * @return the argument's name
-     */
-    String getName();
-
-    /**
-     * @return the argument's raw value
-     */
-    String getValue();
-
-    /**
-     * Checks the user input if its valid for the argument or not
+     * Sets the categories where the command will be allowed
      *
-     * @param input the user input
-     * @return true or false depends on the validation process result
+     * @param categories the list of the categories
      */
-    boolean isValid(String input);
+    void setCategories(boolean allowed, ChannelCategory... categories);
 
     /**
-     * @return the class of the result's type
+     * @return the list of the categories
      */
-    Class<?> getResultType();
+    List<ChannelCategory> getCategories();
+
+    /**
+     * @return true or false depends on if the category limitation is allowing or disallowing
+     */
+    boolean isAllowedCategories();
 
 }

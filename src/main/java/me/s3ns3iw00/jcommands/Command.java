@@ -20,11 +20,6 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.permission.Role;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
 
 import java.util.*;
 
@@ -39,19 +34,11 @@ public class Command {
      * These guys are nice
      */
     private String name;
-    private CommandType type;
     private LinkedList<List<Argument>> arguments = new LinkedList<>();
-    private List<User> allowedUserList = new ArrayList<>(), notAllowedUserList = new ArrayList<>();
-    private List<ChannelCategory> allowedCategoryList = new ArrayList<>(), notAllowedCategoryList = new ArrayList<>();
-    private List<TextChannel> allowedChannelList = new ArrayList<>(), notAllowedChannelList = new ArrayList<>();
-    private Role[] roles;
-    private boolean needAllRole;
-    private Optional<Server> roleSourceServer = Optional.empty();
     private Optional<CommandAction> action = Optional.empty();
 
-    public Command(String name, CommandType type) {
+    public Command(String name) {
         this.name = name;
-        this.type = type;
     }
 
     /**
@@ -61,90 +48,6 @@ public class Command {
      */
     public void addArguments(Argument... arguments) {
         this.arguments.add(new ArrayList<>(Arrays.asList(arguments)));
-    }
-
-    /**
-     * Sets the users who can use this command<br>
-     * If the not allowed users has been set this will not take any effect.
-     *
-     * @param users the list of the users
-     */
-    public void setAllowedUsers(User... users) {
-        allowedUserList = new ArrayList<>(Arrays.asList(users));
-    }
-
-    /**
-     * Sets the users who cannot use this command<br>
-     * If the allowed users has been set this will not take any effect
-     *
-     * @param users the list of the users
-     */
-    public void setNotAllowedUsers(User... users) {
-        notAllowedUserList = new ArrayList<>(Arrays.asList(users));
-    }
-
-    /**
-     * Sets the categories where the command will be allowed<br>
-     * If the not allowed categories has been set this will not take any effect.
-     *
-     * @param categories the list of the categories
-     */
-    public void setAllowedCategories(ChannelCategory... categories) {
-        allowedCategoryList = new ArrayList<>(Arrays.asList(categories));
-    }
-
-    /**
-     * Sets the categories where the command will not be allowed<br>
-     * If the allowed categories has been set this will not take any effect
-     *
-     * @param categories the list of the categories
-     */
-    public void setNotAllowedCategories(ChannelCategory... categories) {
-        notAllowedCategoryList = new ArrayList<>(Arrays.asList(categories));
-    }
-
-    /**
-     * Sets the channels where the command will be allowed<br>
-     * If the not allowed commands has been set this will not take any effect.
-     *
-     * @param channels the list of the channels
-     */
-    public void setAllowedChannels(TextChannel... channels) {
-        allowedChannelList = new ArrayList<>(Arrays.asList(channels));
-    }
-
-    /**
-     * Sets the channels where the command will not be allowed<br>
-     * If the allowed commands has been set this will not take any effect
-     *
-     * @param channels the list of the channels
-     */
-    public void setNotAllowedChannels(TextChannel... channels) {
-        notAllowedChannelList = new ArrayList<>(Arrays.asList(channels));
-    }
-
-    /**
-     * Sets the roles which can use this command with<br>
-     * Does not take any effect when the command sent in private
-     *
-     * @param needAllRole if true all roles will needed to use this command
-     * @param roles       the list of the roles
-     */
-    public void setRoles(boolean needAllRole, Role... roles) {
-        this.roles = roles;
-        this.needAllRole = needAllRole;
-    }
-
-    /**
-     * Sets the server where the roles will be fetched from<br>
-     * This is useful when we want to check the roles at a private command
-     * <p>
-     * Safe to use when the command is registered in only one server
-     *
-     * @param server the server
-     */
-    public void setRoleSource(Server server) {
-        roleSourceServer = Optional.of(server);
     }
 
     /**
@@ -185,54 +88,23 @@ public class Command {
         return usage.toString();
     }
 
-    public String getName() {
+    /**
+     * @return the command's name
+     */
+    String getName() {
         return name;
     }
 
-    public CommandType getType() {
-        return type;
-    }
-
-    List<List<Argument>> getArguments() {
+    /**
+     * @return the list of the arguments
+     */
+    LinkedList<List<Argument>> getArguments() {
         return arguments;
     }
 
-    List<User> getAllowedUserList() {
-        return allowedUserList;
-    }
-
-    List<User> getNotAllowedUserList() {
-        return notAllowedUserList;
-    }
-
-    List<ChannelCategory> getAllowedCategoryList() {
-        return allowedCategoryList;
-    }
-
-    List<ChannelCategory> getNotAllowedCategoryList() {
-        return notAllowedCategoryList;
-    }
-
-    List<TextChannel> getAllowedChannelList() {
-        return allowedChannelList;
-    }
-
-    List<TextChannel> getNotAllowedChannelList() {
-        return notAllowedChannelList;
-    }
-
-    Role[] getRoles() {
-        return roles;
-    }
-
-    boolean isNeedAllRole() {
-        return needAllRole;
-    }
-
-    Optional<Server> getRoleSource() {
-        return roleSourceServer;
-    }
-
+    /**
+     * @return the command action instance
+     */
     Optional<CommandAction> getAction() {
         return action;
     }
