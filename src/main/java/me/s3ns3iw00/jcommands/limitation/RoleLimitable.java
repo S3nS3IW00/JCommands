@@ -16,28 +16,34 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands;
+package me.s3ns3iw00.jcommands.limitation;
+
+import org.javacord.api.entity.permission.Role;
+
+import java.util.List;
 
 /**
- * Enum with command type constants
- *
- * @author S3nS3IW00
+ * Commands that implements this interface will be able to limited for roles
  */
-public enum CommandType {
+public interface RoleLimitable {
 
     /**
-     * The command will only be available on the servers where the command have been registered.
+     * Sets the roles which can use this command with<br>
+     * Does not take any effect when the command sent in private
+     *
+     * @param needAllRoles if true all roles will needed to use this command
+     * @param roles        the list of the roles
      */
-    SERVER,
+    void setRoles(boolean needAllRoles, Role... roles);
 
     /**
-     * The command will only be available in private.
+     * @return the list of the roles
      */
-    PM,
+    List<Role> getRoles();
 
     /**
-     * The command will be available in private and also on the servers where the command have been registered.
+     * @return true or false depends on if the user needs all the roles to use this command
      */
-    BOTH
+    boolean isNeedAllRoles();
 
 }

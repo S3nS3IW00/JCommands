@@ -16,36 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument;
+package me.s3ns3iw00.jcommands.builder;
+
+import me.s3ns3iw00.jcommands.Command;
 
 /**
- * Represents an argument
+ * Useful class that makes {@code Command} creations more comfortable
  *
  * @author S3nS3IW00
  */
-public interface Argument {
+public interface CommandBuilder {
 
     /**
-     * @return the argument's name
+     * @return the command itself
      */
-    String getName();
-
-    /**
-     * @return the argument's raw value
-     */
-    String getValue();
-
-    /**
-     * Checks the user input if its valid for the argument or not
-     *
-     * @param input the user input
-     * @return true or false depends on the validation process result
-     */
-    boolean isValid(String input);
-
-    /**
-     * @return the class of the result's type
-     */
-    Class<?> getResultType();
+    Command getCommand();
 
 }

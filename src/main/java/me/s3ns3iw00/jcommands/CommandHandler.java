@@ -24,6 +24,17 @@ import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.ChannelConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.MentionConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
+import me.s3ns3iw00.jcommands.builder.CommandBuilder;
+import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
+import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
+import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
+import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
+import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.RoleLimitable;
+import me.s3ns3iw00.jcommands.limitation.UserLimitable;
+import me.s3ns3iw00.jcommands.type.GlobalCommand;
+import me.s3ns3iw00.jcommands.type.PrivateCommand;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ServerChannel;
@@ -42,7 +53,7 @@ import java.util.*;
  *
  * @author S3nS3IW00
  */
-public class MessageCommandHandler {
+public class CommandHandler {
 
     /**
      * Some cool and obvious stuff here
@@ -68,7 +79,7 @@ public class MessageCommandHandler {
      * @param api is the instance of the Discord api
      */
     public static void setApi(DiscordApi api) {
-        MessageCommandHandler.api = api;
+        CommandHandler.api = api;
         api.addMessageCreateListener((event -> {
             if (event.getMessageAuthor().isBotUser()) return;
             String[] raw = event.getMessageContent().split(" ");
@@ -81,7 +92,7 @@ public class MessageCommandHandler {
     /**
      * Handles the command inputs
      *
-     * @param msg  the message what contains the command
+     * @param msg  the message that contains the command
      * @param cmd  the command
      * @param args the list of the command's parameters
      */
@@ -109,13 +120,16 @@ public class MessageCommandHandler {
         final Command command = commandI;
 
         // User validation
-        if (command.getNotAllowedUserList().contains(sender) || (command.getAllowedUserList().size() > 0 && !command.getAllowedUserList().contains(sender))) {
-            error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
-            return;
+        if (command instanceof UserLimitable) {
+            UserLimitable userLimitable = (UserLimitable) command;
+            if ((userLimitable.isAllowedUsers() && !userLimitable.getUsers().contains(sender)) || (!userLimitable.isAllowedUsers() && userLimitable.getUsers().contains(sender))) {
+                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
+                return;
+            }
         }
 
         //Category and channel validation
-        if ((command.getType() == CommandType.PM && !msg.isPrivateMessage()) || (command.getType() == CommandType.SERVER && msg.isPrivateMessage())) {
+        if ((!(command instanceof GlobalCommand) && command instanceof PrivateCommand && !msg.isPrivateMessage()) || (command instanceof ServerCommand && msg.isPrivateMessage())) {
             error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
             return;
         }
@@ -123,14 +137,20 @@ public class MessageCommandHandler {
             Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
             if (serverTextChannel.isPresent()) {
                 Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
-                if (category.isPresent() && (command.getNotAllowedCategoryList().contains(category.get()) || (command.getAllowedCategoryList().size() > 0 && !command.getAllowedCategoryList().contains(category.get())))
-                        || (!category.isPresent() && command.getAllowedCategoryList().size() > 0)) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
-                    return;
+                if (command instanceof CategoryLimitable) {
+                    CategoryLimitable categoryLimitable = (CategoryLimitable) command;
+                    if (category.isPresent() && ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get())))
+                            || (!category.isPresent() && (categoryLimitable.getCategories().size() > 0))) {
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
+                        return;
+                    }
                 }
-                if (command.getNotAllowedChannelList().contains(msg.getChannel()) || (command.getAllowedChannelList().size() > 0 && !command.getAllowedChannelList().contains(msg.getChannel()))) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
-                    return;
+                if (command instanceof ChannelLimitable) {
+                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
+                    if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(serverTextChannel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(serverTextChannel.get()))) {
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
+                        return;
+                    }
                 }
             } else {
                 return;
@@ -138,20 +158,27 @@ public class MessageCommandHandler {
         }
 
         //Role validation
-        if ((server != null || command.getRoleSource().isPresent()) && command.getRoles() != null && command.getRoles().length > 0) {
-            int needCount = command.isNeedAllRole() ? command.getRoles().length : 1;
-            List<Role> userRoles = sender.getRoles(command.getRoleSource().orElse(server));
-
-            int count = 0;
-            int i = 0;
-            while (i < command.getRoles().length && count < needCount) {
-                if (userRoles.contains(command.getRoles()[i])) count++;
-                i++;
+        if (command instanceof RoleLimitable) {
+            RoleLimitable roleLimitable = (RoleLimitable) command;
+            Optional<Server> roleSource = Optional.empty();
+            if (command instanceof PrivateCommand) {
+                roleSource = ((PrivateCommand) command).getRoleSource();
             }
+            if ((server != null || roleSource.isPresent()) && roleLimitable.getRoles() != null && roleLimitable.getRoles().size() > 0) {
+                int needCount = roleLimitable.isNeedAllRoles() ? roleLimitable.getRoles().size() : 1;
+                List<Role> userRoles = sender.getRoles(roleSource.orElse(server));
 
-            if (count < needCount) {
-                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
-                return;
+                int count = 0;
+                int i = 0;
+                while (i < roleLimitable.getRoles().size() && count < needCount) {
+                    if (userRoles.contains(roleLimitable.getRoles().get(i))) count++;
+                    i++;
+                }
+
+                if (count < needCount) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
+                    return;
+                }
             }
         }
 
@@ -192,7 +219,7 @@ public class MessageCommandHandler {
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(Command command, Server... servers) {
+    private static void registerCommand(Command command, Server... servers) {
         commands.add(command);
         for (Server server : servers) {
             if (!serverCommands.containsKey(server)) {
@@ -203,13 +230,69 @@ public class MessageCommandHandler {
     }
 
     /**
-     * Calls the {@link me.s3ns3iw00.jcommands.MessageCommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
+     * Registers the {@code PrivateCommand} for the listener that is will only available in private
+     *
+     * @param command the command
+     */
+    public static void registerPrivateCommand(PrivateCommand command) {
+        registerCommand(command);
+    }
+
+    /**
+     * Registers the {@code ServerCommand} for the listener on the specified servers
+     *
+     * @param command the command
+     * @param servers the list of the servers where the command will be registered
+     */
+    public static void registerServerCommand(ServerCommand command, Server... servers) {
+        registerCommand(command, servers);
+    }
+
+    /**
+     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
+     *
+     * @param command the command
+     * @param servers the list of the servers where the command will be registered
+     */
+    public static void registerGlobalCommand(GlobalCommand command, Server... servers) {
+        registerCommand(command, servers);
+    }
+
+    /**
+     * Calls the {@link CommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
      *
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(CommandBuilder builder, Server... servers) {
+    private static void registerCommand(CommandBuilder builder, Server... servers) {
         registerCommand(builder.getCommand(), servers);
+    }
+
+    /**
+     * Registers the {@code PrivateCommand} for the listener that is will only available in private
+     *
+     * @param builder the builder that contains the command
+     */
+    public static void registerPrivateCommand(PrivateCommandBuilder builder) {
+        registerCommand(builder);
+    }
+
+    /**
+     * Registers the {@code ServerCommand} for the listener on the specified servers
+     *
+     * @param builder the builder that contains the command
+     */
+    public static void registerServerCommand(ServerCommandBuilder builder, Server... servers) {
+        registerCommand(builder, servers);
+    }
+
+    /**
+     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
+     *
+     * @param builder the builder that contains the command
+     */
+    public static void registerGlobalCommand(GlobalCommandBuilder builder, Server... servers) {
+        registerCommand(builder, servers);
     }
 
     /**
@@ -217,17 +300,53 @@ public class MessageCommandHandler {
      *
      * @param command the command
      */
-    public static void registerCommandOnAllServer(Command command) {
+    private static void registerCommandOnAllServer(Command command) {
         registerCommand(command, (Server[]) api.getServers().toArray());
     }
 
     /**
-     * Calls the {@link me.s3ns3iw00.jcommands.MessageCommandHandler#registerCommandOnAllServer(Command)} method with the command contained by the {@code CommandBuilder} class
+     * Registers the {@code ServerCommand} on all the servers where the bot on
      *
-     * @param builder the builder
+     * @param command the command
      */
-    public static void registerCommandOnAllServer(CommandBuilder builder) {
+    public static void registerServerCommandOnAllServer(ServerCommand command) {
+        registerCommandOnAllServer(command);
+    }
+
+    /**
+     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
+     *
+     * @param command the command
+     */
+    public static void registerGlobalCommandOnAllServer(GlobalCommand command) {
+        registerCommandOnAllServer(command);
+    }
+
+    /**
+     * Registers the command on all the servers where the bot on
+     *
+     * @param builder the builder that contains the command
+     */
+    private static void registerCommandOnAllServer(CommandBuilder builder) {
         registerCommandOnAllServer(builder.getCommand());
+    }
+
+    /**
+     * Registers the {@code ServerCommand} on all the servers where the bot on
+     *
+     * @param builder the builder that contains the command
+     */
+    public static void registerServerCommandOnAllServer(ServerCommandBuilder builder) {
+        registerCommandOnAllServer(builder);
+    }
+
+    /**
+     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
+     *
+     * @param builder the builder that contains the command
+     */
+    public static void registerGlobalCommandOnAllServer(GlobalCommandBuilder builder) {
+        registerCommandOnAllServer(builder);
     }
 
     /**
@@ -236,7 +355,7 @@ public class MessageCommandHandler {
      * @param error the listener interface
      */
     public static void setOnError(CommandError error) {
-        MessageCommandHandler.error = Optional.of(error);
+        CommandHandler.error = Optional.of(error);
     }
 
     /**
@@ -245,7 +364,7 @@ public class MessageCommandHandler {
      * @param commandChar the sign that following by the command
      */
     public static void setCommandChar(String commandChar) {
-        MessageCommandHandler.commandChar = commandChar;
+        CommandHandler.commandChar = commandChar;
     }
 
     /**
@@ -320,6 +439,9 @@ public class MessageCommandHandler {
         return commandChar;
     }
 
+    /**
+     * @return the discord api
+     */
     public static DiscordApi getApi() {
         return api;
     }

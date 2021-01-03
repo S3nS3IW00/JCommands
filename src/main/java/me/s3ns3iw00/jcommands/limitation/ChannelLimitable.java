@@ -16,36 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument;
+package me.s3ns3iw00.jcommands.limitation;
+
+import org.javacord.api.entity.channel.TextChannel;
+
+import java.util.List;
 
 /**
- * Represents an argument
- *
- * @author S3nS3IW00
+ * Commands that implements this interface will be able to limited for channels
  */
-public interface Argument {
+public interface ChannelLimitable {
 
     /**
-     * @return the argument's name
-     */
-    String getName();
-
-    /**
-     * @return the argument's raw value
-     */
-    String getValue();
-
-    /**
-     * Checks the user input if its valid for the argument or not
+     * Sets the channels where the command will be allowed
      *
-     * @param input the user input
-     * @return true or false depends on the validation process result
+     * @param channels the list of the channels
      */
-    boolean isValid(String input);
+    void setChannels(boolean allowed, TextChannel... channels);
 
     /**
-     * @return the class of the result's type
+     * @return the list of the channels
      */
-    Class<?> getResultType();
+    List<TextChannel> getChannels();
+
+    /**
+     * @return true or false depends on if the channel limitation is allowing or disallowing
+     */
+    boolean isAllowedChannels();
 
 }

@@ -25,6 +25,10 @@ package me.s3ns3iw00.jcommands.argument.converter;
  */
 public interface ArgumentResultConverter {
 
+    /**
+     * @param value the raw value
+     * @return the converted object
+     */
     Object convertTo(String value);
 
 }
