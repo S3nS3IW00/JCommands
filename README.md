@@ -91,7 +91,7 @@ introduceCommand.setAction((sender, raw, args, msg, source) -> {
     responseMessage.send(source);
 });
 // And don't forget to register the command on the server(s). (I always forget it and never know what's wrong :D)
-CommandHandler.registerCommand(introduceCommand, myServer);
+CommandHandler.registerServerCommand(introduceCommand, myServer);
 ```  
 ![Example](https://imgur.com/ciHnqpS.png)
   
