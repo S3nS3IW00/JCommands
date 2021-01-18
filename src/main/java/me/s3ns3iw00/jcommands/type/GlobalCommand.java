@@ -48,7 +48,7 @@ public class GlobalCommand extends PrivateCommand implements ChannelLimitable, C
     @Override
     public void setChannels(boolean allowed, TextChannel... channels) {
         allowedChannels = allowed;
-        channelList.addAll(Arrays.asList(channels));
+        channelList = Arrays.asList(channels);
     }
 
     /**
@@ -59,7 +59,7 @@ public class GlobalCommand extends PrivateCommand implements ChannelLimitable, C
     @Override
     public void setCategories(boolean allowed, ChannelCategory... categories) {
         allowedCategories = allowed;
-        categoryList.addAll(Arrays.asList(categories));
+        categoryList = Arrays.asList(categories);
     }
 
     /**

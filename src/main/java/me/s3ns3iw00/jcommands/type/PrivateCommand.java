@@ -52,7 +52,7 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
     @Override
     public void setUsers(boolean allowed, User... users) {
         allowedUsers = allowed;
-        userList.addAll(Arrays.asList(users));
+        userList = Arrays.asList(users);
     }
 
     /**

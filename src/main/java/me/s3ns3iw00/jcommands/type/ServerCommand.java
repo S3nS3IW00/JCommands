@@ -56,7 +56,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     @Override
     public void setUsers(boolean allowed, User... users) {
         allowedUsers = allowed;
-        userList.addAll(Arrays.asList(users));
+        userList = Arrays.asList(users);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     @Override
     public void setChannels(boolean allowed, TextChannel... channels) {
         allowedChannels = allowed;
-        channelList.addAll(Arrays.asList(channels));
+        channelList = Arrays.asList(channels);
     }
 
     /**
@@ -90,7 +90,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     @Override
     public void setCategories(boolean allowed, ChannelCategory... categories) {
         allowedCategories = allowed;
-        categoryList.addAll(Arrays.asList(categories));
+        categoryList = Arrays.asList(categories);
     }
 
     /**
