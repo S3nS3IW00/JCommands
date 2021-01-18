@@ -32,6 +32,19 @@ public class MentionArgument extends RegexArgument {
     }
 
     @Override
+    public boolean isValid(String input) {
+        if (super.isValid(input)) {
+            try {
+                long id = Long.parseLong(getValue());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String getValue() {
         return super.getValue().substring(super.getValue().toCharArray()[2] == '!' ? 3 : 2, super.getValue().length() - 1);
     }
