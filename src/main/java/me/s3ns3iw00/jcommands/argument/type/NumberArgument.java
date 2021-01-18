@@ -19,12 +19,13 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 /**
- * An argument that only accepts number inputs
+ * An argument that only accepts number inputs inside integer's range (from -2147483648 to 2147483647)
  *
  * @author S3nS3IW00
  */
 public class NumberArgument extends RegexArgument {
 
+    // Define default range
     private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
 
     public NumberArgument(String name) {
@@ -39,8 +40,12 @@ public class NumberArgument extends RegexArgument {
     @Override
     public boolean isValid(String input) {
         if (super.isValid(input)) {
-            int value = Integer.parseInt(input);
-            return value >= min && value <= max;
+            try {
+                int value = Integer.parseInt(input);
+                return value >= min && value <= max;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
         return false;
     }
