@@ -29,7 +29,7 @@ public class NumberArgument extends RegexArgument {
     private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
 
     public NumberArgument(String name) {
-        super(name, "\\d+", Integer.class);
+        super(name, "^-?\\d+$", Integer.class);
     }
 
     public void setRange(int min, int max) {
