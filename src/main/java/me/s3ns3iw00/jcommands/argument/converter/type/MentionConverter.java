@@ -33,9 +33,9 @@ public class MentionConverter implements ArgumentResultConverter {
 
     @Override
     public Object convertTo(String value) {
-        CompletableFuture<User> userFuture = CommandHandler.getApi().getUserById(value);
-        userFuture.join();
         try {
+            CompletableFuture<User> userFuture = CommandHandler.getApi().getUserById(value);
+            userFuture.join();
             return userFuture.get();
         } catch (Exception e) {
             return null;
