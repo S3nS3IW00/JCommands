@@ -35,7 +35,7 @@ import org.javacord.api.entity.user.User;
  */
 public class GlobalCommandBuilder implements CommandBuilder {
 
-    private GlobalCommand command;
+    private final GlobalCommand command;
 
     public GlobalCommandBuilder(String name) {
         command = new GlobalCommand(name);

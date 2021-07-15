@@ -59,15 +59,15 @@ public class CommandHandler {
      * Some cool and obvious stuff here
      */
     private static DiscordApi api;
-    private static List<Command> commands = new ArrayList<>();
-    private static Map<Server, List<Command>> serverCommands = new HashMap<>();
+    private static final List<Command> commands = new ArrayList<>();
+    private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
     private static Optional<CommandError> error = Optional.empty();
     private static String commandChar = "/";
 
     /**
      * HasMap that contains the converters initiated with default converters
      */
-    private static Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
+    private static final Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
         put(URL.class, new URLConverter());
         put(ServerChannel.class, new ChannelConverter());
         put(User.class, new MentionConverter());

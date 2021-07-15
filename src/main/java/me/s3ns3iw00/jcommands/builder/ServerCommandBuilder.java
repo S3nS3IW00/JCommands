@@ -34,7 +34,7 @@ import org.javacord.api.entity.user.User;
  */
 public class ServerCommandBuilder implements CommandBuilder {
 
-    private ServerCommand command;
+    private final ServerCommand command;
 
     public ServerCommandBuilder(String name) {
         command = new ServerCommand(name);

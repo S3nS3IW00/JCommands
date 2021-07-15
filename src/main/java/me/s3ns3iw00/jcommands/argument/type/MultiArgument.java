@@ -31,7 +31,7 @@ import java.util.Collections;
  */
 public class MultiArgument implements Argument {
 
-    private Collection<String> names;
+    private final Collection<String> names;
     private String input;
 
     public MultiArgument(String... names) {

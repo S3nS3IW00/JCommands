@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class RegexArgument extends ConstantArgument {
 
     private String input;
-    private Pattern pattern;
+    private final Pattern pattern;
     private Matcher matcher;
     private Class<?> type = Matcher.class;
 

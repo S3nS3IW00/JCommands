@@ -33,8 +33,8 @@ public class Command {
     /**
      * These guys are nice
      */
-    private String name;
-    private LinkedList<List<Argument>> arguments = new LinkedList<>();
+    private final String name;
+    private final LinkedList<List<Argument>> arguments = new LinkedList<>();
     private Optional<CommandAction> action = Optional.empty();
 
     public Command(String name) {

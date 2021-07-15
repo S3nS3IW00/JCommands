@@ -27,7 +27,7 @@ import me.s3ns3iw00.jcommands.argument.Argument;
  */
 public class ConstantArgument implements Argument {
 
-    private String name;
+    private final String name;
 
     public ConstantArgument(String name) {
         this.name = name;

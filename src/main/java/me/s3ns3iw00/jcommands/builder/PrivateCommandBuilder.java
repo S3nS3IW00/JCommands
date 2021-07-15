@@ -33,7 +33,7 @@ import org.javacord.api.entity.user.User;
  */
 public class PrivateCommandBuilder implements CommandBuilder {
 
-    private PrivateCommand command;
+    private final PrivateCommand command;
 
     public PrivateCommandBuilder(String name) {
         command = new PrivateCommand(name);

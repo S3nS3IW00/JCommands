@@ -32,8 +32,8 @@ import java.util.regex.Matcher;
  */
 public class ArgumentResult {
 
-    private Class<?> clazz;
-    private Object o;
+    private final Class<?> clazz;
+    private final Object o;
 
     /**
      * Converts the string value into the type that is specified in the argument.
