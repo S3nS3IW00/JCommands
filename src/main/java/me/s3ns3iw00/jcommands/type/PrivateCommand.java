@@ -32,7 +32,10 @@ import java.util.Optional;
 
 /**
  * A {@code Command} that can be only used in private message and can be limited for users and roles.
+ *
+ * Deprecated since the new command system doesn't support private commands.
  */
+@Deprecated
 public class PrivateCommand extends Command implements UserLimitable, RoleLimitable {
 
     private boolean needAllRoles, allowedUsers;
