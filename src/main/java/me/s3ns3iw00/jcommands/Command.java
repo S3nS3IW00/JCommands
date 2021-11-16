@@ -33,12 +33,13 @@ public class Command {
     /**
      * These guys are nice
      */
-    private final String name;
+    private final String name, description;
     private final LinkedList<List<Argument>> arguments = new LinkedList<>();
     private Optional<CommandAction> action = Optional.empty();
 
-    public Command(String name) {
+    public Command(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     /**
@@ -93,6 +94,13 @@ public class Command {
      */
     String getName() {
         return name;
+    }
+
+    /**
+     * @return the command's description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**
