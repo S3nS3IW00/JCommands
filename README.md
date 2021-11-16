@@ -101,7 +101,7 @@ CommandHandler.registerServerCommand(introduceCommand, myServer);
 You can find more information about how to use `JCommands` on the [Wiki](https://github.com/S3nS3IW00/JCommands/wiki) page.
   
 ## Dependencies  
-As you can see in the description, this is a Javacord extension. Javacord is a framework of JDA and it so much easier to create bots with it.  
+As you can see in the description, this is a Javacord extension. Javacord is a framework and it so much easier to create bots with it.  
 - [Javacord](https://github.com/Javacord/Javacord)
   
 ## Usage  
