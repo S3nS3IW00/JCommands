@@ -31,6 +31,11 @@ public interface Argument {
     String getName();
 
     /**
+     * @return the argument's description
+     */
+    String getDescription();
+
+    /**
      * @return the argument's raw value
      */
     String getValue();
