@@ -39,8 +39,8 @@ public class GlobalCommand extends PrivateCommand implements ChannelLimitable, C
     private List<TextChannel> channelList = new ArrayList<>();
     private List<ChannelCategory> categoryList = new ArrayList<>();
 
-    public GlobalCommand(String name) {
-        super(name);
+    public GlobalCommand(String name, String description) {
+        super(name, description);
     }
 
     /**
