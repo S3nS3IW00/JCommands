@@ -33,8 +33,8 @@ public class RegexArgument extends ConstantArgument {
     private Matcher matcher;
     private Class<?> type = Matcher.class;
 
-    public RegexArgument(String name, String regex) {
-        super(name);
+    public RegexArgument(String name, String description, String regex) {
+        super(name, description);
         pattern = Pattern.compile(regex);
     }
 
@@ -43,8 +43,8 @@ public class RegexArgument extends ConstantArgument {
      *
      * @param type a non-primitive data type
      */
-    public RegexArgument(String name, String regex, Class<?> type) {
-        this(name, regex);
+    public RegexArgument(String name, String description, String regex, Class<?> type) {
+        this(name, description, regex);
         this.type = type;
     }
 

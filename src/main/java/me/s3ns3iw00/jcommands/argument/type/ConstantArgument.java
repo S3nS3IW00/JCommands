@@ -27,14 +27,20 @@ import me.s3ns3iw00.jcommands.argument.Argument;
  */
 public class ConstantArgument implements Argument {
 
-    private final String name;
+    private final String name, description;
 
-    public ConstantArgument(String name) {
+    public ConstantArgument(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 
     public String getValue() {
