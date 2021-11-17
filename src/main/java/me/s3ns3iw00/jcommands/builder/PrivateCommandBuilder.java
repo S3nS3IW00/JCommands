@@ -30,7 +30,9 @@ import org.javacord.api.entity.user.User;
  * Useful class that makes {@code PrivateCommand} creations more comfortable
  *
  * @author S3nS3IW00
+ * @deprecated since the new command system doesn't support private commands
  */
+@Deprecated
 public class PrivateCommandBuilder implements CommandBuilder {
 
     private final PrivateCommand command;
