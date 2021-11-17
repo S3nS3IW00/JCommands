@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class ConstantArgument implements Argument {
 
     private final String name, description;
-    private final LinkedList<ConstantArgument> arguments = new LinkedList<>();
+    private final LinkedList<Argument> arguments = new LinkedList<>();
 
     public ConstantArgument(String name, String description) {
         this.name = name;
@@ -59,7 +59,7 @@ public class ConstantArgument implements Argument {
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, name, description, arguments.stream().map(ConstantArgument::getCommandOption).collect(Collectors.toList()));
+        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, name, description, arguments.stream().map(Argument::getCommandOption).collect(Collectors.toList()));
     }
 
     /**
