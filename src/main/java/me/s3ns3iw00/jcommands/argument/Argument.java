@@ -41,7 +41,7 @@ public interface Argument {
     String getValue();
 
     /**
-     * Checks the user input if its valid for the argument or not
+     * Checks the user input if it's valid for the argument or not
      *
      * @param input the user input
      * @return true or false depends on the validation process result
