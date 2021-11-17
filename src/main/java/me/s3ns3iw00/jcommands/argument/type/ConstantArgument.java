@@ -19,6 +19,11 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionType;
+
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Only accepts inputs that are exactly the same as its name
@@ -28,6 +33,7 @@ import me.s3ns3iw00.jcommands.argument.Argument;
 public class ConstantArgument implements Argument {
 
     private final String name, description;
+    private final LinkedList<ConstantArgument> arguments = new LinkedList<>();
 
     public ConstantArgument(String name, String description) {
         this.name = name;
@@ -47,12 +53,22 @@ public class ConstantArgument implements Argument {
         return name;
     }
 
-    public boolean isValid(String input) {
-        return name.equals(input);
-    }
-
     public Class<?> getResultType() {
         return String.class;
+    }
+
+    @Override
+    public SlashCommandOption getCommandOption() {
+        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, name, description, arguments.stream().map(ConstantArgument::getCommandOption).collect(Collectors.toList()));
+    }
+
+    /**
+     * Adds an argument to the argument
+     *
+     * @param argument the argument
+     */
+    public void addArgument(ConstantArgument argument) {
+        arguments.add(argument);
     }
 
 }
