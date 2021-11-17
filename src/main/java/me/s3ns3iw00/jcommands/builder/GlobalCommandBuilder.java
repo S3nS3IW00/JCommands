@@ -37,8 +37,8 @@ public class GlobalCommandBuilder implements CommandBuilder {
 
     private final GlobalCommand command;
 
-    public GlobalCommandBuilder(String name) {
-        command = new GlobalCommand(name);
+    public GlobalCommandBuilder(String name, String description) {
+        command = new GlobalCommand(name, description);
     }
 
     /**
