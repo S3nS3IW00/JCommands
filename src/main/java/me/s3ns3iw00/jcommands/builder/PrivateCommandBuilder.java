@@ -35,8 +35,8 @@ public class PrivateCommandBuilder implements CommandBuilder {
 
     private final PrivateCommand command;
 
-    public PrivateCommandBuilder(String name) {
-        command = new PrivateCommand(name);
+    public PrivateCommandBuilder(String name, String description) {
+        command = new PrivateCommand(name, description);
     }
 
     /**
