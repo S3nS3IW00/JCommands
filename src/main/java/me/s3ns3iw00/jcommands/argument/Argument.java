@@ -18,6 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import org.javacord.api.interaction.SlashCommandOption;
+
 /**
  * Represents an argument
  *
@@ -52,5 +54,10 @@ public interface Argument {
      * @return the class of the result's type
      */
     Class<?> getResultType();
+
+    /**
+     * @return the command option that need for to register the argument
+     */
+    SlashCommandOption getCommandOption();
 
 }
