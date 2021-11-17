@@ -22,6 +22,7 @@ import me.s3ns3iw00.jcommands.Command;
 import me.s3ns3iw00.jcommands.CommandAction;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -32,7 +33,9 @@ import org.javacord.api.entity.user.User;
  * Useful class that makes {@code GlobalCommand} creations more comfortable
  *
  * @author S3nS3IW00
+ * @deprecated use {@link ServerCommandBuilder} instead
  */
+@Deprecated
 public class GlobalCommandBuilder implements CommandBuilder {
 
     private final GlobalCommand command;
