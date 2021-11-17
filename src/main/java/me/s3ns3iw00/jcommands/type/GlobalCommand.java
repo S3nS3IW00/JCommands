@@ -29,7 +29,10 @@ import java.util.List;
 
 /**
  * An extended version of {@code PrivateCommand} that can be used also on servers and can be limited for channels and categories.
+ *
+ * @deprecated use {@link ServerCommand} instead
  */
+@Deprecated
 public class GlobalCommand extends PrivateCommand implements ChannelLimitable, CategoryLimitable {
 
     private boolean allowedChannels, allowedCategories;
