@@ -43,8 +43,8 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
     private Optional<Server> roleSourceServer = Optional.empty();
     private List<Role> roleCollection;
 
-    public PrivateCommand(String name) {
-        super(name);
+    public PrivateCommand(String name, String description) {
+        super(name, description);
     }
 
     /**
