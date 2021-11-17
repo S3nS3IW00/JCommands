@@ -44,8 +44,8 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     private List<TextChannel> channelList = new ArrayList<>();
     private List<ChannelCategory> categoryList = new ArrayList<>();
 
-    public ServerCommand(String name) {
-        super(name);
+    public ServerCommand(String name, String description) {
+        super(name, description);
     }
 
     /**
