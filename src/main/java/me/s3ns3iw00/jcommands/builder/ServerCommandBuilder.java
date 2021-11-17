@@ -36,8 +36,8 @@ public class ServerCommandBuilder implements CommandBuilder {
 
     private final ServerCommand command;
 
-    public ServerCommandBuilder(String name) {
-        command = new ServerCommand(name);
+    public ServerCommandBuilder(String name, String description) {
+        command = new ServerCommand(name, description);
     }
 
     /**
