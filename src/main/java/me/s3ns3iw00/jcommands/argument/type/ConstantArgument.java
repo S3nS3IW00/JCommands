@@ -67,7 +67,7 @@ public class ConstantArgument implements Argument {
      *
      * @param argument the argument
      */
-    public void addArgument(ConstantArgument argument) {
+    public void addArgument(Argument argument) {
         arguments.add(argument);
     }
 
