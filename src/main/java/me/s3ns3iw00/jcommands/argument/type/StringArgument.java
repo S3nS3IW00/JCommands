@@ -27,8 +27,19 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  */
 public class StringArgument extends ValueArgument {
 
+    // Define max length of a String by default
+    private int max = Integer.MAX_VALUE;
+
     public StringArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.STRING, String.class);
     }
 
+    public void setMaxLength(int max) {
+        this.max = max;
+    }
+
+    @Override
+    public boolean isValid(String input) {
+        return super.isValid(input) && input.length() <= max;
+    }
 }
