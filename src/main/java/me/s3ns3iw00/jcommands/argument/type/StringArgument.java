@@ -18,15 +18,17 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.interaction.SlashCommandOptionType;
+
 /**
  * An argument that only accepts any string value
  *
  * @author S3nS3IW00
  */
-public class StringArgument extends RegexArgument {
+public class StringArgument extends ValueArgument {
 
-    public StringArgument(String name) {
-        super(name, ".+", String.class);
+    public StringArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.STRING, String.class);
     }
 
 }

@@ -19,33 +19,16 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import org.javacord.api.entity.channel.ServerChannel;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
  * An argument that has a regex that only accepts inputs what are channel tags
  *
  * @author S3nS3IW00
  */
-public class ChannelArgument extends RegexArgument {
+public class ChannelArgument extends ValueArgument {
 
-    public ChannelArgument(String name) {
-        super(name, "\\<#\\d+\\>", ServerChannel.class);
-    }
-
-    @Override
-    public boolean isValid(String input) {
-        if (super.isValid(input)) {
-            try {
-                long id = Long.parseLong(getValue());
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String getValue() {
-        return super.getValue().substring(2, super.getValue().length() - 1);
+    public ChannelArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);
     }
 }

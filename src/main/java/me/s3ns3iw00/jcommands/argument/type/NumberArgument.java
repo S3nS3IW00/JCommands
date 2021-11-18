@@ -18,18 +18,20 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.interaction.SlashCommandOptionType;
+
 /**
  * An argument that only accepts number inputs inside integer's range (from -2147483648 to 2147483647)
  *
  * @author S3nS3IW00
  */
-public class NumberArgument extends RegexArgument {
+public class NumberArgument extends ValueArgument {
 
     // Define default range
     private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
 
-    public NumberArgument(String name) {
-        super(name, "^-?\\d+$", Integer.class);
+    public NumberArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.INTEGER, Integer.class);
     }
 
     public void setRange(int min, int max) {
