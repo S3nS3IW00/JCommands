@@ -25,7 +25,11 @@ import java.util.regex.Pattern;
  * An argument that only accepts inputs what are matching the pattern
  *
  * @author S3nS3IW00
+ * @deprecated don't use it because it is not working
+ *             use {@link ValueArgument} instead
+ *             it will be removed in the next version
  */
+@Deprecated
 public class RegexArgument extends ConstantArgument {
 
     private String input;
@@ -54,7 +58,6 @@ public class RegexArgument extends ConstantArgument {
      * @param input the string what needs to be validated
      * @return true if the input is valid or false if is not
      */
-    @Override
     public boolean isValid(String input) {
         return (matcher = pattern.matcher(this.input = input)).lookingAt();
     }
