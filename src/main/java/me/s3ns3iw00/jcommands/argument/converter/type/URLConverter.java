@@ -31,9 +31,9 @@ import java.net.URL;
 public class URLConverter implements ArgumentResultConverter {
 
     @Override
-    public Object convertTo(String value) {
+    public Object convertTo(Object value) {
         try {
-            return new URL(value);
+            return new URL(value.toString());
         } catch (MalformedURLException e) {
             return null;
         }
