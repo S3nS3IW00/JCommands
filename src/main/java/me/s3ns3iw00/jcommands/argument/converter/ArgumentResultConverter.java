@@ -29,6 +29,6 @@ public interface ArgumentResultConverter {
      * @param value the raw value
      * @return the converted object
      */
-    Object convertTo(String value);
+    Object convertTo(Object value);
 
 }
