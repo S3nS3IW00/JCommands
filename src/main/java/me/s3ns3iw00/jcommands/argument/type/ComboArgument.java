@@ -53,7 +53,7 @@ public class ComboArgument implements Argument {
         this.description = description;
         this.type = type;
 
-        if (type == SlashCommandOptionType.STRING || type == SlashCommandOptionType.INTEGER) {
+        if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.INTEGER) {
             throw new IllegalArgumentException("type can be only String or Integer");
         }
     }
@@ -99,7 +99,10 @@ public class ComboArgument implements Argument {
 
     @Override
     public Object getValue() {
-        return value.toString();
+        if (type == SlashCommandOptionType.STRING) {
+            return value.toString();
+        }
+        return value;
     }
 
     @Override
