@@ -82,13 +82,16 @@ public class ValueArgument extends ConstantArgument {
      * @return true if validator is not set
      *         if validator is set then true or false depends on the validation process result
      */
-    public boolean isValid(String input) {
+    public boolean isValid(Object input) {
         this.input = input;
-        return validator.map(pattern -> pattern.matcher(input).lookingAt()).orElse(true);
+        return validator.map(pattern -> pattern.matcher(input.toString()).lookingAt()).orElse(true);
     }
 
     @Override
     public Object getValue() {
+        if (validator.isPresent() && resultType == Matcher.class) {
+            return matcher;
+        }
         return input;
     }
 
