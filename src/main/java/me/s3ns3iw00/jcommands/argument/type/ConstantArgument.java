@@ -49,7 +49,7 @@ public class ConstantArgument implements Argument {
         return description;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return name;
     }
 

@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  */
 public class ValueArgument extends ConstantArgument {
 
-    private String input;
+    private Object input;
     private Optional<Pattern> validator = Optional.empty();
     private Matcher matcher;
 
@@ -88,7 +88,7 @@ public class ValueArgument extends ConstantArgument {
     }
 
     @Override
-    public String getValue() {
+    public Object getValue() {
         return input;
     }
 

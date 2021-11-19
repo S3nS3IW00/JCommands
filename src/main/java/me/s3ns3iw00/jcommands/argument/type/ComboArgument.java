@@ -98,7 +98,7 @@ public class ComboArgument implements Argument {
     }
 
     @Override
-    public String getValue() {
+    public Object getValue() {
         return value.toString();
     }
 
