@@ -104,7 +104,7 @@ public class ComboArgument implements Argument {
 
     @Override
     public Class<?> getResultType() {
-        return null;
+        return type == SlashCommandOptionType.STRING ? String.class : Integer.class;
     }
 
     @Override
