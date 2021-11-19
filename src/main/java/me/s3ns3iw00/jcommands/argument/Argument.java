@@ -40,7 +40,7 @@ public interface Argument {
     /**
      * @return the argument's raw value
      */
-    String getValue();
+    Object getValue();
 
     /**
      * @return the class of the result's type
