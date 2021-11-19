@@ -83,7 +83,8 @@ public class ValueArgument extends ConstantArgument {
      *         if validator is set then true or false depends on the validation process result
      */
     public boolean isValid(String input) {
-        return validator.map(pattern -> pattern.matcher(this.input = input).lookingAt()).orElse(true);
+        this.input = input;
+        return validator.map(pattern -> pattern.matcher(input).lookingAt()).orElse(true);
     }
 
     @Override
