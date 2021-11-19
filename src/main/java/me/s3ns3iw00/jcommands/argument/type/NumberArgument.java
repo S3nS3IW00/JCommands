@@ -40,11 +40,10 @@ public class NumberArgument extends ValueArgument {
     }
 
     @Override
-    public boolean isValid(String input) {
+    public boolean isValid(Object input) {
         if (super.isValid(input)) {
             try {
-                int value = Integer.parseInt(input);
-                return value >= min && value <= max;
+                return (int) input >= min && (int) input <= max;
             } catch (NumberFormatException e) {
                 return false;
             }

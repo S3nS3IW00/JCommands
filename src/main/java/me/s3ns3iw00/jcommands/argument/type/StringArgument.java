@@ -39,7 +39,7 @@ public class StringArgument extends ValueArgument {
     }
 
     @Override
-    public boolean isValid(String input) {
-        return super.isValid(input) && input.length() <= max;
+    public boolean isValid(Object input) {
+        return super.isValid(input) && input.toString().length() <= max;
     }
 }
