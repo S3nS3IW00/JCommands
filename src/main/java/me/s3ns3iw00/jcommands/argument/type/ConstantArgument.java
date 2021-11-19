@@ -71,4 +71,7 @@ public class ConstantArgument implements Argument {
         arguments.add(argument);
     }
 
+    public LinkedList<Argument> getArguments() {
+        return arguments;
+    }
 }
