@@ -21,8 +21,6 @@ package me.s3ns3iw00.jcommands;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.ChannelConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.MentionConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
@@ -37,7 +35,6 @@ import me.s3ns3iw00.jcommands.type.PrivateCommand;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.Messageable;
@@ -69,8 +66,6 @@ public class CommandHandler {
      */
     private static final Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
         put(URL.class, new URLConverter());
-        put(ServerChannel.class, new ChannelConverter());
-        put(User.class, new MentionConverter());
     }};
 
     /**
