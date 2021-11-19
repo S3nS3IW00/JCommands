@@ -102,17 +102,6 @@ public class ComboArgument implements Argument {
         return value.toString();
     }
 
-    /**
-     * Gets the value as Integer
-     *
-     * NOTE: Don't use if the type of the argument is {@code String}
-     *
-     * @return the value as integer
-     */
-    public int getIntValue() {
-        return (int) value;
-    }
-
     @Override
     public Class<?> getResultType() {
         return null;
