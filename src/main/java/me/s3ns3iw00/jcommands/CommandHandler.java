@@ -77,8 +77,8 @@ public class CommandHandler {
         api.addMessageCreateListener((event -> {
             if (event.getMessageAuthor().isBotUser()) return;
             String[] raw = event.getMessageContent().split(" ");
-            if (raw[0].startsWith(commandChar)) {
-                handleCommand(event.getServer().isPresent() ? event.getServer().get() : null, event.getMessage(), raw[0].substring(commandChar.length()), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
+            if (raw[0].startsWith("/") && commands.stream().noneMatch(command -> command.getName().equalsIgnoreCase(raw[0]))) {
+                error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null));
             }
         }));
     }
