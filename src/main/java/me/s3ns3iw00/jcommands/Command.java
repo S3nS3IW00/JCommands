@@ -61,35 +61,6 @@ public class Command {
     }
 
     /**
-     * Prints the valid usage of the command with all the acceptable arguments
-     *
-     * @return a string of the usage
-     */
-    public String getUsage() {
-        StringBuilder usage = new StringBuilder("/" + getName());
-        if (getArguments().size() == 0) {
-            return usage.toString();
-        }
-        usage.append(" ");
-        for (int i = 0; i < getArguments().size(); i++) {
-            List<Argument> arguments = getArguments().get(i);
-
-            for (int j = 0; j < arguments.size(); j++) {
-                Argument argument = arguments.get(j);
-
-                if (argument instanceof RegexArgument) {
-                    usage.append("<").append(argument.getName()).append(">");
-                } else {
-                    usage.append(argument.getName());
-                }
-                if (j + 1 < arguments.size()) usage.append("|");
-            }
-            if (i + 1 < getArguments().size()) usage.append(" ");
-        }
-        return usage.toString();
-    }
-
-    /**
      * @return the command's name
      */
     String getName() {
