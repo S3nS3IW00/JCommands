@@ -43,12 +43,12 @@ public class Command {
     }
 
     /**
-     * Adds a list of argument which at least one of are acceptable at the current index
+     * Adds an argument to the command
      *
-     * @param arguments the list of the arguments
+     * @param argument the argument
      */
-    public void addArguments(Argument... arguments) {
-        this.arguments.add(new ArrayList<>(Arrays.asList(arguments)));
+    public void addArgument(Argument argument) {
+        this.arguments.add(argument);
     }
 
     /**
