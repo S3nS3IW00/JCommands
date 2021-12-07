@@ -42,30 +42,36 @@ public class ArgumentResult {
      */
     public ArgumentResult(Argument argument) {
         clazz = argument.getResultType();
-        if (Boolean.class == clazz) {
-            o = Boolean.parseBoolean(argument.getValue());
-        } else if (Byte.class == clazz) {
-            o = Byte.parseByte(argument.getValue());
-        } else if (Short.class == clazz) {
-            o = Short.parseShort(argument.getValue());
-        } else if (Integer.class == clazz) {
-            o = Integer.parseInt(argument.getValue());
-        } else if (Long.class == clazz) {
-            o = Long.parseLong(argument.getValue());
-        } else if (Float.class == clazz) {
-            o = Float.parseFloat(argument.getValue());
-        } else if (Double.class == clazz) {
-            o = Double.parseDouble(argument.getValue());
-        } else if (Matcher.class == clazz) {
-            o = ((RegexArgument) argument).getMatcher();
-        } else if (String.class == clazz) {
-            o = argument.getValue();
+        Object value = argument.getValue();
+        if (value.getClass() == clazz) {
+            o = value;
         } else {
             Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
             if (converter.isPresent()) {
                 o = converter.get().convertTo(argument.getValue());
             } else {
-                throw new NullPointerException("No converter found for type: " + clazz.getName());
+                if (value.getClass() == String.class) {
+                    String s = (String) value;
+                    if (Boolean.class == clazz) {
+                        o = Boolean.parseBoolean(s);
+                    } else if (Byte.class == clazz) {
+                        o = Byte.parseByte(s);
+                    } else if (Short.class == clazz) {
+                        o = Short.parseShort(s);
+                    } else if (Integer.class == clazz) {
+                        o = Integer.parseInt(s);
+                    } else if (Long.class == clazz) {
+                        o = Long.parseLong(s);
+                    } else if (Float.class == clazz) {
+                        o = Float.parseFloat(s);
+                    } else if (Double.class == clazz) {
+                        o = Double.parseDouble(s);
+                    } else {
+                        throw new NullPointerException("No converter found for type: " + clazz.getName());
+                    }
+                } else {
+                    throw new NullPointerException("No converter found for type: " + clazz.getName());
+                }
             }
         }
     }
