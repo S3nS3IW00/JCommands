@@ -41,12 +41,12 @@ public class ServerCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link ServerCommand#addArguments(Argument...) addArguments}
+     * Calls {@link ServerCommand#addArgument(Argument) addArguments}
      *
      * @return this class
      */
-    public ServerCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public ServerCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 
