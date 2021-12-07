@@ -42,12 +42,12 @@ public class PrivateCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link PrivateCommand#addArguments(Argument...) addArguments}
+     * Calls {@link PrivateCommand#addArgument(Argument) addArgument}
      *
      * @return this class
      */
-    public PrivateCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public PrivateCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 

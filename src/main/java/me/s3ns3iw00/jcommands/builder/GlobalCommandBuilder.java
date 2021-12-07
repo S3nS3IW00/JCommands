@@ -45,12 +45,12 @@ public class GlobalCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link GlobalCommand#addArguments(Argument...) addArguments}
+     * Calls {@link GlobalCommand#addArgument(Argument) addArgument}
      *
      * @return this class
      */
-    public GlobalCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public GlobalCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 
