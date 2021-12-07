@@ -34,7 +34,7 @@ public class Command {
      * These guys are nice
      */
     private final String name, description;
-    private final LinkedList<List<Argument>> arguments = new LinkedList<>();
+    private final LinkedList<Argument> arguments = new LinkedList<>();
     private Optional<CommandAction> action = Optional.empty();
 
     public Command(String name, String description) {
@@ -106,7 +106,7 @@ public class Command {
     /**
      * @return the list of the arguments
      */
-    LinkedList<List<Argument>> getArguments() {
+    LinkedList<Argument> getArguments() {
         return arguments;
     }
 
