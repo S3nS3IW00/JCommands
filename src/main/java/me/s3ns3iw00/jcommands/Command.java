@@ -19,7 +19,6 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 
 import java.util.*;
 
