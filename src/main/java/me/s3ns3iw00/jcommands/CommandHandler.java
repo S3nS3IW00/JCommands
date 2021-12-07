@@ -59,7 +59,6 @@ public class CommandHandler {
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
     private static Optional<CommandError> error = Optional.empty();
-    private static String commandChar = "/";
 
     /**
      * HasMap that contains the converters initiated with default converters
@@ -429,9 +428,12 @@ public class CommandHandler {
 
     /**
      * @return the command sign
+     *
+     * @deprecated since Discord specifies the character that the command needs to start with
      */
+    @Deprecated
     public static String getCommandChar() {
-        return commandChar;
+        return null;
     }
 
     /**
