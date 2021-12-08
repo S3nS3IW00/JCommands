@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.Argument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -30,7 +31,9 @@ import java.util.regex.Pattern;
  *
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
-public class ValueArgument extends ConstantArgument {
+public class ValueArgument implements Argument {
+
+    private final String name, description;
 
     private Object input;
     private Optional<Pattern> validator = Optional.empty();
@@ -49,7 +52,8 @@ public class ValueArgument extends ConstantArgument {
      * @param type the type of the input value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type) {
-        super(name, description);
+        this.name = name;
+        this.description = description;
         this.type = type;
     }
 
@@ -85,6 +89,16 @@ public class ValueArgument extends ConstantArgument {
     public boolean isValid(Object input) {
         this.input = input;
         return validator.map(pattern -> pattern.matcher(input.toString()).lookingAt()).orElse(true);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
     }
 
     @Override
