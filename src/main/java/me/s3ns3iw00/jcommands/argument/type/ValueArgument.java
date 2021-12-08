@@ -88,7 +88,7 @@ public class ValueArgument implements Argument {
      */
     public boolean isValid(Object input) {
         this.input = input;
-        return validator.map(pattern -> pattern.matcher(input.toString()).lookingAt()).orElse(true);
+        return validator.map(pattern -> (matcher = pattern.matcher(input.toString())).lookingAt()).orElse(true);
     }
 
     @Override
