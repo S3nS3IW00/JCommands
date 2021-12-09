@@ -43,7 +43,7 @@ public class ArgumentResult {
     public ArgumentResult(Argument argument) {
         clazz = argument.getResultType();
         Object value = argument.getValue();
-        if (value.getClass() == clazz) {
+        if (clazz.isAssignableFrom(value.getClass())) {
             o = value;
         } else {
             Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
