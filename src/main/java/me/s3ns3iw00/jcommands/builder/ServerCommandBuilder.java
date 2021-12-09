@@ -32,7 +32,7 @@ import org.javacord.api.entity.user.User;
  *
  * @author S3nS3IW00
  */
-public class ServerCommandBuilder implements CommandBuilder {
+public class ServerCommandBuilder extends CommandBuilder {
 
     private final ServerCommand command;
 

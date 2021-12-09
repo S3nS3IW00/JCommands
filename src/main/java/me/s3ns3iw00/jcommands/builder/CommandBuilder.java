@@ -25,11 +25,11 @@ import me.s3ns3iw00.jcommands.Command;
  *
  * @author S3nS3IW00
  */
-public interface CommandBuilder {
+public abstract class CommandBuilder {
 
     /**
      * @return the command itself
      */
-    Command getCommand();
+    public abstract Command getCommand();
 
 }

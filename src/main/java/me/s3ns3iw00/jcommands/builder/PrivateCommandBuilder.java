@@ -33,7 +33,7 @@ import org.javacord.api.entity.user.User;
  * @deprecated since the new command system doesn't support private commands
  */
 @Deprecated
-public class PrivateCommandBuilder implements CommandBuilder {
+public class PrivateCommandBuilder extends CommandBuilder {
 
     private final PrivateCommand command;
 

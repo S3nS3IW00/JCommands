@@ -36,7 +36,7 @@ import org.javacord.api.entity.user.User;
  * @deprecated use {@link ServerCommandBuilder} instead
  */
 @Deprecated
-public class GlobalCommandBuilder implements CommandBuilder {
+public class GlobalCommandBuilder extends CommandBuilder {
 
     private final GlobalCommand command;
 

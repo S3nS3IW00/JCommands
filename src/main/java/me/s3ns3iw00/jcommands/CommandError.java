@@ -25,7 +25,7 @@ import org.javacord.api.interaction.SlashCommandInteraction;
  *
  * @author S3nS3IW00
  */
-public interface CommandError {
+public abstract class CommandError {
 
     /**
      * A method signature that represents an error
@@ -33,6 +33,6 @@ public interface CommandError {
      * @param type        of the error
      * @param interaction the slash command interaction
      */
-    void onError(CommandErrorType type, SlashCommandInteraction interaction);
+    public abstract void onError(CommandErrorType type, SlashCommandInteraction interaction);
 
 }

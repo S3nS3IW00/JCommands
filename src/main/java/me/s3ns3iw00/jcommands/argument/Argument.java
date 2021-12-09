@@ -25,31 +25,31 @@ import org.javacord.api.interaction.SlashCommandOption;
  *
  * @author S3nS3IW00
  */
-public interface Argument {
+public abstract class Argument {
 
     /**
      * @return the argument's name
      */
-    String getName();
+    public abstract String getName();
 
     /**
      * @return the argument's description
      */
-    String getDescription();
+    public abstract String getDescription();
 
     /**
      * @return the argument's raw value
      */
-    Object getValue();
+    public abstract Object getValue();
 
     /**
      * @return the class of the result's type
      */
-    Class<?> getResultType();
+    public abstract Class<?> getResultType();
 
     /**
      * @return the command option that need for to register the argument
      */
-    SlashCommandOption getCommandOption();
+    public abstract SlashCommandOption getCommandOption();
 
 }

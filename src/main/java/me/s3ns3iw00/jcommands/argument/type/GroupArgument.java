@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Represents an argument with {@code SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
  * This is for grouping {@code SUB_COMMAND} options because {@code SUB_COMMANDS} cannot be nested
  */
-public class GroupArgument implements Argument {
+public class GroupArgument extends Argument {
 
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();

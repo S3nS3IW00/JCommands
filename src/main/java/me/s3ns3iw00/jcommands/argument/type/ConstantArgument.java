@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * @author S3nS3IW00
  */
-public class ConstantArgument implements Argument {
+public class ConstantArgument extends Argument {
 
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();

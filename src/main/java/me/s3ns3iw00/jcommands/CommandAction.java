@@ -28,7 +28,7 @@ import org.javacord.api.entity.user.User;
  *
  * @author S3nS3IW00
  */
-public interface CommandAction {
+public abstract class CommandAction {
 
     /**
      * A method signature that represents an action
@@ -40,6 +40,6 @@ public interface CommandAction {
      * @param source the message's source<br>
      *               If the message is private the source is the User or else the source is the channel where the message is.
      */
-    void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg, Messageable source);
+    public abstract void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg, Messageable source);
 
 }

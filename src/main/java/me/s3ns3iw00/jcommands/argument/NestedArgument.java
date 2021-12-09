@@ -1,9 +1,9 @@
 package me.s3ns3iw00.jcommands.argument;
 
 /**
- * A helper interface
+ * A helper class
  * It helps to identify arguments that can be contained by {@link me.s3ns3iw00.jcommands.argument.type.ConstantArgument}
- * Arguments that implements this interface can be nested
+ * Arguments that extends this class can be nested
  */
-public interface NestedArgument extends Argument {
+public abstract class NestedArgument extends Argument {
 }

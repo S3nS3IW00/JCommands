@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Integer}
  */
-public class ComboArgument implements NestedArgument {
+public class ComboArgument extends NestedArgument {
 
     private final String name, description;
     private Object value;

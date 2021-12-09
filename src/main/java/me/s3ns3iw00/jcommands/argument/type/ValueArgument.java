@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  *
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
-public class ValueArgument implements NestedArgument {
+public class ValueArgument extends NestedArgument {
 
     private final String name, description;
 
