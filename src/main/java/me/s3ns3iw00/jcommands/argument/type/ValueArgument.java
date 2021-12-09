@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.NestedArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  *
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
-public class ValueArgument implements Argument {
+public class ValueArgument implements NestedArgument {
 
     private final String name, description;
 

@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.NestedArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 public class ConstantArgument implements Argument {
 
     private final String name, description;
-    private final LinkedList<Argument> arguments = new LinkedList<>();
+    private final LinkedList<NestedArgument> arguments = new LinkedList<>();
 
     public ConstantArgument(String name, String description) {
         this.name = name;
@@ -67,11 +68,11 @@ public class ConstantArgument implements Argument {
      *
      * @param argument the argument
      */
-    public void addArgument(Argument argument) {
+    public void addArgument(NestedArgument argument) {
         arguments.add(argument);
     }
 
-    public LinkedList<Argument> getArguments() {
+    public LinkedList<NestedArgument> getArguments() {
         return arguments;
     }
 }

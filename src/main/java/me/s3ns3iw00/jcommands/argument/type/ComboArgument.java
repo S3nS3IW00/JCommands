@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.NestedArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Integer}
  */
-public class ComboArgument implements Argument {
+public class ComboArgument implements NestedArgument {
 
     private final String name, description;
     private Object value;
