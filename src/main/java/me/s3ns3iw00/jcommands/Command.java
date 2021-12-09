@@ -62,7 +62,7 @@ public class Command {
     /**
      * @return the command's name
      */
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -76,7 +76,7 @@ public class Command {
     /**
      * @return the list of the arguments
      */
-    LinkedList<Argument> getArguments() {
+    public LinkedList<Argument> getArguments() {
         return arguments;
     }
 
