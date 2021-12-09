@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class GroupArgument implements Argument {
 
     private final String name, description;
-    private final LinkedList<ConstantArgument> arguments = new LinkedList<>();
+    private final LinkedList<Argument> arguments = new LinkedList<>();
 
     public GroupArgument(String name, String description) {
         this.name = name;
@@ -55,7 +55,7 @@ public class GroupArgument implements Argument {
         arguments.add(argument);
     }
 
-    public LinkedList<ConstantArgument> getArguments() {
+    public LinkedList<Argument> getArguments() {
         return arguments;
     }
 

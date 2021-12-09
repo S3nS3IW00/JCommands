@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class ConstantArgument implements Argument {
 
     private final String name, description;
-    private final LinkedList<NestedArgument> arguments = new LinkedList<>();
+    private final LinkedList<Argument> arguments = new LinkedList<>();
 
     public ConstantArgument(String name, String description) {
         this.name = name;
@@ -72,7 +72,7 @@ public class ConstantArgument implements Argument {
         arguments.add(argument);
     }
 
-    public LinkedList<NestedArgument> getArguments() {
+    public LinkedList<Argument> getArguments() {
         return arguments;
     }
 }
