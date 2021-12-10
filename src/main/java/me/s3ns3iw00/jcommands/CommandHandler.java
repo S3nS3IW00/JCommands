@@ -242,7 +242,7 @@ public class CommandHandler {
      *
      * @param command the command to register
      */
-    public static void registerCommandGlobally(Command command) {
+    public static void registerCommand(Command command) {
         commands.add(command);
 
         SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
@@ -296,12 +296,12 @@ public class CommandHandler {
     }
 
     /**
-     * Calls the {@link CommandHandler#registerCommandGlobally(Command)} method with the command contained by the {@code CommandBuilder} class
+     * Calls the {@link CommandHandler#registerCommand(Command)} method with the command contained by the {@code CommandBuilder} class
      *
      * @param builder the builder
      */
     public static void registerCommandGlobally(CommandBuilder builder) {
-        registerCommandGlobally(builder.getCommand());
+        registerCommand(builder.getCommand());
     }
 
     /**
@@ -341,7 +341,7 @@ public class CommandHandler {
      * Registers the command on all the servers where the bot on
      *
      * @param command the command
-     * @deprecated use {@link CommandHandler#registerCommandGlobally(Command)}
+     * @deprecated use {@link CommandHandler#registerCommand(Command)}
      */
     @Deprecated
     private static void registerCommandOnAllServer(Command command) {
