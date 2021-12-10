@@ -65,6 +65,10 @@ public class ComboArgument extends NestedArgument {
      * @param value is the value of the argument as {@code String}
      */
     public void addChoice(String key, String value) {
+        if (type == SlashCommandOptionType.INTEGER) {
+            throw new IllegalStateException("Value must match with the argument's type: Integer");
+        }
+
         choices.add(SlashCommandOptionChoice.create(key, value));
     }
 
@@ -75,6 +79,10 @@ public class ComboArgument extends NestedArgument {
      * @param value the value of the argument as {@code Integer}
      */
     public void addChoice(String key, int value) {
+        if (type == SlashCommandOptionType.STRING) {
+            throw new IllegalStateException("Value must match with the argument's type: String");
+        }
+
         choices.add(SlashCommandOptionChoice.create(key, value));
     }
 
