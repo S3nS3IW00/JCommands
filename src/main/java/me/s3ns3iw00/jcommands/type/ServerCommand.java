@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class ServerCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
 
-    private boolean needAllRoles, allowedUsers, allowedChannels, allowedCategories;
+    private boolean allowedRoles, allowedUsers, allowedChannels, allowedCategories;
     private List<User> userList = new ArrayList<>();
     private List<Role> roleList;
     private List<TextChannel> channelList = new ArrayList<>();
@@ -62,12 +62,11 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     /**
      * Sets the roles which can use this command with
      *
-     * @param needAllRoles if true all roles will needed to use this command
      * @param roles        the list of the roles
      */
     @Override
-    public void setRoles(boolean needAllRoles, Role... roles) {
-        this.needAllRoles = needAllRoles;
+    public void setRoles(boolean allowedRoles, Role... roles) {
+        this.allowedRoles = allowedRoles;
         roleList = Arrays.asList(roles);
     }
 
@@ -113,8 +112,8 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
      * @return true or false depends on if the user needs all the roles to use this command
      */
     @Override
-    public boolean isNeedAllRoles() {
-        return needAllRoles;
+    public boolean isAllowedRoles() {
+        return allowedRoles;
     }
 
     /**

@@ -30,10 +30,9 @@ public interface RoleLimitable {
     /**
      * Sets the roles which can use this command with
      *
-     * @param needAllRoles if true all roles will needed to use this command
-     * @param roles        the list of the roles
+     * @param roles the list of the roles
      */
-    void setRoles(boolean needAllRoles, Role... roles);
+    void setRoles(boolean allowed, Role... roles);
 
     /**
      * @return the list of the roles
@@ -41,8 +40,8 @@ public interface RoleLimitable {
     List<Role> getRoles();
 
     /**
-     * @return true or false depends on if the user needs all the roles to use this command
+     * @return true or false depends on if the role limitation is allowing or disallowing
      */
-    boolean isNeedAllRoles();
+    boolean isAllowedRoles();
 
 }

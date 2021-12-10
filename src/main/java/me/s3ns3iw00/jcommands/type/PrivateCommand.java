@@ -38,7 +38,7 @@ import java.util.Optional;
 @Deprecated
 public class PrivateCommand extends Command implements UserLimitable, RoleLimitable {
 
-    private boolean needAllRoles, allowedUsers;
+    private boolean allowedRoles, allowedUsers;
     private List<User> userList = new ArrayList<>();
     private Optional<Server> roleSourceServer = Optional.empty();
     private List<Role> roleCollection;
@@ -62,12 +62,11 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
      * Sets the roles which can use this command with<br>
      * Does not take any effect if the {@code roleSourceServer} is not set
      *
-     * @param needAllRoles if true all roles will needed to use this command
      * @param roles        the list of the roles
      */
     @Override
-    public void setRoles(boolean needAllRoles, Role... roles) {
-        this.needAllRoles = needAllRoles;
+    public void setRoles(boolean allowedRoles, Role... roles) {
+        this.allowedRoles = allowedRoles;
         roleCollection = Arrays.asList(roles);
     }
 
@@ -116,7 +115,7 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
      * @return true or false depends on if the user needs all the roles to use this command
      */
     @Override
-    public boolean isNeedAllRoles() {
-        return needAllRoles;
+    public boolean isAllowedRoles() {
+        return allowedRoles;
     }
 }
