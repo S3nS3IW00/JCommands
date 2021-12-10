@@ -20,30 +20,34 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
+import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
+import me.s3ns3iw00.jcommands.argument.type.ValueArgument;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
-import me.s3ns3iw00.jcommands.limitation.RoleLimitable;
-import me.s3ns3iw00.jcommands.limitation.UserLimitable;
+import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
-import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.channel.ChannelType;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
+import org.javacord.api.interaction.SlashCommand;
+import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The main class of the API
@@ -58,7 +62,7 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static Optional<CommandError> error = Optional.empty();
+    private static Optional<CommandErrorListener> error = Optional.empty();
 
     /**
      * HasMap that contains the converters initiated with default converters
@@ -81,130 +85,135 @@ public class CommandHandler {
                 error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null));
             }
         }));
+
+        api.addSlashCommandCreateListener(event -> {
+            handleCommand(event.getSlashCommandInteraction());
+        });
     }
 
     /**
-     * Handles the command inputs
+     * Handles slash command interactions
      *
-     * @param msg  the message that contains the command
-     * @param cmd  the command
-     * @param args the list of the command's parameters
+     * @param interaction the slash command interaction
      */
-    private static void handleCommand(Server server, Message msg, String cmd, String[] args) {
-        if (!msg.getAuthor().asUser().isPresent())
-            return;
-        User sender = msg.getAuthor().asUser().get();
-        Messageable source = msg.isPrivateMessage() ? sender : msg.getChannel();
-
-        //Command checker
-        List<Command> commandList = server == null ? commands : serverCommands.get(server);
-        if (commandList == null) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        Command commandI = commandList.get(0);
-        int cmdI = 0;
-        while (cmdI < commandList.size() && (!(commandI = commandList.get(cmdI)).getName().equalsIgnoreCase(cmd))) {
-            cmdI++;
-        }
-        if (cmdI >= commandList.size()) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        final Command command = commandI;
-
-        // User validation
-        if (command instanceof UserLimitable) {
-            UserLimitable userLimitable = (UserLimitable) command;
-            if ((userLimitable.isAllowedUsers() && !userLimitable.getUsers().contains(sender)) || (!userLimitable.isAllowedUsers() && userLimitable.getUsers().contains(sender))) {
-                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
-                return;
-            }
-        }
+    private static void handleCommand(SlashCommandInteraction interaction) {
+        User sender = interaction.getUser();
+        Optional<TextChannel> channel = interaction.getChannel();
+        Command command = commands.stream().filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName())).findFirst().get();
 
         //Category and channel validation
-        if ((!(command instanceof GlobalCommand) && command instanceof PrivateCommand && !msg.isPrivateMessage()) || (command instanceof ServerCommand && msg.isPrivateMessage())) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        if (!msg.isPrivateMessage()) {
-            Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
-            if (serverTextChannel.isPresent()) {
-                Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
+        if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
+            Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
+            if (category.isPresent()) {
                 if (command instanceof CategoryLimitable) {
                     CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                    if (category.isPresent() && ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get())))
-                            || (!category.isPresent() && (categoryLimitable.getCategories().size() > 0))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
+                    if ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get()))) {
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, interaction));
                         return;
                     }
                 }
-                if (command instanceof ChannelLimitable) {
-                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                    if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(serverTextChannel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(serverTextChannel.get()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
-                        return;
-                    }
-                }
-            } else {
-                return;
             }
-        }
-
-        //Role validation
-        if (command instanceof RoleLimitable) {
-            RoleLimitable roleLimitable = (RoleLimitable) command;
-            Optional<Server> roleSource = Optional.empty();
-            if (command instanceof PrivateCommand) {
-                roleSource = ((PrivateCommand) command).getRoleSource();
-            }
-            if ((server != null || roleSource.isPresent()) && roleLimitable.getRoles() != null && roleLimitable.getRoles().size() > 0) {
-                int needCount = roleLimitable.isNeedAllRoles() ? roleLimitable.getRoles().size() : 1;
-                List<Role> userRoles = sender.getRoles(roleSource.orElse(server));
-
-                int count = 0;
-                int i = 0;
-                while (i < roleLimitable.getRoles().size() && count < needCount) {
-                    if (userRoles.contains(roleLimitable.getRoles().get(i))) count++;
-                    i++;
-                }
-
-                if (count < needCount) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
+            if (command instanceof ChannelLimitable) {
+                ChannelLimitable channelLimitable = (ChannelLimitable) command;
+                if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(channel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(channel.get()))) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, interaction));
                     return;
                 }
             }
         }
 
         //Argument validation
-        ArgumentResult[] argumentResults = new ArgumentResult[command.getArguments().size()];
-        if (command.getArguments() != null && command.getArguments().size() > 0) {
-            boolean argsValid = true;
-            if (args.length < command.getArguments().size()) {
-                argsValid = false;
-            } else {
-                for (int i = 0; i < command.getArguments().size(); i++) {
-                    List<Argument> arguments = command.getArguments().get(i);
-                    String arg = args[i];
-                    int j = 0;
-                    while (j < arguments.size() && !arguments.get(j).isValid(arg)) {
-                        j++;
-                    }
-                    if (j == arguments.size()) {
-                        argsValid = false;
+        Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
+
+        if (resultOptional.isPresent()) {
+            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), (ArgumentResult[]) resultOptional.get().toArray(),
+                    new CommandResponder(interaction)));
+        } else {
+            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, interaction));
+        }
+    }
+
+    /**
+     * Processes arguments and every argument of the arguments recursively:
+     * - Adjusts values to the arguments
+     * - Checks that the value is valid for the argument
+     * - Assembles a list with the result of every argument
+     *
+     * @param arguments the list of arguments need to be processed
+     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
+     * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
+     *         otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
+     */
+    private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
+        List<ArgumentResult> results = new ArrayList<>();
+        for (SlashCommandInteractionOption option : options) {
+            // Get the argument that has the same name as the option
+            // It cannot be null since options are based on the registered arguments
+            Argument argument = arguments.stream().filter(arg -> arg.getName().equalsIgnoreCase(option.getName())).findFirst().orElse(null);
+
+            if (argument != null) {
+                // Declare a value object that will be initiated with the value from the option
+                Object value;
+                switch (argument.getCommandOption().getType()) {
+                    case ROLE:
+                        value = option.getRoleValue().get();
                         break;
+                    case USER:
+                        value = option.getUserValue().get();
+                        break;
+                    case CHANNEL:
+                        value = option.getChannelValue().get();
+                        break;
+                    case MENTIONABLE:
+                        value = option.getMentionableValue().get();
+                        break;
+                    case STRING:
+                        value = option.getStringValue().get();
+                        break;
+                    case INTEGER:
+                        value = option.getIntValue().get();
+                        break;
+                    case BOOLEAN:
+                        value = option.getBooleanValue().get();
+                        break;
+                    default:
+                        value = null;
+                }
+
+                if (argument instanceof SubArgument) {
+                    /* Add the result of the argument to the list, which is basically the name of the argument;
+                       If the result is present that means there are other arguments that need to be added to the list,
+                            otherwise just return an empty optional to tell the caller that there aren't any other options;
+                       The best practice is to solve this recursively since the other option's count is unknown,
+                            and it cannot be determined directly
+                    */
+                    results.add(new ArgumentResult(argument));
+                    Optional<List<ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
+                    if (result.isPresent()) {
+                        results.addAll(result.get());
                     } else {
-                        argumentResults[i] = new ArgumentResult(arguments.get(j));
+                        return Optional.empty();
+                    }
+                } else if (argument instanceof ComboArgument) {
+                    // Simply adjust the argument's value to the option's value and add it to the list
+                    ((ComboArgument) argument).choose(value);
+                    results.add(new ArgumentResult(argument));
+                } else if (argument instanceof ValueArgument) {
+                    /* Check that the option's value is valid for the argument
+                       If it is valid then the validator adjust the argument's value to that value, and it will be added to the list,
+                            otherwise return an empty optional to tell the caller that one of the argument is not valid
+                     */
+                    ValueArgument va = (ValueArgument) argument;
+
+                    if (va.isValid(value)) {
+                        results.add(new ArgumentResult(va));
+                    } else {
+                        return Optional.empty();
                     }
                 }
             }
-            if (!argsValid) {
-                error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg, source));
-                return;
-            }
         }
-
-        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg, source));
+        return Optional.of(results);
     }
 
     /**
@@ -220,7 +229,25 @@ public class CommandHandler {
                 serverCommands.put(server, new ArrayList<>());
             }
             serverCommands.get(server).add(command);
+
+            SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                    .createForServer(server)
+                    .join();
         }
+    }
+
+    /**
+     * Registers command globally
+     * That means the command will be available in all the servers where the bot on, and also in private
+     *
+     * @param command the command to register
+     */
+    private static void registerCommandGlobally(Command command) {
+        commands.add(command);
+
+        SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                .createGlobal(api)
+                .join();
     }
 
     /**
@@ -260,6 +287,15 @@ public class CommandHandler {
      */
     private static void registerCommand(CommandBuilder builder, Server... servers) {
         registerCommand(builder.getCommand(), servers);
+    }
+
+    /**
+     * Calls the {@link CommandHandler#registerCommandGlobally(Command)} method with the command contained by the {@code CommandBuilder} class
+     *
+     * @param builder the builder
+     */
+    private static void registerCommandGlobally(CommandBuilder builder) {
+        registerCommandGlobally(builder.getCommand());
     }
 
     /**
@@ -348,7 +384,7 @@ public class CommandHandler {
      *
      * @param error the listener interface
      */
-    public static void setOnError(CommandError error) {
+    public static void setOnError(CommandErrorListener error) {
         CommandHandler.error = Optional.of(error);
     }
 
@@ -428,7 +464,6 @@ public class CommandHandler {
 
     /**
      * @return the command sign
-     *
      * @deprecated since Discord specifies the character that the command needs to start with
      */
     @Deprecated
