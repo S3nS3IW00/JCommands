@@ -40,7 +40,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
 
     private boolean allowedRoles, allowedUsers, allowedChannels, allowedCategories;
     private List<User> userList = new ArrayList<>();
-    private List<Role> roleList;
+    private List<Role> roleList = new ArrayList<>();
     private List<TextChannel> channelList = new ArrayList<>();
     private List<ChannelCategory> categoryList = new ArrayList<>();
 
