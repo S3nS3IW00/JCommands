@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.listener;
 
 import me.s3ns3iw00.jcommands.CommandErrorType;
-import org.javacord.api.interaction.SlashCommandInteraction;
+import me.s3ns3iw00.jcommands.CommandResponder;
 
 /**
  * The error listener
@@ -32,8 +32,8 @@ public interface CommandErrorListener {
      * A method signature that represents an error
      *
      * @param type        of the error
-     * @param interaction the slash command interaction
+     * @param responder the responder to send respond
      */
-    void onError(CommandErrorType type, SlashCommandInteraction interaction);
+    void onError(CommandErrorType type, CommandResponder responder);
 
 }
