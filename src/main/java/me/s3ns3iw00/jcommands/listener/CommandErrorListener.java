@@ -16,8 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands;
+package me.s3ns3iw00.jcommands.listener;
 
+import me.s3ns3iw00.jcommands.CommandErrorType;
 import org.javacord.api.interaction.SlashCommandInteraction;
 
 /**
@@ -25,7 +26,7 @@ import org.javacord.api.interaction.SlashCommandInteraction;
  *
  * @author S3nS3IW00
  */
-public abstract class CommandError {
+public interface CommandErrorListener {
 
     /**
      * A method signature that represents an error
@@ -33,6 +34,6 @@ public abstract class CommandError {
      * @param type        of the error
      * @param interaction the slash command interaction
      */
-    public abstract void onError(CommandErrorType type, SlashCommandInteraction interaction);
+    void onError(CommandErrorType type, SlashCommandInteraction interaction);
 
 }
