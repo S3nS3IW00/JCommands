@@ -222,7 +222,7 @@ public class CommandHandler {
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
-    private static void registerCommand(Command command, Server... servers) {
+    public static void registerCommand(Command command, Server... servers) {
         commands.add(command);
         for (Server server : servers) {
             if (!serverCommands.containsKey(server)) {
@@ -242,7 +242,7 @@ public class CommandHandler {
      *
      * @param command the command to register
      */
-    private static void registerCommandGlobally(Command command) {
+    public static void registerCommandGlobally(Command command) {
         commands.add(command);
 
         SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
@@ -291,7 +291,7 @@ public class CommandHandler {
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    private static void registerCommand(CommandBuilder builder, Server... servers) {
+    public static void registerCommand(CommandBuilder builder, Server... servers) {
         registerCommand(builder.getCommand(), servers);
     }
 
@@ -300,7 +300,7 @@ public class CommandHandler {
      *
      * @param builder the builder
      */
-    private static void registerCommandGlobally(CommandBuilder builder) {
+    public static void registerCommandGlobally(CommandBuilder builder) {
         registerCommandGlobally(builder.getCommand());
     }
 
