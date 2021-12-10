@@ -78,14 +78,6 @@ public class CommandHandler {
      */
     public static void setApi(DiscordApi api) {
         CommandHandler.api = api;
-        api.addMessageCreateListener((event -> {
-            if (event.getMessageAuthor().isBotUser()) return;
-            String[] raw = event.getMessageContent().split(" ");
-            if (raw[0].startsWith("/") && commands.stream().noneMatch(command -> command.getName().equalsIgnoreCase(raw[0]))) {
-                error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null));
-            }
-        }));
-
         api.addSlashCommandCreateListener(event -> {
             handleCommand(event.getSlashCommandInteraction());
         });
