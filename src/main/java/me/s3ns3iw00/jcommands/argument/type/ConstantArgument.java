@@ -20,6 +20,7 @@ package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.NestedArgument;
+import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  *
  * @author S3nS3IW00
  */
-public class ConstantArgument extends Argument {
+public class ConstantArgument extends SubArgument {
 
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();

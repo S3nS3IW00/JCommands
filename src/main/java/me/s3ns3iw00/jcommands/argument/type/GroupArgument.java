@@ -1,6 +1,7 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
  * Represents an argument with {@code SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
  * This is for grouping {@code SUB_COMMAND} options because {@code SUB_COMMANDS} cannot be nested
  */
-public class GroupArgument extends Argument {
+public class GroupArgument extends SubArgument {
 
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
