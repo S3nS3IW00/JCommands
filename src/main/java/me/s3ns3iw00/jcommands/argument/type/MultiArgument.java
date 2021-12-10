@@ -34,7 +34,7 @@ import java.util.Collections;
  *             it will be removed in the next version
  */
 @Deprecated
-public class MultiArgument implements Argument {
+public class MultiArgument extends Argument {
 
     private final Collection<String> names;
     private String input;
