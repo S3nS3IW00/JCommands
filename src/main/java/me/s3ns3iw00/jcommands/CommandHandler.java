@@ -108,7 +108,7 @@ public class CommandHandler {
                 if (command instanceof CategoryLimitable) {
                     CategoryLimitable categoryLimitable = (CategoryLimitable) command;
                     if ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, interaction));
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
                         return;
                     }
                 }
@@ -116,7 +116,7 @@ public class CommandHandler {
             if (command instanceof ChannelLimitable) {
                 ChannelLimitable channelLimitable = (ChannelLimitable) command;
                 if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(channel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(channel.get()))) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, interaction));
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
                     return;
                 }
             }
@@ -129,7 +129,7 @@ public class CommandHandler {
             command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), (ArgumentResult[]) resultOptional.get().toArray(),
                     new CommandResponder(interaction)));
         } else {
-            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, interaction));
+            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
         }
     }
 
