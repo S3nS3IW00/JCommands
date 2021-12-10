@@ -126,7 +126,7 @@ public class CommandHandler {
         Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
 
         if (resultOptional.isPresent()) {
-            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), (ArgumentResult[]) resultOptional.get().toArray(),
+            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
                     new CommandResponder(interaction)));
         } else {
             error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
