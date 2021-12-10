@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
@@ -91,11 +91,11 @@ public class ServerCommandBuilder extends CommandBuilder {
     }
 
     /**
-     * Calls {@link ServerCommand#setAction(CommandAction) setAction}
+     * Calls {@link ServerCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public ServerCommandBuilder action(CommandAction action) {
+    public ServerCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

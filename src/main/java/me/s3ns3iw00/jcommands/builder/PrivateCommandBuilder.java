@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
 import org.javacord.api.entity.permission.Role;
@@ -82,11 +82,11 @@ public class PrivateCommandBuilder extends CommandBuilder {
     }
 
     /**
-     * Calls {@link PrivateCommand#setAction(CommandAction) setAction}
+     * Calls {@link PrivateCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public PrivateCommandBuilder action(CommandAction action) {
+    public PrivateCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

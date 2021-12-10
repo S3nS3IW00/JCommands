@@ -19,10 +19,9 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
-import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -105,11 +104,11 @@ public class GlobalCommandBuilder extends CommandBuilder {
     }
 
     /**
-     * Calls {@link GlobalCommand#setAction(CommandAction) setAction}
+     * Calls {@link GlobalCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public GlobalCommandBuilder action(CommandAction action) {
+    public GlobalCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

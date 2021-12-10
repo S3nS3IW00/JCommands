@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands;
+package me.s3ns3iw00.jcommands.listener;
 
+import me.s3ns3iw00.jcommands.CommandResponder;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
 import org.javacord.api.entity.user.User;
 
 /**
@@ -28,18 +27,16 @@ import org.javacord.api.entity.user.User;
  *
  * @author S3nS3IW00
  */
-public abstract class CommandAction {
+public interface CommandActionListener {
 
     /**
      * A method signature that represents an action
      *
-     * @param sender is the User who sent the message
-     * @param raw    is the array that contains the user's inputs
-     * @param args   is the array that contains the converted results
-     * @param msg    is the message that contains the command
-     * @param source the message's source<br>
-     *               If the message is private the source is the User or else the source is the channel where the message is.
+     * @param sender    is the User who sent the message
+     * @param args      is the array that contains the converted results
+     * @param responder is a class with an immediate or a late response can be sent
+     *                  NOTE: The late response need to be sent within 15 minutes, otherwise Discord simply drops it
      */
-    public abstract void onCommand(User sender, String[] raw, ArgumentResult[] args, Message msg, Messageable source);
+    void onCommand(User sender, ArgumentResult[] args, CommandResponder responder);
 
 }
