@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
-    private Optional<CommandAction> action = Optional.empty();
+    private Optional<CommandActionListener> action = Optional.empty();
 
     public Command(String name, String description) {
         this.name = name;
@@ -55,7 +56,7 @@ public class Command {
      *
      * @param action is the listener object
      */
-    public void setAction(CommandAction action) {
+    public void setAction(CommandActionListener action) {
         this.action = Optional.of(action);
     }
 
@@ -83,7 +84,7 @@ public class Command {
     /**
      * @return the command action instance
      */
-    Optional<CommandAction> getAction() {
+    Optional<CommandActionListener> getAction() {
         return action;
     }
 
