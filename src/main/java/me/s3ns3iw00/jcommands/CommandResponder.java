@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.callback.InteractionFollowupMessageBuilder;
 import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 
@@ -58,6 +59,15 @@ public class CommandResponder {
      */
     public InteractionImmediateResponseBuilder respondNow() {
         return interaction.createImmediateResponder();
+    }
+
+    /**
+     * Creates a followup message builder to send the final result of late response
+     *
+     * @return the followup message builder
+     */
+    public InteractionFollowupMessageBuilder followUp() {
+        return interaction.createFollowupMessageBuilder();
     }
 
 }
