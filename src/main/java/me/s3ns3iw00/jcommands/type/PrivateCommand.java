@@ -19,14 +19,14 @@
 package me.s3ns3iw00.jcommands.type;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.limitation.RoleLimitable;
-import me.s3ns3iw00.jcommands.limitation.UserLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
+import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.UserLimitation;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +38,6 @@ import java.util.Optional;
 @Deprecated
 public class PrivateCommand extends Command implements UserLimitable, RoleLimitable {
 
-    private boolean allowedRoles, allowedUsers;
-    private List<User> userList = new ArrayList<>();
-    private Optional<Server> roleSourceServer = Optional.empty();
-    private List<Role> roleCollection;
-
     public PrivateCommand(String name, String description) {
         super(name, description);
     }
@@ -51,11 +46,11 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
      * Sets the users who can use this command
      *
      * @param users the list of the users
+     * @deprecated because of the new limit system
+     *             use {@link PrivateCommand#addUserLimitation(UserLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setUsers(boolean allowed, User... users) {
-        allowedUsers = allowed;
-        userList = Arrays.asList(users);
     }
 
     /**
@@ -63,11 +58,11 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
      * Does not take any effect if the {@code roleSourceServer} is not set
      *
      * @param roles        the list of the roles
+     * @deprecated because of the new limit system
+     *             use {@link PrivateCommand#addRoleLimitation(RoleLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setRoles(boolean allowedRoles, Role... roles) {
-        this.allowedRoles = allowedRoles;
-        roleCollection = Arrays.asList(roles);
     }
 
     /**
@@ -75,47 +70,54 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
      * If this is not specified the role limitation will be ignored
      *
      * @param roleSource the server
+     * @deprecated because of the new limit system
      */
+    @Deprecated
     public void setRoleSource(Server roleSource) {
-        roleSourceServer = Optional.of(roleSource);
     }
 
     /**
      * @return the list of the users
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<User> getUsers() {
-        return userList;
+        return null;
     }
 
     /**
      * @return true or false depends on if the user limitation is allowing or disallowing
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedUsers() {
-        return allowedUsers;
+        return false;
     }
 
     /**
      * @return an {@code Optional} that is empty when no server was specified otherwise contains a {@code Server}
+     * @deprecated because of the new limit system
      */
+    @Deprecated
     public Optional<Server> getRoleSource() {
-        return roleSourceServer;
+        return Optional.empty();
     }
 
     /**
      * @return the list of the roles
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<Role> getRoles() {
-        return roleCollection;
+        return null;
     }
 
     /**
      * @return true or false depends on if the user needs all the roles to use this command
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedRoles() {
-        return allowedRoles;
+        return false;
     }
 }

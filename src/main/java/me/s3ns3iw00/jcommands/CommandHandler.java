@@ -29,8 +29,8 @@ import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
-import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
-import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.Limitation;
+import me.s3ns3iw00.jcommands.limitation.type.*;
 import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
@@ -41,9 +41,7 @@ import org.javacord.api.entity.channel.ChannelType;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.*;
 
 import java.net.URL;
 import java.util.*;
@@ -99,7 +97,8 @@ public class CommandHandler {
             if (category.isPresent()) {
                 if (command instanceof CategoryLimitable) {
                     CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                    if ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get()))) {
+                    if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
+                            (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
                         error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
                         return;
                     }
@@ -107,7 +106,8 @@ public class CommandHandler {
             }
             if (command instanceof ChannelLimitable) {
                 ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(channel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(channel.get()))) {
+                if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
+                        (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
                     error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
                     return;
                 }
@@ -134,7 +134,7 @@ public class CommandHandler {
      * @param arguments the list of arguments need to be processed
      * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
-     *         otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
+     * otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
      */
     private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
         List<ArgumentResult> results = new ArrayList<>();
@@ -210,36 +210,99 @@ public class CommandHandler {
 
     /**
      * Registers the command for the listener on the specified servers
+     * and sets up permissions with discord's default permission system
      *
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
     public static void registerCommand(Command command, Server... servers) {
         commands.add(command);
+
+        /*
+          Check if default permissions need to be turned off
+          They will get turned off when user or role limitation has been set on a command
+        */
+        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
+                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
+
         for (Server server : servers) {
             if (!serverCommands.containsKey(server)) {
                 serverCommands.put(server, new ArrayList<>());
             }
             serverCommands.get(server).add(command);
 
-            SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+            long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                    .setDefaultPermission(defPermissions)
                     .createForServer(server)
-                    .join();
+                    .join()
+                    .getId();
+
+            applyPermissions(command, id, server);
         }
     }
 
     /**
      * Registers command globally
      * That means the command will be available in all the servers where the bot on, and also in private
+     * Sets up permissions with discord's default permission system
      *
      * @param command the command to register
      */
     public static void registerCommand(Command command) {
         commands.add(command);
 
-        SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+        /*
+          Check if default permissions need to be turned off
+          They will get turned off when user or role limitation has been set on a command
+        */
+        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
+                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
+
+        long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                .setDefaultPermission(defPermissions)
                 .createGlobal(api)
-                .join();
+                .join()
+                .getId();
+
+        for (Server server : api.getServers()) {
+            applyPermissions(command, id, server);
+        }
+    }
+
+    /**
+     * Applies default Discord permissions on command
+     *
+     * @param command the command
+     * @param id the slash command's id
+     * @param server the server
+     */
+    private static void applyPermissions(Command command, long id, Server server) {
+        List<SlashCommandPermissions> permissions = new ArrayList<>();
+        if (command instanceof UserLimitable) {
+            UserLimitable userLimitable = (UserLimitable) command;
+            permissions.addAll(userLimitable.getUserLimitations().stream()
+                    .filter(user -> user.getServer().getId() == server.getId())
+                    .map(user -> SlashCommandPermissions.create(user.getEntity().getId(),
+                            SlashCommandPermissionType.USER,
+                            user.isPermit()))
+                    .collect(Collectors.toList()));
+        }
+        if (command instanceof RoleLimitable) {
+            RoleLimitable roleLimitable = (RoleLimitable) command;
+            permissions.addAll(roleLimitable.getRoleLimitations().stream()
+                    .filter(user -> user.getServer().getId() == server.getId())
+                    .map(role -> SlashCommandPermissions.create(role.getEntity().getId(),
+                            SlashCommandPermissionType.ROLE,
+                            role.isPermit()))
+                    .collect(Collectors.toList()));
+        }
+
+        if (permissions.size() > 0) {
+            new SlashCommandPermissionsUpdater(server)
+                    .setPermissions(permissions)
+                    .update(id)
+                    .join();
+        }
     }
 
     /**

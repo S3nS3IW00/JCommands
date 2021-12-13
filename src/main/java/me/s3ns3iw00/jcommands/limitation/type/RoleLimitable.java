@@ -16,32 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.permission.Role;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Commands that implements this interface will be able to limited for roles
+ * Commands that implements this interface can be limited for roles
  */
 public interface RoleLimitable {
 
-    /**
-     * Sets the roles which can use this command with
-     *
-     * @param roles the list of the roles
-     */
-    void setRoles(boolean allowed, Role... roles);
+    List<RoleLimitation> roleLimitations = new ArrayList<>();
 
-    /**
-     * @return the list of the roles
-     */
-    List<Role> getRoles();
+    default void addRoleLimitation(RoleLimitation limitation) {
+        roleLimitations.add(limitation);
+    }
 
-    /**
-     * @return true or false depends on if the role limitation is allowing or disallowing
-     */
-    boolean isAllowedRoles();
+    default List<RoleLimitation> getRoleLimitations() {
+        return Collections.unmodifiableList(roleLimitations);
+    }
 
 }

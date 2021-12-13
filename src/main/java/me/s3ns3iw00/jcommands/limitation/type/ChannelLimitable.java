@@ -16,32 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.channel.ChannelCategory;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Commands that implements this interface will be able to limited for categories
+ * Commands that implements this interface can be limited for channels
  */
-public interface CategoryLimitable {
+public interface ChannelLimitable {
 
-    /**
-     * Sets the categories where the command will be allowed
-     *
-     * @param categories the list of the categories
-     */
-    void setCategories(boolean allowed, ChannelCategory... categories);
+    List<ChannelLimitation> channelLimitations = new ArrayList<>();
 
-    /**
-     * @return the list of the categories
-     */
-    List<ChannelCategory> getCategories();
+    default void addChannelLimitation(ChannelLimitation limitation) {
+        channelLimitations.add(limitation);
+    }
 
-    /**
-     * @return true or false depends on if the category limitation is allowing or disallowing
-     */
-    boolean isAllowedCategories();
+    default List<ChannelLimitation> getChannelLimitations() {
+        return Collections.unmodifiableList(channelLimitations);
+    }
 
 }

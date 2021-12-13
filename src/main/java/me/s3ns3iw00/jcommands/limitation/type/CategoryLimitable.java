@@ -16,32 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.user.User;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Commands that implements this interface will be able to limited for users
+ * Commands that implements this interface can be limited for categories
  */
-public interface UserLimitable {
+public interface CategoryLimitable {
 
-    /**
-     * Sets the users who can use this command
-     *
-     * @param users the list of the users
-     */
-    void setUsers(boolean allowed, User... users);
+    List<CategoryLimitation> categoryLimitations = new ArrayList<>();
 
-    /**
-     * @return the list of the users
-     */
-    List<User> getUsers();
+    default void addCategoryLimitation(CategoryLimitation limitation) {
+        categoryLimitations.add(limitation);
+    }
 
-    /**
-     * @return true or false depends on if the user limitation is allowing or disallowing
-     */
-    boolean isAllowedUsers();
+    default List<CategoryLimitation> getCategoryLimitations() {
+        return Collections.unmodifiableList(categoryLimitations);
+    }
 
 }
