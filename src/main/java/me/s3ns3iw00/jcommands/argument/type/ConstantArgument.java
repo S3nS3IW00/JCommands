@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.NestedArgument;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
@@ -70,7 +70,7 @@ public class ConstantArgument extends SubArgument {
      *
      * @param argument a list of arguments
      */
-    public void addArgument(NestedArgument... argument) {
+    public void addArgument(InputArgument... argument) {
         arguments.addAll(Arrays.asList(argument));
     }
 

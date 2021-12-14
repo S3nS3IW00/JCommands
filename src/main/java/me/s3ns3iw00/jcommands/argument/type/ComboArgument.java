@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.NestedArgument;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
@@ -31,15 +31,11 @@ import java.util.LinkedList;
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Integer}
  */
-public class ComboArgument extends NestedArgument {
+public class ComboArgument extends InputArgument {
 
-    private final String name, description;
     private Object value;
 
-    private final SlashCommandOptionType type;
     private final LinkedList<SlashCommandOptionChoice> choices = new LinkedList<>();
-
-    private boolean optional = false;
 
     /**
      * Constructs the argument with the default requirements
@@ -49,9 +45,7 @@ public class ComboArgument extends NestedArgument {
      * @param type the type of the input value, can be {@code STRING} or {@code INTEGER}
      */
     public ComboArgument(String name, String description, SlashCommandOptionType type) {
-        this.name = name;
-        this.description = description;
-        this.type = type;
+        super(name, description, type);
 
         if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.INTEGER) {
             throw new IllegalArgumentException("type can be only String or Integer");
@@ -65,7 +59,7 @@ public class ComboArgument extends NestedArgument {
      * @param value is the value of the argument as {@code String}
      */
     public void addChoice(String key, String value) {
-        if (type == SlashCommandOptionType.INTEGER) {
+        if (getType() == SlashCommandOptionType.INTEGER) {
             throw new IllegalStateException("Value must match with the argument's type: Integer");
         }
 
@@ -79,7 +73,7 @@ public class ComboArgument extends NestedArgument {
      * @param value the value of the argument as {@code Integer}
      */
     public void addChoice(String key, int value) {
-        if (type == SlashCommandOptionType.STRING) {
+        if (getType() == SlashCommandOptionType.STRING) {
             throw new IllegalStateException("Value must match with the argument's type: String");
         }
 
@@ -96,18 +90,8 @@ public class ComboArgument extends NestedArgument {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
     public Object getValue() {
-        if (type == SlashCommandOptionType.STRING) {
+        if (getType() == SlashCommandOptionType.STRING) {
             return value.toString();
         }
         return value;
@@ -115,20 +99,12 @@ public class ComboArgument extends NestedArgument {
 
     @Override
     public Class<?> getResultType() {
-        return type == SlashCommandOptionType.STRING ? String.class : Integer.class;
+        return getType() == SlashCommandOptionType.STRING ? String.class : Integer.class;
     }
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.createWithChoices(type, name, description, !optional, choices);
-    }
-
-    /**
-     * Sets the argument optional
-     *
-     * NOTE: only the last argument of the options can be set as optional, otherwise the command won't work
-     */
-    public void setOptional() {
-        this.optional = true;
+        return SlashCommandOption.createWithChoices(getType(),
+                getName(), getDescription(), !isOptional(), choices);
     }
 }

@@ -18,8 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.NestedArgument;
-import org.javacord.api.interaction.SlashCommandOption;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.Optional;
@@ -31,18 +30,13 @@ import java.util.regex.Pattern;
  *
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
-public class ValueArgument extends NestedArgument {
-
-    private final String name, description;
+public class ValueArgument extends InputArgument {
 
     private Object input;
     private Optional<Pattern> validator = Optional.empty();
     private Matcher matcher;
 
-    private final SlashCommandOptionType type;
     private Class<?> resultType = Matcher.class;
-
-    private boolean optional = false;
 
     /**
      * Constructs the argument with the default requirements
@@ -52,9 +46,7 @@ public class ValueArgument extends NestedArgument {
      * @param type the type of the input value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type) {
-        this.name = name;
-        this.description = description;
-        this.type = type;
+        super(name, description, type);
     }
 
     /**
@@ -92,16 +84,6 @@ public class ValueArgument extends NestedArgument {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
     public Object getValue() {
         if (validator.isPresent() && resultType == Matcher.class) {
             return matcher;
@@ -112,19 +94,5 @@ public class ValueArgument extends NestedArgument {
     @Override
     public Class<?> getResultType() {
         return resultType;
-    }
-
-    @Override
-    public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.create(type, getName(), getDescription(), !optional);
-    }
-
-    /**
-     * Sets the argument optional
-     *
-     * NOTE: only the last argument of the options can be set as optional, otherwise the command won't work
-     */
-    public void setOptional() {
-        this.optional = true;
     }
 }
