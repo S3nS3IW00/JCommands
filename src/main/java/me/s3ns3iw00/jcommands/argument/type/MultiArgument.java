@@ -40,6 +40,7 @@ public class MultiArgument extends Argument {
     private String input;
 
     public MultiArgument(String... names) {
+        super(null, null, null);
         this.names = Collections.unmodifiableCollection(Arrays.asList(names));
     }
 
