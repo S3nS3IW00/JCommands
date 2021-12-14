@@ -5,7 +5,6 @@ import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
