@@ -110,7 +110,7 @@ introduceCommand.setAction((sender, args, responder) -> {
 CommandHandler.registerCommand(introduceCommand, myServer);
 ```  
 
-![Example](https://imgur.com/963D9gv.png)
+![Example](https://imgur.com/swqZYXH.png)
   
 > You can find a full code [here](https://github.com/S3nS3IW00/JCommands/blob/master/src/test/java/me/s3ns3iw00/jcommands/TestMain.java) what runs a bot with the example codes above.
 
