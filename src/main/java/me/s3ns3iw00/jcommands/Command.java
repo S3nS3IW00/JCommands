@@ -45,7 +45,7 @@ public class Command {
         this.description = description;
 
         if (!name.matches("^[\\w-]{1,32}$")) {
-            throw new IllegalArgumentException("Name must match the following regex: ^[\\w-]{1,32}$");
+            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
         }
     }
 
