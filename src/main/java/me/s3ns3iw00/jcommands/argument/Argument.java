@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands.argument;
 
 import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
  * Represents an argument
@@ -27,15 +28,35 @@ import org.javacord.api.interaction.SlashCommandOption;
  */
 public abstract class Argument {
 
+    private final String name, description;
+    private final SlashCommandOptionType type;
+
+    public Argument(String name, String description, SlashCommandOptionType type) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
+
     /**
      * @return the argument's name
      */
-    public abstract String getName();
+    public String getName() {
+        return name;
+    }
 
     /**
      * @return the argument's description
      */
-    public abstract String getDescription();
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @return type of the argument
+     */
+    public SlashCommandOptionType getType() {
+        return type;
+    }
 
     /**
      * @return the argument's raw value

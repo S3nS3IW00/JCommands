@@ -35,25 +35,12 @@ import java.util.stream.Collectors;
  */
 public class ConstantArgument extends SubArgument {
 
-    private final String name, description;
-    private final LinkedList<Argument> arguments = new LinkedList<>();
-
     public ConstantArgument(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
+        super(name, description, SlashCommandOptionType.SUB_COMMAND);
     }
 
     public Object getValue() {
-        return name;
+        return getName();
     }
 
     public Class<?> getResultType() {
@@ -62,7 +49,7 @@ public class ConstantArgument extends SubArgument {
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, name, description, arguments.stream().map(Argument::getCommandOption).collect(Collectors.toList()));
+        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, getName(), getDescription(), getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
     }
 
     /**
@@ -71,10 +58,6 @@ public class ConstantArgument extends SubArgument {
      * @param argument a list of arguments
      */
     public void addArgument(InputArgument... argument) {
-        arguments.addAll(Arrays.asList(argument));
-    }
-
-    public LinkedList<Argument> getArguments() {
-        return arguments;
+        getArguments().addAll(Arrays.asList(argument));
     }
 }

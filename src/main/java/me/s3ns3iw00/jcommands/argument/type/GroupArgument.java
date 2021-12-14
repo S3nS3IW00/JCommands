@@ -14,27 +14,13 @@ import java.util.stream.Collectors;
  */
 public class GroupArgument extends SubArgument {
 
-    private final String name, description;
-    private final LinkedList<Argument> arguments = new LinkedList<>();
-
     public GroupArgument(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
+        super(name, description, SlashCommandOptionType.SUB_COMMAND_GROUP);
     }
 
     @Override
     public Object getValue() {
-        return name;
+        return getName();
     }
 
     @Override
@@ -44,7 +30,7 @@ public class GroupArgument extends SubArgument {
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND_GROUP, getName(), getDescription(), getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
+        return SlashCommandOption.createWithOptions(getType(), getName(), getDescription(), getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
     }
 
     /**
@@ -53,11 +39,7 @@ public class GroupArgument extends SubArgument {
      * @param argument the argument
      */
     public void addArgument(ConstantArgument argument) {
-        arguments.add(argument);
-    }
-
-    public LinkedList<Argument> getArguments() {
-        return arguments;
+        getArguments().add(argument);
     }
 
 }

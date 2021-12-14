@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 /**
  * Represents an argument that accepts a specified type of value
- *
+ * <p>
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
 public class ValueArgument extends InputArgument {
@@ -41,9 +41,9 @@ public class ValueArgument extends InputArgument {
     /**
      * Constructs the argument with the default requirements
      *
-     * @param name the argument's name
+     * @param name        the argument's name
      * @param description the argument's description
-     * @param type the type of the input value
+     * @param type        the type of the input value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
@@ -52,10 +52,10 @@ public class ValueArgument extends InputArgument {
     /**
      * Runs the default constructor and specifies the result type of the value, that the input will be converted to
      *
-     * @param name the argument's name
+     * @param name        the argument's name
      * @param description the argument's description
-     * @param type the type of the value
-     * @param resultType the type of the converted value
+     * @param type        the type of the value
+     * @param resultType  the type of the converted value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
         this(name, description, type);
@@ -76,7 +76,7 @@ public class ValueArgument extends InputArgument {
      *
      * @param input the user input
      * @return true if validator is not set
-     *         if validator is set then true or false depends on the validation process result
+     * if validator is set then true or false depends on the validation process result
      */
     public boolean isValid(Object input) {
         this.input = input;

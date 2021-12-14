@@ -9,40 +9,22 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  */
 public abstract class InputArgument extends Argument {
 
-    private final String name, description;
-    private final SlashCommandOptionType type;
     private boolean optional = false;
 
     /**
      * Constructs the argument with the default requirements
      *
-     * @param name the argument's name
+     * @param name        the argument's name
      * @param description the argument's description
-     * @param type the type of the input value
+     * @param type        the type of the input value
      */
     public InputArgument(String name, String description, SlashCommandOptionType type) {
-        this.name = name;
-        this.description = description;
-        this.type = type;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
+        super(name, description, type);
     }
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.create(type, getName(), getDescription(), !optional);
-    }
-
-    public SlashCommandOptionType getType() {
-        return type;
+        return SlashCommandOption.create(getType(), getName(), getDescription(), !optional);
     }
 
     public boolean isOptional() {
