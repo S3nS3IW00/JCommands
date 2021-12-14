@@ -52,11 +52,24 @@ public class ConstantArgument extends SubArgument {
     }
 
     /**
+     * Adds an argument to the argument
+     *
+     * @param argument the argument
+     */
+    public void addArgument(InputArgument argument) {
+        if (getArguments().size() > 0 && (getArguments().getLast() instanceof InputArgument) && ((InputArgument) getArguments().getLast()).isOptional()) {
+            throw new IllegalStateException("Cannot add argument after an optional argument!");
+        }
+
+        getArguments().add(argument);
+    }
+
+    /**
      * Adds arguments to the argument
      *
-     * @param argument a list of arguments
+     * @param arguments a list of arguments
      */
-    public void addArgument(InputArgument... argument) {
-        getArguments().addAll(Arrays.asList(argument));
+    public void addArgument(InputArgument... arguments) {
+        Arrays.stream(arguments).forEach(this::addArgument);
     }
 }

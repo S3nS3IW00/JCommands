@@ -19,9 +19,12 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * A class that represents a command
@@ -43,12 +46,25 @@ public class Command {
     }
 
     /**
+     * Adds an argument to the command
+     *
+     * @param argument the argument
+     */
+    public void addArgument(Argument argument) {
+        if (arguments.size() > 0 && (arguments.getLast() instanceof InputArgument) && ((InputArgument) arguments.getLast()).isOptional()) {
+            throw new IllegalStateException("Cannot add argument after an optional argument!");
+        }
+
+        this.arguments.add(argument);
+    }
+
+    /**
      * Adds arguments to the command
      *
-     * @param argument a list of argument
+     * @param arguments a list of argument
      */
-    public void addArgument(Argument... argument) {
-        this.arguments.addAll(Arrays.asList(argument));
+    public void addArgument(Argument... arguments) {
+        Arrays.stream(arguments).forEach(this::addArgument);
     }
 
     /**
