@@ -39,6 +39,10 @@ public abstract class Argument {
         if (!name.matches("^[\\w-]{1,32}$")) {
             throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
         }
+
+        if (description.length() < 1 || description.length() > 100) {
+            throw new IllegalArgumentException("Description's length must between 1 and 100");
+        }
     }
 
     /**
