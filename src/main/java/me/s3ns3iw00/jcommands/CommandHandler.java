@@ -138,12 +138,12 @@ public class CommandHandler {
      */
     private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
         List<ArgumentResult> results = new ArrayList<>();
-        for (SlashCommandInteractionOption option : options) {
-            // Get the argument that has the same name as the option
-            // It cannot be null since options are based on the registered arguments
-            Argument argument = arguments.stream().filter(arg -> arg.getName().equalsIgnoreCase(option.getName())).findFirst().orElse(null);
+        for (Argument argument : arguments) {
+            // Get the argument that has the same name as the option;
+            // Option is null when the argument is marked as optional, and was not specified
+            SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
-            if (argument != null) {
+            if (option != null) {
                 // Declare a value object that will be initiated with the value from the option
                 Object value;
                 switch (argument.getCommandOption().getType()) {
