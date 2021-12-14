@@ -40,6 +40,18 @@ public class Command {
     private final LinkedList<Argument> arguments = new LinkedList<>();
     private Optional<CommandActionListener> action = Optional.empty();
 
+    /**
+     * Default constructor
+     *
+     * @param name        the name of the command
+     *                    Its length must between 1 and 32
+     *                    Can contain only:
+     *                    - word characters
+     *                    - numbers
+     *                    - '-' characters
+     * @param description the description of the command
+     *                    Its length must between 1 and 100
+     */
     public Command(String name, String description) {
         this.name = name;
         this.description = description;

@@ -31,6 +31,19 @@ public abstract class Argument {
     private final String name, description;
     private final SlashCommandOptionType type;
 
+    /**
+     * Default constructor
+     *
+     * @param name        the name of the command
+     *                    Its length must between 1 and 32
+     *                    Can contain only:
+     *                    - word characters
+     *                    - numbers
+     *                    - '-' characters
+     * @param description the description of the command
+     *                    Its length must between 1 and 100
+     * @param type        the type of the argument
+     */
     public Argument(String name, String description, SlashCommandOptionType type) {
         this.name = name;
         this.description = description;
