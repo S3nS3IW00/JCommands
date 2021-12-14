@@ -24,6 +24,7 @@ import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -65,12 +66,12 @@ public class ConstantArgument extends SubArgument {
     }
 
     /**
-     * Adds an argument to the argument
+     * Adds arguments to the argument
      *
-     * @param argument the argument
+     * @param argument a list of arguments
      */
-    public void addArgument(NestedArgument argument) {
-        arguments.add(argument);
+    public void addArgument(NestedArgument... argument) {
+        arguments.addAll(Arrays.asList(argument));
     }
 
     public LinkedList<Argument> getArguments() {
