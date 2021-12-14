@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -25,16 +25,20 @@ import java.util.regex.Pattern;
  * An argument that only accepts inputs what are matching the pattern
  *
  * @author S3nS3IW00
+ * @deprecated don't use it because it is not working
+ *             use {@link ValueArgument} instead
+ *             it will be removed in the next version
  */
+@Deprecated
 public class RegexArgument extends ConstantArgument {
 
     private String input;
-    private Pattern pattern;
+    private final Pattern pattern;
     private Matcher matcher;
     private Class<?> type = Matcher.class;
 
-    public RegexArgument(String name, String regex) {
-        super(name);
+    public RegexArgument(String name, String description, String regex) {
+        super(name, description);
         pattern = Pattern.compile(regex);
     }
 
@@ -43,8 +47,8 @@ public class RegexArgument extends ConstantArgument {
      *
      * @param type a non-primitive data type
      */
-    public RegexArgument(String name, String regex, Class<?> type) {
-        this(name, regex);
+    public RegexArgument(String name, String description, String regex, Class<?> type) {
+        this(name, description, regex);
         this.type = type;
     }
 
@@ -54,7 +58,6 @@ public class RegexArgument extends ConstantArgument {
      * @param input the string what needs to be validated
      * @return true if the input is valid or false if is not
      */
-    @Override
     public boolean isValid(String input) {
         return (matcher = pattern.matcher(this.input = input)).lookingAt();
     }

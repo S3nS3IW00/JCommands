@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,15 +18,28 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.interaction.SlashCommandOptionType;
+
 /**
  * An argument that only accepts any string value
  *
  * @author S3nS3IW00
  */
-public class StringArgument extends RegexArgument {
+public class StringArgument extends ValueArgument {
 
-    public StringArgument(String name) {
-        super(name, ".+", String.class);
+    // Define max length of a String by default
+    private int max = Integer.MAX_VALUE;
+
+    public StringArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.STRING, String.class);
     }
 
+    public void setMaxLength(int max) {
+        this.max = max;
+    }
+
+    @Override
+    public boolean isValid(Object input) {
+        return super.isValid(input) && input.toString().length() <= max;
+    }
 }

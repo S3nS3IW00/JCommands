@@ -24,11 +24,9 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'net.dv8tion:JDA:4.1.1_136'
-    implementation  'org.javacord:javacord:3.1.1'
+    implementation  'org.javacord:javacord:3.3.2'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
 import org.javacord.api.entity.permission.Role;
@@ -30,22 +30,24 @@ import org.javacord.api.entity.user.User;
  * Useful class that makes {@code PrivateCommand} creations more comfortable
  *
  * @author S3nS3IW00
+ * @deprecated since the new command system doesn't support private commands
  */
-public class PrivateCommandBuilder implements CommandBuilder {
+@Deprecated
+public class PrivateCommandBuilder extends CommandBuilder {
 
-    private PrivateCommand command;
+    private final PrivateCommand command;
 
-    public PrivateCommandBuilder(String name) {
-        command = new PrivateCommand(name);
+    public PrivateCommandBuilder(String name, String description) {
+        command = new PrivateCommand(name, description);
     }
 
     /**
-     * Calls {@link PrivateCommand#addArguments(Argument...) addArguments}
+     * Calls {@link PrivateCommand#addArgument(Argument) addArgument}
      *
      * @return this class
      */
-    public PrivateCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public PrivateCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 
@@ -80,11 +82,11 @@ public class PrivateCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link PrivateCommand#setAction(CommandAction) setAction}
+     * Calls {@link PrivateCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public PrivateCommandBuilder action(CommandAction action) {
+    public PrivateCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

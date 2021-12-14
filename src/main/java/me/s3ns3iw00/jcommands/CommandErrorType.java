@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -26,11 +26,6 @@ package me.s3ns3iw00.jcommands;
 public enum CommandErrorType {
 
     /**
-     * Occurs when no command is registered at the source with the given name.
-     */
-    INVALID_COMMAND,
-
-    /**
      * Occurs when one or more of the arguments are missing or not matching the pattern.
      */
     BAD_ARGUMENTS,
@@ -43,11 +38,6 @@ public enum CommandErrorType {
     /**
      * Occurs when the sender wants to use the command in a channel where it is not allowed.
      */
-    BAD_CHANNEL,
-
-    /**
-     * Occurs when the sender is not allowed to use this command or the sender does not have one of or all the roles that need to use the command.
-     */
-    NO_PERMISSION
+    BAD_CHANNEL
 
 }

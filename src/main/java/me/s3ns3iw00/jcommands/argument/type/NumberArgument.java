@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,18 +18,20 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import org.javacord.api.interaction.SlashCommandOptionType;
+
 /**
  * An argument that only accepts number inputs inside integer's range (from -2147483648 to 2147483647)
  *
  * @author S3nS3IW00
  */
-public class NumberArgument extends RegexArgument {
+public class NumberArgument extends ValueArgument {
 
     // Define default range
     private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
 
-    public NumberArgument(String name) {
-        super(name, "^-?\\d+$", Integer.class);
+    public NumberArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.INTEGER, Integer.class);
     }
 
     public void setRange(int min, int max) {
@@ -38,11 +40,10 @@ public class NumberArgument extends RegexArgument {
     }
 
     @Override
-    public boolean isValid(String input) {
+    public boolean isValid(Object input) {
         if (super.isValid(input)) {
             try {
-                int value = Integer.parseInt(input);
-                return value >= min && value <= max;
+                return (int) input >= min && (int) input <= max;
             } catch (NumberFormatException e) {
                 return false;
             }

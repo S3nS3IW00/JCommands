@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import org.javacord.api.interaction.SlashCommandOption;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,13 +29,18 @@ import java.util.Collections;
  * An argument that accepts exactly one of the specified values
  *
  * @author S3nS3IW00
+ * @deprecated don't use, because it is not working
+ *             use {@link ComboArgument} instead
+ *             it will be removed in the next version
  */
-public class MultiArgument implements Argument {
+@Deprecated
+public class MultiArgument extends Argument {
 
-    private Collection<String> names;
+    private final Collection<String> names;
     private String input;
 
     public MultiArgument(String... names) {
+        super(null, null, null);
         this.names = Collections.unmodifiableCollection(Arrays.asList(names));
     }
 
@@ -49,6 +55,11 @@ public class MultiArgument implements Argument {
         return nameBuilder.toString();
     }
 
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
     public String getValue() {
         return input;
     }
@@ -60,6 +71,11 @@ public class MultiArgument implements Argument {
 
     public Class<?> getResultType() {
         return String.class;
+    }
+
+    @Override
+    public SlashCommandOption getCommandOption() {
+        return null;
     }
 
 }

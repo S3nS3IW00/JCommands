@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,30 +18,43 @@
  */
 package me.s3ns3iw00.jcommands.limitation;
 
-import org.javacord.api.entity.channel.ChannelCategory;
-
-import java.util.List;
+import org.javacord.api.entity.server.Server;
 
 /**
- * Commands that implements this interface will be able to limited for categories
+ * Represents a command limitation
+ *
+ * @param <T> aspect that the command will be limited by
  */
-public interface CategoryLimitable {
+public abstract class Limitation<T> {
 
     /**
-     * Sets the categories where the command will be allowed
+     * The server to which the limitation belongs
+     */
+    private final Server server;
+
+    /**
+     * It's obvious... I hope...
+     */
+    private final boolean permit;
+
+    public Limitation(Server server, boolean permit) {
+        this.server = server;
+        this.permit = permit;
+    }
+
+    /**
+     * Gets the entity of the current aspect
      *
-     * @param categories the list of the categories
+     * @return the entity
      */
-    void setCategories(boolean allowed, ChannelCategory... categories);
+    public abstract T getEntity();
 
-    /**
-     * @return the list of the categories
-     */
-    List<ChannelCategory> getCategories();
+    public Server getServer() {
+        return server;
+    }
 
-    /**
-     * @return true or false depends on if the category limitation is allowing or disallowing
-     */
-    boolean isAllowedCategories();
+    public boolean isPermit() {
+        return permit;
+    }
 
 }

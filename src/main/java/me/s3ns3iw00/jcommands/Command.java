@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,9 +19,12 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * A class that represents a command
@@ -33,21 +36,55 @@ public class Command {
     /**
      * These guys are nice
      */
-    private String name;
-    private LinkedList<List<Argument>> arguments = new LinkedList<>();
-    private Optional<CommandAction> action = Optional.empty();
+    private final String name, description;
+    private final LinkedList<Argument> arguments = new LinkedList<>();
+    private Optional<CommandActionListener> action = Optional.empty();
 
-    public Command(String name) {
+    /**
+     * Default constructor
+     *
+     * @param name        the name of the command
+     *                    Its length must between 1 and 32
+     *                    Can contain only:
+     *                    - word characters
+     *                    - numbers
+     *                    - '-' characters
+     * @param description the description of the command
+     *                    Its length must between 1 and 100
+     */
+    public Command(String name, String description) {
         this.name = name;
+        this.description = description;
+
+        if (!name.matches("^[\\w-]{1,32}$")) {
+            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
+        }
+
+        if (description.length() < 1 || description.length() > 100) {
+            throw new IllegalArgumentException("Description's length must between 1 and 100");
+        }
     }
 
     /**
-     * Adds a list of argument which at least one of are acceptable at the current index
+     * Adds an argument to the command
      *
-     * @param arguments the list of the arguments
+     * @param argument the argument
      */
-    public void addArguments(Argument... arguments) {
-        this.arguments.add(new ArrayList<>(Arrays.asList(arguments)));
+    public void addArgument(Argument argument) {
+        if (arguments.size() > 0 && (arguments.getLast() instanceof InputArgument) && ((InputArgument) arguments.getLast()).isOptional()) {
+            throw new IllegalStateException("Cannot add argument after an optional argument!");
+        }
+
+        this.arguments.add(argument);
+    }
+
+    /**
+     * Adds arguments to the command
+     *
+     * @param arguments a list of argument
+     */
+    public void addArgument(Argument... arguments) {
+        Arrays.stream(arguments).forEach(this::addArgument);
     }
 
     /**
@@ -55,57 +92,35 @@ public class Command {
      *
      * @param action is the listener object
      */
-    public void setAction(CommandAction action) {
+    public void setAction(CommandActionListener action) {
         this.action = Optional.of(action);
-    }
-
-    /**
-     * Prints the valid usage of the command with all the acceptable arguments
-     *
-     * @return a string of the usage
-     */
-    public String getUsage() {
-        StringBuilder usage = new StringBuilder("/" + getName());
-        if (getArguments().size() == 0) {
-            return usage.toString();
-        }
-        usage.append(" ");
-        for (int i = 0; i < getArguments().size(); i++) {
-            List<Argument> arguments = getArguments().get(i);
-
-            for (int j = 0; j < arguments.size(); j++) {
-                Argument argument = arguments.get(j);
-
-                if (argument instanceof RegexArgument) {
-                    usage.append("<").append(argument.getName()).append(">");
-                } else {
-                    usage.append(argument.getName());
-                }
-                if (j + 1 < arguments.size()) usage.append("|");
-            }
-            if (i + 1 < getArguments().size()) usage.append(" ");
-        }
-        return usage.toString();
     }
 
     /**
      * @return the command's name
      */
-    String getName() {
+    public String getName() {
         return name;
+    }
+
+    /**
+     * @return the command's description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**
      * @return the list of the arguments
      */
-    LinkedList<List<Argument>> getArguments() {
+    public LinkedList<Argument> getArguments() {
         return arguments;
     }
 
     /**
      * @return the command action instance
      */
-    Optional<CommandAction> getAction() {
+    Optional<CommandActionListener> getAction() {
         return action;
     }
 

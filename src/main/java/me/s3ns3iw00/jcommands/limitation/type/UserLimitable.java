@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -16,29 +16,27 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
 import org.javacord.api.entity.user.User;
 
-/**
- * The error listener
- *
- * @author S3nS3IW00
- */
-public interface CommandError {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    /**
-     * A method signature that represents an error
-     *
-     * @param type   of the error
-     * @param cmd    the command
-     * @param sender of the command
-     * @param msg    the message that contains the command
-     * @param source the message's source<br>
-     *               If the message is private the source is the User or else the source is the channel where the message is.
-     */
-    void onError(CommandErrorType type, Command cmd, User sender, Message msg, Messageable source);
+/**
+ * Commands that implements this interface can be limited for users
+ */
+public interface UserLimitable {
+
+    List<UserLimitation> userLimitations = new ArrayList<>();
+
+    default void addUserLimitation(UserLimitation limitation) {
+        userLimitations.add(limitation);
+    }
+
+    default List<UserLimitation> getUserLimitations() {
+        return Collections.unmodifiableList(userLimitations);
+    }
 
 }

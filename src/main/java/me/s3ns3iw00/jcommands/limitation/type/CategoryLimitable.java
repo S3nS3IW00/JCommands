@@ -16,19 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.type;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.channel.ServerChannel;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * An argument that has a regex that only accepts inputs what are channel tags
- *
- * @author S3nS3IW00
+ * Commands that implements this interface can be limited for categories
  */
-public class ChannelArgument extends ValueArgument {
+public interface CategoryLimitable {
 
-    public ChannelArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);
+    List<CategoryLimitation> categoryLimitations = new ArrayList<>();
+
+    default void addCategoryLimitation(CategoryLimitation limitation) {
+        categoryLimitations.add(limitation);
     }
+
+    default List<CategoryLimitation> getCategoryLimitations() {
+        return Collections.unmodifiableList(categoryLimitations);
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -29,6 +29,6 @@ public interface ArgumentResultConverter {
      * @param value the raw value
      * @return the converted object
      */
-    Object convertTo(String value);
+    Object convertTo(Object value);
 
 }

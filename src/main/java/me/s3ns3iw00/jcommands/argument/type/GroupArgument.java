@@ -19,57 +19,44 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Only accepts inputs that are exactly the same as its name
- *
- * @author S3nS3IW00
+ * Represents an argument with {@code SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
+ * This is for grouping {@code SUB_COMMAND} options because {@code SUB_COMMANDS} cannot be nested
  */
-public class ConstantArgument extends SubArgument {
+public class GroupArgument extends SubArgument {
 
-    public ConstantArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.SUB_COMMAND);
+    public GroupArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.SUB_COMMAND_GROUP);
     }
 
+    @Override
     public Object getValue() {
         return getName();
     }
 
+    @Override
     public Class<?> getResultType() {
         return String.class;
     }
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.createWithOptions(SlashCommandOptionType.SUB_COMMAND, getName(), getDescription(), getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
+        return SlashCommandOption.createWithOptions(getType(), getName(), getDescription(), getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
     }
 
     /**
-     * Adds an argument to the argument
+     * Adds a {@link ConstantArgument} to the argument
      *
      * @param argument the argument
      */
-    public void addArgument(InputArgument argument) {
-        if (getArguments().size() > 0 && (getArguments().getLast() instanceof InputArgument) && ((InputArgument) getArguments().getLast()).isOptional()) {
-            throw new IllegalStateException("Cannot add argument after an optional argument!");
-        }
-
+    public void addArgument(ConstantArgument argument) {
         getArguments().add(argument);
     }
 
-    /**
-     * Adds arguments to the argument
-     *
-     * @param arguments a list of arguments
-     */
-    public void addArgument(InputArgument... arguments) {
-        Arrays.stream(arguments).forEach(this::addArgument);
-    }
 }

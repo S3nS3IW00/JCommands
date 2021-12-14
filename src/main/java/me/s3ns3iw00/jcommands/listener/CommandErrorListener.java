@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -16,32 +16,24 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation;
+package me.s3ns3iw00.jcommands.listener;
 
-import org.javacord.api.entity.user.User;
-
-import java.util.List;
+import me.s3ns3iw00.jcommands.CommandErrorType;
+import me.s3ns3iw00.jcommands.CommandResponder;
 
 /**
- * Commands that implements this interface will be able to limited for users
+ * The error listener
+ *
+ * @author S3nS3IW00
  */
-public interface UserLimitable {
+public interface CommandErrorListener {
 
     /**
-     * Sets the users who can use this command
+     * A method signature that represents an error
      *
-     * @param users the list of the users
+     * @param type        of the error
+     * @param responder the responder to send respond
      */
-    void setUsers(boolean allowed, User... users);
-
-    /**
-     * @return the list of the users
-     */
-    List<User> getUsers();
-
-    /**
-     * @return true or false depends on if the user limitation is allowing or disallowing
-     */
-    boolean isAllowedUsers();
+    void onError(CommandErrorType type, CommandResponder responder);
 
 }

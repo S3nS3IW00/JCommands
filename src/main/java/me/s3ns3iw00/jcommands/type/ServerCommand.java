@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,10 +19,7 @@
 package me.s3ns3iw00.jcommands.type;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
-import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
-import me.s3ns3iw00.jcommands.limitation.RoleLimitable;
-import me.s3ns3iw00.jcommands.limitation.UserLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.*;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -38,122 +35,122 @@ import java.util.List;
  */
 public class ServerCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
 
-    private boolean needAllRoles, allowedUsers, allowedChannels, allowedCategories;
-    private List<User> userList = new ArrayList<>();
-    private List<Role> roleList;
-    private List<TextChannel> channelList = new ArrayList<>();
-    private List<ChannelCategory> categoryList = new ArrayList<>();
-
-    public ServerCommand(String name) {
-        super(name);
+    public ServerCommand(String name, String description) {
+        super(name, description);
     }
 
     /**
      * Sets the users who can use this command
      *
      * @param users the list of the users
+     * @deprecated because of the new limit system
+     *             use {@link ServerCommand#addUserLimitation(UserLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setUsers(boolean allowed, User... users) {
-        allowedUsers = allowed;
-        userList = Arrays.asList(users);
     }
 
     /**
      * Sets the roles which can use this command with
      *
-     * @param needAllRoles if true all roles will needed to use this command
      * @param roles        the list of the roles
+     * @deprecated because of the new limit system
+     *             use {@link ServerCommand#addRoleLimitation(RoleLimitation)} instead
      */
-    @Override
-    public void setRoles(boolean needAllRoles, Role... roles) {
-        this.needAllRoles = needAllRoles;
-        roleList = Arrays.asList(roles);
+    @Deprecated
+    public void setRoles(boolean allowedRoles, Role... roles) {
     }
 
     /**
      * Sets the channels where the command will be allowed
      *
      * @param channels the list of the channels
+     * @deprecated because of the new limit system
+     *             use {@link ServerCommand#addChannelLimitation(ChannelLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setChannels(boolean allowed, TextChannel... channels) {
-        allowedChannels = allowed;
-        channelList = Arrays.asList(channels);
     }
 
     /**
      * Sets the categories where the command will be allowed
      *
-     * @param categories the list of the categories
+     * @deprecated because of the new limit system
+     *             use {@link ServerCommand#addCategoryLimitation(CategoryLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setCategories(boolean allowed, ChannelCategory... categories) {
-        allowedCategories = allowed;
-        categoryList = Arrays.asList(categories);
     }
 
     /**
      * @return the list of the users
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<User> getUsers() {
-        return userList;
+        return null;
     }
 
     /**
      * @return the list of the roles
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<Role> getRoles() {
-        return roleList;
+        return null;
     }
 
     /**
      * @return true or false depends on if the user needs all the roles to use this command
+     * @deprecated because of the new limit system
      */
-    @Override
-    public boolean isNeedAllRoles() {
-        return needAllRoles;
+    @Deprecated
+    public boolean isAllowedRoles() {
+        return false;
     }
 
     /**
      * @return the list of the channels
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<TextChannel> getChannels() {
-        return channelList;
+        return null;
     }
 
     /**
      * @return the list of the categories
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<ChannelCategory> getCategories() {
-        return categoryList;
+        return null;
     }
 
     /**
      * @return true or false depends on if the category limitation is allowing or disallowing
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedCategories() {
-        return allowedCategories;
+        return false;
     }
 
     /**
      * @return true or false depends on if the channel limitation is allowing or disallowing
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedChannels() {
-        return allowedChannels;
+        return false;
     }
 
     /**
      * @return true or false depends on if the user limitation is allowing or disallowing
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedUsers() {
-        return allowedUsers;
+        return false;
     }
 }

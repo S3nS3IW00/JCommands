@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,34 +18,80 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionType;
+
 /**
  * Represents an argument
  *
  * @author S3nS3IW00
  */
-public interface Argument {
+public abstract class Argument {
+
+    private final String name, description;
+    private final SlashCommandOptionType type;
+
+    /**
+     * Default constructor
+     *
+     * @param name        the name of the command
+     *                    Its length must between 1 and 32
+     *                    Can contain only:
+     *                    - word characters
+     *                    - numbers
+     *                    - '-' characters
+     * @param description the description of the command
+     *                    Its length must between 1 and 100
+     * @param type        the type of the argument
+     */
+    public Argument(String name, String description, SlashCommandOptionType type) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+
+        if (!name.matches("^[\\w-]{1,32}$")) {
+            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
+        }
+
+        if (description.length() < 1 || description.length() > 100) {
+            throw new IllegalArgumentException("Description's length must between 1 and 100");
+        }
+    }
 
     /**
      * @return the argument's name
      */
-    String getName();
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the argument's description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @return type of the argument
+     */
+    public SlashCommandOptionType getType() {
+        return type;
+    }
 
     /**
      * @return the argument's raw value
      */
-    String getValue();
-
-    /**
-     * Checks the user input if its valid for the argument or not
-     *
-     * @param input the user input
-     * @return true or false depends on the validation process result
-     */
-    boolean isValid(String input);
+    public abstract Object getValue();
 
     /**
      * @return the class of the result's type
      */
-    Class<?> getResultType();
+    public abstract Class<?> getResultType();
+
+    /**
+     * @return the command option that need for to register the argument
+     */
+    public abstract SlashCommandOption getCommandOption();
 
 }

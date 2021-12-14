@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -16,33 +16,18 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation;
+package me.s3ns3iw00.jcommands.argument.type;
 
 import org.javacord.api.entity.permission.Role;
-
-import java.util.List;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * Commands that implements this interface will be able to limited for roles
+ * An argument that only accepts role as input and returns a {@link Role}
  */
-public interface RoleLimitable {
+public class RoleArgument extends ValueArgument {
 
-    /**
-     * Sets the roles which can use this command with
-     *
-     * @param needAllRoles if true all roles will needed to use this command
-     * @param roles        the list of the roles
-     */
-    void setRoles(boolean needAllRoles, Role... roles);
-
-    /**
-     * @return the list of the roles
-     */
-    List<Role> getRoles();
-
-    /**
-     * @return true or false depends on if the user needs all the roles to use this command
-     */
-    boolean isNeedAllRoles();
+    public RoleArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.ROLE, Role.class);
+    }
 
 }

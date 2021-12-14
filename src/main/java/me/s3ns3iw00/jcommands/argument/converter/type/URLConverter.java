@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -31,9 +31,9 @@ import java.net.URL;
 public class URLConverter implements ArgumentResultConverter {
 
     @Override
-    public Object convertTo(String value) {
+    public Object convertTo(Object value) {
         try {
-            return new URL(value);
+            return new URL(value.toString());
         } catch (MalformedURLException e) {
             return null;
         }

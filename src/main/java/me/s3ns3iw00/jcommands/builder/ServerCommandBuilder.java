@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
@@ -32,21 +32,21 @@ import org.javacord.api.entity.user.User;
  *
  * @author S3nS3IW00
  */
-public class ServerCommandBuilder implements CommandBuilder {
+public class ServerCommandBuilder extends CommandBuilder {
 
-    private ServerCommand command;
+    private final ServerCommand command;
 
-    public ServerCommandBuilder(String name) {
-        command = new ServerCommand(name);
+    public ServerCommandBuilder(String name, String description) {
+        command = new ServerCommand(name, description);
     }
 
     /**
-     * Calls {@link ServerCommand#addArguments(Argument...) addArguments}
+     * Calls {@link ServerCommand#addArgument(Argument) addArguments}
      *
      * @return this class
      */
-    public ServerCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public ServerCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 
@@ -91,11 +91,11 @@ public class ServerCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link ServerCommand#setAction(CommandAction) setAction}
+     * Calls {@link ServerCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public ServerCommandBuilder action(CommandAction action) {
+    public ServerCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

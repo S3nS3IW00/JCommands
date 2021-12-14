@@ -16,19 +16,32 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.type;
+package me.s3ns3iw00.jcommands.argument;
 
-import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-/**
- * An argument that has a regex that only accepts inputs what are channel tags
- *
- * @author S3nS3IW00
- */
-public class ChannelArgument extends ValueArgument {
+import java.util.LinkedList;
 
-    public ChannelArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);
+/**
+ * Represents a sub argument
+ * Classes that extends this class can have arguments
+ */
+public abstract class SubArgument extends Argument {
+
+    private final LinkedList<Argument> arguments = new LinkedList<>();
+
+    /**
+     * Constructs the argument with the default requirements
+     *
+     * @param name        the argument's name
+     * @param description the argument's description
+     * @param type        the type of the input value
+     */
+    public SubArgument(String name, String description, SlashCommandOptionType type) {
+        super(name, description, type);
+    }
+
+    public LinkedList<Argument> getArguments() {
+        return arguments;
     }
 }

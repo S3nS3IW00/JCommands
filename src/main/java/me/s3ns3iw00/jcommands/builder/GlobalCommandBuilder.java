@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.CommandAction;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
@@ -32,22 +32,24 @@ import org.javacord.api.entity.user.User;
  * Useful class that makes {@code GlobalCommand} creations more comfortable
  *
  * @author S3nS3IW00
+ * @deprecated use {@link ServerCommandBuilder} instead
  */
-public class GlobalCommandBuilder implements CommandBuilder {
+@Deprecated
+public class GlobalCommandBuilder extends CommandBuilder {
 
-    private GlobalCommand command;
+    private final GlobalCommand command;
 
-    public GlobalCommandBuilder(String name) {
-        command = new GlobalCommand(name);
+    public GlobalCommandBuilder(String name, String description) {
+        command = new GlobalCommand(name, description);
     }
 
     /**
-     * Calls {@link GlobalCommand#addArguments(Argument...) addArguments}
+     * Calls {@link GlobalCommand#addArgument(Argument) addArgument}
      *
      * @return this class
      */
-    public GlobalCommandBuilder arguments(Argument... arguments) {
-        command.addArguments(arguments);
+    public GlobalCommandBuilder argument(Argument argument) {
+        command.addArgument(argument);
         return this;
     }
 
@@ -102,11 +104,11 @@ public class GlobalCommandBuilder implements CommandBuilder {
     }
 
     /**
-     * Calls {@link GlobalCommand#setAction(CommandAction) setAction}
+     * Calls {@link GlobalCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
      */
-    public GlobalCommandBuilder action(CommandAction action) {
+    public GlobalCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
         return this;
     }

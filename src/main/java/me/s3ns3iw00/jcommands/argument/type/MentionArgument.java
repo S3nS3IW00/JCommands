@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,34 +19,17 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import org.javacord.api.entity.user.User;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
  * An argument that has a regex that only accepts inputs what are mention tags
  *
  * @author S3nS3IW00
  */
-public class MentionArgument extends RegexArgument {
+public class MentionArgument extends ValueArgument {
 
-    public MentionArgument(String name) {
-        super(name, "\\<@!?\\d+\\>", User.class);
-    }
-
-    @Override
-    public boolean isValid(String input) {
-        if (super.isValid(input)) {
-            try {
-                long id = Long.parseLong(getValue());
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String getValue() {
-        return super.getValue().substring(super.getValue().toCharArray()[2] == '!' ? 3 : 2, super.getValue().length() - 1);
+    public MentionArgument(String name, String description) {
+        super(name, description, SlashCommandOptionType.USER, User.class);
     }
 
 }

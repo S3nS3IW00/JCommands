@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -25,11 +25,11 @@ import me.s3ns3iw00.jcommands.Command;
  *
  * @author S3nS3IW00
  */
-public interface CommandBuilder {
+public abstract class CommandBuilder {
 
     /**
      * @return the command itself
      */
-    Command getCommand();
+    public abstract Command getCommand();
 
 }

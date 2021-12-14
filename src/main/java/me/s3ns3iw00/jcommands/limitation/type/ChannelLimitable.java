@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -16,21 +16,25 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.converter.type;
+package me.s3ns3iw00.jcommands.limitation.type;
 
-import me.s3ns3iw00.jcommands.CommandHandler;
-import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Converts to {@code ServerChannel} from the given value that expectedly is the id of the {@code ServerChannel}.
- *
- * @author S3nS3IW00
+ * Commands that implements this interface can be limited for channels
  */
-public class ChannelConverter implements ArgumentResultConverter {
+public interface ChannelLimitable {
 
-    @Override
-    public Object convertTo(String value) {
-        return CommandHandler.getApi().getServerChannelById(value).orElse(null);
+    List<ChannelLimitation> channelLimitations = new ArrayList<>();
+
+    default void addChannelLimitation(ChannelLimitation limitation) {
+        channelLimitations.add(limitation);
+    }
+
+    default List<ChannelLimitation> getChannelLimitations() {
+        return Collections.unmodifiableList(channelLimitations);
     }
 
 }

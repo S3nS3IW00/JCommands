@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -20,33 +20,32 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.ChannelConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.MentionConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
+import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
+import me.s3ns3iw00.jcommands.argument.type.ValueArgument;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
-import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
-import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
-import me.s3ns3iw00.jcommands.limitation.RoleLimitable;
-import me.s3ns3iw00.jcommands.limitation.UserLimitable;
+import me.s3ns3iw00.jcommands.limitation.Limitation;
+import me.s3ns3iw00.jcommands.limitation.type.*;
+import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ServerChannel;
-import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
-import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.channel.ChannelType;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
+import org.javacord.api.interaction.*;
 
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The main class of the API
@@ -59,18 +58,15 @@ public class CommandHandler {
      * Some cool and obvious stuff here
      */
     private static DiscordApi api;
-    private static List<Command> commands = new ArrayList<>();
-    private static Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static Optional<CommandError> error = Optional.empty();
-    private static String commandChar = "/";
+    private static final List<Command> commands = new ArrayList<>();
+    private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
+    private static Optional<CommandErrorListener> error = Optional.empty();
 
     /**
      * HasMap that contains the converters initiated with default converters
      */
-    private static Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
+    private static final Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
         put(URL.class, new URLConverter());
-        put(ServerChannel.class, new ChannelConverter());
-        put(User.class, new MentionConverter());
     }};
 
     /**
@@ -80,152 +76,232 @@ public class CommandHandler {
      */
     public static void setApi(DiscordApi api) {
         CommandHandler.api = api;
-        api.addMessageCreateListener((event -> {
-            if (event.getMessageAuthor().isBotUser()) return;
-            String[] raw = event.getMessageContent().split(" ");
-            if (raw[0].startsWith(commandChar)) {
-                handleCommand(event.getServer().isPresent() ? event.getServer().get() : null, event.getMessage(), raw[0].substring(commandChar.length()), raw.length > 1 ? Arrays.copyOfRange(raw, 1, raw.length) : new String[]{});
-            }
-        }));
+        api.addSlashCommandCreateListener(event -> {
+            handleCommand(event.getSlashCommandInteraction());
+        });
     }
 
     /**
-     * Handles the command inputs
+     * Handles slash command interactions
      *
-     * @param msg  the message that contains the command
-     * @param cmd  the command
-     * @param args the list of the command's parameters
+     * @param interaction the slash command interaction
      */
-    private static void handleCommand(Server server, Message msg, String cmd, String[] args) {
-        if (!msg.getAuthor().asUser().isPresent())
-            return;
-        User sender = msg.getAuthor().asUser().get();
-        Messageable source = msg.isPrivateMessage() ? sender : msg.getChannel();
-
-        //Command checker
-        List<Command> commandList = server == null ? commands : serverCommands.get(server);
-        if (commandList == null) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        Command commandI = commandList.get(0);
-        int cmdI = 0;
-        while (cmdI < commandList.size() && (!(commandI = commandList.get(cmdI)).getName().equalsIgnoreCase(cmd))) {
-            cmdI++;
-        }
-        if (cmdI >= commandList.size()) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        final Command command = commandI;
-
-        // User validation
-        if (command instanceof UserLimitable) {
-            UserLimitable userLimitable = (UserLimitable) command;
-            if ((userLimitable.isAllowedUsers() && !userLimitable.getUsers().contains(sender)) || (!userLimitable.isAllowedUsers() && userLimitable.getUsers().contains(sender))) {
-                error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
-                return;
-            }
-        }
+    private static void handleCommand(SlashCommandInteraction interaction) {
+        User sender = interaction.getUser();
+        Optional<TextChannel> channel = interaction.getChannel();
+        Command command = commands.stream().filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName())).findFirst().get();
 
         //Category and channel validation
-        if ((!(command instanceof GlobalCommand) && command instanceof PrivateCommand && !msg.isPrivateMessage()) || (command instanceof ServerCommand && msg.isPrivateMessage())) {
-            error.ifPresent(e -> e.onError(CommandErrorType.INVALID_COMMAND, null, sender, msg, source));
-            return;
-        }
-        if (!msg.isPrivateMessage()) {
-            Optional<ServerTextChannel> serverTextChannel = api.getServerTextChannelById(msg.getChannel().getId());
-            if (serverTextChannel.isPresent()) {
-                Optional<ChannelCategory> category = serverTextChannel.get().getCategory();
+        if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
+            Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
+            if (category.isPresent()) {
                 if (command instanceof CategoryLimitable) {
                     CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                    if (category.isPresent() && ((categoryLimitable.isAllowedCategories() && !categoryLimitable.getCategories().contains(category.get())) || (!categoryLimitable.isAllowedCategories() && categoryLimitable.getCategories().contains(category.get())))
-                            || (!category.isPresent() && (categoryLimitable.getCategories().size() > 0))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, command, sender, msg, source));
+                    if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
+                            (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
+                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
                         return;
                     }
                 }
-                if (command instanceof ChannelLimitable) {
-                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                    if ((channelLimitable.isAllowedChannels() && !channelLimitable.getChannels().contains(serverTextChannel.get())) || (!channelLimitable.isAllowedChannels() && channelLimitable.getChannels().contains(serverTextChannel.get()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, command, sender, msg, source));
-                        return;
-                    }
-                }
-            } else {
-                return;
             }
-        }
-
-        //Role validation
-        if (command instanceof RoleLimitable) {
-            RoleLimitable roleLimitable = (RoleLimitable) command;
-            Optional<Server> roleSource = Optional.empty();
-            if (command instanceof PrivateCommand) {
-                roleSource = ((PrivateCommand) command).getRoleSource();
-            }
-            if ((server != null || roleSource.isPresent()) && roleLimitable.getRoles() != null && roleLimitable.getRoles().size() > 0) {
-                int needCount = roleLimitable.isNeedAllRoles() ? roleLimitable.getRoles().size() : 1;
-                List<Role> userRoles = sender.getRoles(roleSource.orElse(server));
-
-                int count = 0;
-                int i = 0;
-                while (i < roleLimitable.getRoles().size() && count < needCount) {
-                    if (userRoles.contains(roleLimitable.getRoles().get(i))) count++;
-                    i++;
-                }
-
-                if (count < needCount) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.NO_PERMISSION, command, sender, msg, source));
+            if (command instanceof ChannelLimitable) {
+                ChannelLimitable channelLimitable = (ChannelLimitable) command;
+                if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
+                        (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
+                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
                     return;
                 }
             }
         }
 
         //Argument validation
-        ArgumentResult[] argumentResults = new ArgumentResult[command.getArguments().size()];
-        if (command.getArguments() != null && command.getArguments().size() > 0) {
-            boolean argsValid = true;
-            if (args.length < command.getArguments().size()) {
-                argsValid = false;
-            } else {
-                for (int i = 0; i < command.getArguments().size(); i++) {
-                    List<Argument> arguments = command.getArguments().get(i);
-                    String arg = args[i];
-                    int j = 0;
-                    while (j < arguments.size() && !arguments.get(j).isValid(arg)) {
-                        j++;
-                    }
-                    if (j == arguments.size()) {
-                        argsValid = false;
+        Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
+
+        if (resultOptional.isPresent()) {
+            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
+                    new CommandResponder(interaction)));
+        } else {
+            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
+        }
+    }
+
+    /**
+     * Processes arguments and every argument of the arguments recursively:
+     * - Adjusts values to the arguments
+     * - Checks that the value is valid for the argument
+     * - Assembles a list with the result of every argument
+     *
+     * @param arguments the list of arguments need to be processed
+     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
+     * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
+     * otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
+     */
+    private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
+        List<ArgumentResult> results = new ArrayList<>();
+        for (Argument argument : arguments) {
+            // Get the argument that has the same name as the option;
+            // Option is null when the argument is marked as optional, and was not specified
+            SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
+
+            if (option != null) {
+                // Declare a value object that will be initiated with the value from the option
+                Object value;
+                switch (argument.getCommandOption().getType()) {
+                    case ROLE:
+                        value = option.getRoleValue().get();
                         break;
+                    case USER:
+                        value = option.getUserValue().get();
+                        break;
+                    case CHANNEL:
+                        value = option.getChannelValue().get();
+                        break;
+                    case MENTIONABLE:
+                        value = option.getMentionableValue().get();
+                        break;
+                    case STRING:
+                        value = option.getStringValue().get();
+                        break;
+                    case INTEGER:
+                        value = option.getIntValue().get();
+                        break;
+                    case BOOLEAN:
+                        value = option.getBooleanValue().get();
+                        break;
+                    default:
+                        value = null;
+                }
+
+                if (argument instanceof SubArgument) {
+                    /* Add the result of the argument to the list, which is basically the name of the argument;
+                       If the result is present that means there are other arguments that need to be added to the list,
+                            otherwise just return an empty optional to tell the caller that there aren't any other options;
+                       The best practice is to solve this recursively since the other option's count is unknown,
+                            and it cannot be determined directly
+                    */
+                    results.add(new ArgumentResult(argument));
+                    Optional<List<ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
+                    if (result.isPresent()) {
+                        results.addAll(result.get());
                     } else {
-                        argumentResults[i] = new ArgumentResult(arguments.get(j));
+                        return Optional.empty();
+                    }
+                } else if (argument instanceof ComboArgument) {
+                    // Simply adjust the argument's value to the option's value and add it to the list
+                    ((ComboArgument) argument).choose(value);
+                    results.add(new ArgumentResult(argument));
+                } else if (argument instanceof ValueArgument) {
+                    /* Check that the option's value is valid for the argument
+                       If it is valid then the validator adjust the argument's value to that value, and it will be added to the list,
+                            otherwise return an empty optional to tell the caller that one of the argument is not valid
+                     */
+                    ValueArgument va = (ValueArgument) argument;
+
+                    if (va.isValid(value)) {
+                        results.add(new ArgumentResult(va));
+                    } else {
+                        return Optional.empty();
                     }
                 }
             }
-            if (!argsValid) {
-                error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, command, sender, msg, source));
-                return;
-            }
         }
-
-        command.getAction().ifPresent(action -> action.onCommand(sender, args, argumentResults, msg, source));
+        return Optional.of(results);
     }
 
     /**
      * Registers the command for the listener on the specified servers
+     * and sets up permissions with discord's default permission system
      *
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
-    private static void registerCommand(Command command, Server... servers) {
+    public static void registerCommand(Command command, Server... servers) {
         commands.add(command);
+
+        /*
+          Check if default permissions need to be turned off
+          They will get turned off when user or role limitation has been set on a command
+        */
+        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
+                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
+
         for (Server server : servers) {
             if (!serverCommands.containsKey(server)) {
                 serverCommands.put(server, new ArrayList<>());
             }
             serverCommands.get(server).add(command);
+
+            long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                    .setDefaultPermission(defPermissions)
+                    .createForServer(server)
+                    .join()
+                    .getId();
+
+            applyPermissions(command, id, server);
+        }
+    }
+
+    /**
+     * Registers command globally
+     * That means the command will be available in all the servers where the bot on, and also in private
+     * Sets up permissions with discord's default permission system
+     *
+     * @param command the command to register
+     */
+    public static void registerCommand(Command command) {
+        commands.add(command);
+
+        /*
+          Check if default permissions need to be turned off
+          They will get turned off when user or role limitation has been set on a command
+        */
+        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
+                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
+
+        long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                .setDefaultPermission(defPermissions)
+                .createGlobal(api)
+                .join()
+                .getId();
+
+        for (Server server : api.getServers()) {
+            applyPermissions(command, id, server);
+        }
+    }
+
+    /**
+     * Applies default Discord permissions on command
+     *
+     * @param command the command
+     * @param id the slash command's id
+     * @param server the server
+     */
+    private static void applyPermissions(Command command, long id, Server server) {
+        List<SlashCommandPermissions> permissions = new ArrayList<>();
+        if (command instanceof UserLimitable) {
+            UserLimitable userLimitable = (UserLimitable) command;
+            permissions.addAll(userLimitable.getUserLimitations().stream()
+                    .filter(user -> user.getServer().getId() == server.getId())
+                    .map(user -> SlashCommandPermissions.create(user.getEntity().getId(),
+                            SlashCommandPermissionType.USER,
+                            user.isPermit()))
+                    .collect(Collectors.toList()));
+        }
+        if (command instanceof RoleLimitable) {
+            RoleLimitable roleLimitable = (RoleLimitable) command;
+            permissions.addAll(roleLimitable.getRoleLimitations().stream()
+                    .filter(user -> user.getServer().getId() == server.getId())
+                    .map(role -> SlashCommandPermissions.create(role.getEntity().getId(),
+                            SlashCommandPermissionType.ROLE,
+                            role.isPermit()))
+                    .collect(Collectors.toList()));
+        }
+
+        if (permissions.size() > 0) {
+            new SlashCommandPermissionsUpdater(server)
+                    .setPermissions(permissions)
+                    .update(id)
+                    .join();
         }
     }
 
@@ -233,7 +309,9 @@ public class CommandHandler {
      * Registers the {@code PrivateCommand} for the listener that is will only available in private
      *
      * @param command the command
+     * @deprecated since {@link PrivateCommand} is deprecated
      */
+    @Deprecated
     public static void registerPrivateCommand(PrivateCommand command) {
         registerCommand(command);
     }
@@ -243,7 +321,9 @@ public class CommandHandler {
      *
      * @param command the command
      * @param servers the list of the servers where the command will be registered
+     * @deprecated use {@link CommandHandler#registerCommand(Command, Server...)} directly
      */
+    @Deprecated
     public static void registerServerCommand(ServerCommand command, Server... servers) {
         registerCommand(command, servers);
     }
@@ -253,7 +333,9 @@ public class CommandHandler {
      *
      * @param command the command
      * @param servers the list of the servers where the command will be registered
+     * @deprecated since {@link GlobalCommand} is deprecated
      */
+    @Deprecated
     public static void registerGlobalCommand(GlobalCommand command, Server... servers) {
         registerCommand(command, servers);
     }
@@ -264,15 +346,26 @@ public class CommandHandler {
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    private static void registerCommand(CommandBuilder builder, Server... servers) {
+    public static void registerCommand(CommandBuilder builder, Server... servers) {
         registerCommand(builder.getCommand(), servers);
+    }
+
+    /**
+     * Calls the {@link CommandHandler#registerCommand(Command)} method with the command contained by the {@code CommandBuilder} class
+     *
+     * @param builder the builder
+     */
+    public static void registerCommandGlobally(CommandBuilder builder) {
+        registerCommand(builder.getCommand());
     }
 
     /**
      * Registers the {@code PrivateCommand} for the listener that is will only available in private
      *
      * @param builder the builder that contains the command
+     * @deprecated since {@link PrivateCommandBuilder} is deprecated
      */
+    @Deprecated
     public static void registerPrivateCommand(PrivateCommandBuilder builder) {
         registerCommand(builder);
     }
@@ -281,7 +374,9 @@ public class CommandHandler {
      * Registers the {@code ServerCommand} for the listener on the specified servers
      *
      * @param builder the builder that contains the command
+     * @deprecated use {@link CommandHandler#registerCommand(CommandBuilder, Server...)} directly
      */
+    @Deprecated
     public static void registerServerCommand(ServerCommandBuilder builder, Server... servers) {
         registerCommand(builder, servers);
     }
@@ -290,7 +385,9 @@ public class CommandHandler {
      * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
      *
      * @param builder the builder that contains the command
+     * @deprecated since {@link GlobalCommandBuilder} is deprecated
      */
+    @Deprecated
     public static void registerGlobalCommand(GlobalCommandBuilder builder, Server... servers) {
         registerCommand(builder, servers);
     }
@@ -299,7 +396,9 @@ public class CommandHandler {
      * Registers the command on all the servers where the bot on
      *
      * @param command the command
+     * @deprecated use {@link CommandHandler#registerCommand(Command)}
      */
+    @Deprecated
     private static void registerCommandOnAllServer(Command command) {
         registerCommand(command, (Server[]) api.getServers().toArray());
     }
@@ -308,7 +407,9 @@ public class CommandHandler {
      * Registers the {@code ServerCommand} on all the servers where the bot on
      *
      * @param command the command
+     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
      */
+    @Deprecated
     public static void registerServerCommandOnAllServer(ServerCommand command) {
         registerCommandOnAllServer(command);
     }
@@ -317,7 +418,9 @@ public class CommandHandler {
      * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
      *
      * @param command the command
+     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
      */
+    @Deprecated
     public static void registerGlobalCommandOnAllServer(GlobalCommand command) {
         registerCommandOnAllServer(command);
     }
@@ -326,7 +429,9 @@ public class CommandHandler {
      * Registers the command on all the servers where the bot on
      *
      * @param builder the builder that contains the command
+     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
      */
+    @Deprecated
     private static void registerCommandOnAllServer(CommandBuilder builder) {
         registerCommandOnAllServer(builder.getCommand());
     }
@@ -335,7 +440,9 @@ public class CommandHandler {
      * Registers the {@code ServerCommand} on all the servers where the bot on
      *
      * @param builder the builder that contains the command
+     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
      */
+    @Deprecated
     public static void registerServerCommandOnAllServer(ServerCommandBuilder builder) {
         registerCommandOnAllServer(builder);
     }
@@ -344,7 +451,9 @@ public class CommandHandler {
      * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
      *
      * @param builder the builder that contains the command
+     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
      */
+    @Deprecated
     public static void registerGlobalCommandOnAllServer(GlobalCommandBuilder builder) {
         registerCommandOnAllServer(builder);
     }
@@ -354,7 +463,7 @@ public class CommandHandler {
      *
      * @param error the listener interface
      */
-    public static void setOnError(CommandError error) {
+    public static void setOnError(CommandErrorListener error) {
         CommandHandler.error = Optional.of(error);
     }
 
@@ -362,9 +471,10 @@ public class CommandHandler {
      * Sets the sign what can be determined by when a message is a command
      *
      * @param commandChar the sign that following by the command
+     * @deprecated since {@code commandChar} is not exist anymore
      */
+    @Deprecated
     public static void setCommandChar(String commandChar) {
-        CommandHandler.commandChar = commandChar;
     }
 
     /**
@@ -434,9 +544,11 @@ public class CommandHandler {
 
     /**
      * @return the command sign
+     * @deprecated since Discord specifies the character that the command needs to start with
      */
+    @Deprecated
     public static String getCommandChar() {
-        return commandChar;
+        return null;
     }
 
     /**

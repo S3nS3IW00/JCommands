@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 S3nS3IW00
+ * Copyright (C) 2021 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,8 +18,10 @@
  */
 package me.s3ns3iw00.jcommands.type;
 
-import me.s3ns3iw00.jcommands.limitation.CategoryLimitable;
-import me.s3ns3iw00.jcommands.limitation.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
+import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 
@@ -29,68 +31,70 @@ import java.util.List;
 
 /**
  * An extended version of {@code PrivateCommand} that can be used also on servers and can be limited for channels and categories.
+ *
+ * @deprecated use {@link ServerCommand} instead
  */
+@Deprecated
 public class GlobalCommand extends PrivateCommand implements ChannelLimitable, CategoryLimitable {
 
-    private boolean allowedChannels, allowedCategories;
-    private List<TextChannel> channelList = new ArrayList<>();
-    private List<ChannelCategory> categoryList = new ArrayList<>();
-
-    public GlobalCommand(String name) {
-        super(name);
+    public GlobalCommand(String name, String description) {
+        super(name, description);
     }
 
     /**
      * Sets the channels where the command will be allowed
      *
      * @param channels the list of the channels
+     * @deprecated because of the new limit system
+     *             use {@link GlobalCommand#addChannelLimitation(ChannelLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setChannels(boolean allowed, TextChannel... channels) {
-        allowedChannels = allowed;
-        channelList = Arrays.asList(channels);
     }
 
     /**
      * Sets the categories where the command will be allowed
      *
-     * @param categories the list of the categories
+     * @deprecated because of the new limit system
+     *             use {@link GlobalCommand#addCategoryLimitation(CategoryLimitation)} instead
      */
-    @Override
+    @Deprecated
     public void setCategories(boolean allowed, ChannelCategory... categories) {
-        allowedCategories = allowed;
-        categoryList = Arrays.asList(categories);
     }
 
     /**
      * @return the list of the channels
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<TextChannel> getChannels() {
-        return channelList;
+        return null;
     }
 
     /**
      * @return the list of the categories
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public List<ChannelCategory> getCategories() {
-        return categoryList;
-    }
-
-    /**
-     * @return true or false depends on if the channel limitation is allowing or disallowing
-     */
-    @Override
-    public boolean isAllowedChannels() {
-        return allowedChannels;
+        return null;
     }
 
     /**
      * @return true or false depends on if the category limitation is allowing or disallowing
+     * @deprecated because of the new limit system
      */
-    @Override
+    @Deprecated
     public boolean isAllowedCategories() {
-        return allowedCategories;
+        return false;
+    }
+
+    /**
+     * @return true or false depends on if the channel limitation is allowing or disallowing
+     * @deprecated because of the new limit system
+     */
+    @Deprecated
+    public boolean isAllowedChannels() {
+        return false;
     }
 }
