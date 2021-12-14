@@ -43,12 +43,12 @@ public class Command {
     }
 
     /**
-     * Adds an argument to the command
+     * Adds arguments to the command
      *
-     * @param argument the argument
+     * @param argument a list of argument
      */
-    public void addArgument(Argument argument) {
-        this.arguments.add(argument);
+    public void addArgument(Argument... argument) {
+        this.arguments.addAll(Arrays.asList(argument));
     }
 
     /**
