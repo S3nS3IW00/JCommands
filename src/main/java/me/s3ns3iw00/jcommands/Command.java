@@ -43,6 +43,10 @@ public class Command {
     public Command(String name, String description) {
         this.name = name;
         this.description = description;
+
+        if (!name.matches("^[\\w-]{1,32}$")) {
+            throw new IllegalArgumentException("Name must match the following regex: ^[\\w-]{1,32}$");
+        }
     }
 
     /**

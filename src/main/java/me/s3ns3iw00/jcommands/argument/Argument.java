@@ -35,6 +35,10 @@ public abstract class Argument {
         this.name = name;
         this.description = description;
         this.type = type;
+
+        if (!name.matches("^[\\w-]{1,32}$")) {
+            throw new IllegalArgumentException("Name must match the following regex: ^[\\w-]{1,32}$");
+        }
     }
 
     /**
