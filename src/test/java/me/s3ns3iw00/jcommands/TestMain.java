@@ -20,7 +20,7 @@ public class TestMain {
 
     public static void main(String[] launchArgs) {
         DiscordApi api = new DiscordApiBuilder()
-                .setToken("Nzg3MzY0NzY5NTM5Njg2NDIw.X9T4lQ.L25XLpXGbnTLk93SWCqRWBo3gdg") // <-- Paste your bot TOKEN here
+                .setToken("TOKEN_HERE") // <-- Paste your bot TOKEN here
                 .setAllIntents()
                 .login()
                 .join();
