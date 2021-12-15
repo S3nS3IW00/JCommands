@@ -25,10 +25,12 @@ import java.util.LinkedList;
 /**
  * Represents a sub argument
  * Classes that extends this class can have arguments
+ *
+ * @param <T> the type of arguments that can contain this argument
  */
-public abstract class SubArgument extends Argument {
+public abstract class SubArgument<T extends Argument> extends Argument {
 
-    private final LinkedList<Argument> arguments = new LinkedList<>();
+    private final LinkedList<T> arguments = new LinkedList<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -41,7 +43,14 @@ public abstract class SubArgument extends Argument {
         super(name, description, type);
     }
 
-    public LinkedList<Argument> getArguments() {
+    public LinkedList<T> getArguments() {
         return arguments;
     }
+
+    /**
+     * Adds an argument to the argument
+     *
+     * @param argument the argument
+     */
+    public abstract void addArgument(T argument);
 }

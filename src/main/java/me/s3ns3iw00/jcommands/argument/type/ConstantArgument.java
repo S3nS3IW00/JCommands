@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  *
  * @author S3nS3IW00
  */
-public class ConstantArgument extends SubArgument {
+public class ConstantArgument extends SubArgument<InputArgument> {
 
     public ConstantArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.SUB_COMMAND);
@@ -57,7 +57,7 @@ public class ConstantArgument extends SubArgument {
      * @param argument the argument
      */
     public void addArgument(InputArgument argument) {
-        if (getArguments().size() > 0 && (getArguments().getLast() instanceof InputArgument) && ((InputArgument) getArguments().getLast()).isOptional()) {
+        if (getArguments().size() > 0 && (getArguments().getLast() != null) && getArguments().getLast().isOptional()) {
             throw new IllegalStateException("Cannot add argument after an optional argument!");
         }
 

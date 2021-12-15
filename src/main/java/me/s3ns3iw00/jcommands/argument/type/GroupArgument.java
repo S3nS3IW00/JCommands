@@ -23,13 +23,14 @@ import me.s3ns3iw00.jcommands.argument.SubArgument;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
  * Represents an argument with {@code SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
  * This is for grouping {@code SUB_COMMAND} options because {@code SUB_COMMANDS} cannot be nested
  */
-public class GroupArgument extends SubArgument {
+public class GroupArgument extends SubArgument<ConstantArgument> {
 
     public GroupArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.SUB_COMMAND_GROUP);
@@ -57,6 +58,15 @@ public class GroupArgument extends SubArgument {
      */
     public void addArgument(ConstantArgument argument) {
         getArguments().add(argument);
+    }
+
+    /**
+     * Adds a list of {@link ConstantArgument} to the argument
+     *
+     * @param arguments the arguments
+     */
+    public void addArgument(ConstantArgument... arguments) {
+        Arrays.stream(arguments).forEach(this::addArgument);
     }
 
 }
