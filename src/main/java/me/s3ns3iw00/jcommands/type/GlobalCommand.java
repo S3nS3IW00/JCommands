@@ -25,9 +25,9 @@ import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An extended version of {@code PrivateCommand} that can be used also on servers and can be limited for channels and categories.
@@ -36,6 +36,9 @@ import java.util.List;
  */
 @Deprecated
 public class GlobalCommand extends PrivateCommand implements ChannelLimitable, CategoryLimitable {
+
+    private final Set<ChannelLimitation> channelLimitations = new HashSet<>();
+    private final Set<CategoryLimitation> categoryLimitations = new HashSet<>();
 
     public GlobalCommand(String name, String description) {
         super(name, description);
@@ -96,5 +99,25 @@ public class GlobalCommand extends PrivateCommand implements ChannelLimitable, C
     @Deprecated
     public boolean isAllowedChannels() {
         return false;
+    }
+
+    @Override
+    public void addCategoryLimitation(CategoryLimitation limitation) {
+        categoryLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<CategoryLimitation> getCategoryLimitations() {
+        return categoryLimitations;
+    }
+
+    @Override
+    public void addChannelLimitation(ChannelLimitation limitation) {
+        channelLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<ChannelLimitation> getChannelLimitations() {
+        return channelLimitations;
     }
 }
