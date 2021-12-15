@@ -27,16 +27,21 @@ import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * A {@code Command} that can be only used in private message and can be limited for users and roles.
- *
+ * <p>
  * Deprecated since the new command system doesn't support private commands.
  */
 @Deprecated
 public class PrivateCommand extends Command implements UserLimitable, RoleLimitable {
+
+    private final Set<UserLimitation> userLimitations = new HashSet<>();
+    private final Set<RoleLimitation> roleLimitations = new HashSet<>();
 
     public PrivateCommand(String name, String description) {
         super(name, description);
@@ -119,5 +124,25 @@ public class PrivateCommand extends Command implements UserLimitable, RoleLimita
     @Deprecated
     public boolean isAllowedRoles() {
         return false;
+    }
+
+    @Override
+    public void addRoleLimitation(RoleLimitation limitation) {
+        roleLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<RoleLimitation> getRoleLimitations() {
+        return roleLimitations;
+    }
+
+    @Override
+    public void addUserLimitation(UserLimitation limitation) {
+        userLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<UserLimitation> getUserLimitations() {
+        return userLimitations;
     }
 }

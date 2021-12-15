@@ -18,25 +18,15 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
-import org.javacord.api.entity.user.User;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for users
  */
 public interface UserLimitable {
 
-    List<UserLimitation> userLimitations = new ArrayList<>();
+    void addUserLimitation(UserLimitation limitation);
 
-    default void addUserLimitation(UserLimitation limitation) {
-        userLimitations.add(limitation);
-    }
-
-    default List<UserLimitation> getUserLimitations() {
-        return Collections.unmodifiableList(userLimitations);
-    }
+    Set<UserLimitation> getUserLimitations();
 
 }

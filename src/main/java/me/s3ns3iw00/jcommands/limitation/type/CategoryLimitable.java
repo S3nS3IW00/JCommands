@@ -18,23 +18,15 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for categories
  */
 public interface CategoryLimitable {
 
-    List<CategoryLimitation> categoryLimitations = new ArrayList<>();
+    void addCategoryLimitation(CategoryLimitation limitation);
 
-    default void addCategoryLimitation(CategoryLimitation limitation) {
-        categoryLimitations.add(limitation);
-    }
-
-    default List<CategoryLimitation> getCategoryLimitations() {
-        return Collections.unmodifiableList(categoryLimitations);
-    }
+    Set<CategoryLimitation> getCategoryLimitations();
 
 }

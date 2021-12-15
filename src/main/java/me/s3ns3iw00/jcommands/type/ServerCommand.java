@@ -25,15 +25,20 @@ import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A {@code Command} that only can be used on servers where the command has been registered.<br>
  * Can be limited for users, roles, channels and categories.
  */
 public class ServerCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
+
+    private final Set<UserLimitation> userLimitations = new HashSet<>();
+    private final Set<RoleLimitation> roleLimitations = new HashSet<>();
+    private final Set<ChannelLimitation> channelLimitations = new HashSet<>();
+    private final Set<CategoryLimitation> categoryLimitations = new HashSet<>();
 
     public ServerCommand(String name, String description) {
         super(name, description);
@@ -152,5 +157,45 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     @Deprecated
     public boolean isAllowedUsers() {
         return false;
+    }
+
+    @Override
+    public void addCategoryLimitation(CategoryLimitation limitation) {
+        categoryLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<CategoryLimitation> getCategoryLimitations() {
+        return categoryLimitations;
+    }
+
+    @Override
+    public void addChannelLimitation(ChannelLimitation limitation) {
+        channelLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<ChannelLimitation> getChannelLimitations() {
+        return channelLimitations;
+    }
+
+    @Override
+    public void addRoleLimitation(RoleLimitation limitation) {
+        roleLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<RoleLimitation> getRoleLimitations() {
+        return roleLimitations;
+    }
+
+    @Override
+    public void addUserLimitation(UserLimitation limitation) {
+        userLimitations.add(limitation);
+    }
+
+    @Override
+    public Set<UserLimitation> getUserLimitations() {
+        return userLimitations;
     }
 }

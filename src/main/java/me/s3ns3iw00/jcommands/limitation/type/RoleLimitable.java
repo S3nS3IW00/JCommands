@@ -18,23 +18,15 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for roles
  */
 public interface RoleLimitable {
 
-    List<RoleLimitation> roleLimitations = new ArrayList<>();
+    void addRoleLimitation(RoleLimitation limitation);
 
-    default void addRoleLimitation(RoleLimitation limitation) {
-        roleLimitations.add(limitation);
-    }
-
-    default List<RoleLimitation> getRoleLimitations() {
-        return Collections.unmodifiableList(roleLimitations);
-    }
+    Set<RoleLimitation> getRoleLimitations();
 
 }

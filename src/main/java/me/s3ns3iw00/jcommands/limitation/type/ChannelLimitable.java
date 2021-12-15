@@ -18,23 +18,15 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for channels
  */
 public interface ChannelLimitable {
 
-    List<ChannelLimitation> channelLimitations = new ArrayList<>();
+    void addChannelLimitation(ChannelLimitation limitation);
 
-    default void addChannelLimitation(ChannelLimitation limitation) {
-        channelLimitations.add(limitation);
-    }
-
-    default List<ChannelLimitation> getChannelLimitations() {
-        return Collections.unmodifiableList(channelLimitations);
-    }
+    Set<ChannelLimitation> getChannelLimitations();
 
 }

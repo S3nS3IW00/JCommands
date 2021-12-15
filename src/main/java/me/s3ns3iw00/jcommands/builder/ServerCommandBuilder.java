@@ -19,13 +19,19 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
+import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
+import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
+import me.s3ns3iw00.jcommands.limitation.type.UserLimitation;
+import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
+
+import java.util.Arrays;
 
 /**
  * Useful class that makes {@code ServerCommand} creations more comfortable
@@ -87,6 +93,46 @@ public class ServerCommandBuilder extends CommandBuilder {
      */
     public ServerCommandBuilder roles(boolean needAllRole, Role... roles) {
         command.setRoles(needAllRole, roles);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#addUserLimitation(UserLimitation)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder userLimitations(UserLimitation... limitations) {
+        Arrays.stream(limitations).forEach(command::addUserLimitation);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#addChannelLimitation(ChannelLimitation)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder channelLimitations(ChannelLimitation... limitations) {
+        Arrays.stream(limitations).forEach(command::addChannelLimitation);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#addCategoryLimitation(CategoryLimitation)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder categoryLimitations(CategoryLimitation... limitations) {
+        Arrays.stream(limitations).forEach(command::addCategoryLimitation);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#addRoleLimitation(RoleLimitation)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder roleLimitations(RoleLimitation... limitations) {
+        Arrays.stream(limitations).forEach(command::addRoleLimitation);
         return this;
     }
 
