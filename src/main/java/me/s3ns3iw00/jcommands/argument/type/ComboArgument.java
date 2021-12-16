@@ -27,22 +27,19 @@ import java.util.LinkedList;
 
 /**
  * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
- *
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Integer}
  */
 public class ComboArgument extends InputArgument {
-
-    private Object value;
 
     private final LinkedList<SlashCommandOptionChoice> choices = new LinkedList<>();
 
     /**
      * Constructs the argument with the default requirements
      *
-     * @param name the argument's name
+     * @param name        the argument's name
      * @param description the argument's description
-     * @param type the type of the input value, can be {@code STRING} or {@code INTEGER}
+     * @param type        the type of the input value, can be {@code STRING} or {@code INTEGER}
      */
     public ComboArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
@@ -55,7 +52,7 @@ public class ComboArgument extends InputArgument {
     /**
      * Adds a choice
      *
-     * @param key is the name of the argument
+     * @param key   is the name of the argument
      * @param value is the value of the argument as {@code String}
      */
     public void addChoice(String key, String value) {
@@ -69,7 +66,7 @@ public class ComboArgument extends InputArgument {
     /**
      * Adds a choice
      *
-     * @param key the name of the argument
+     * @param key   the name of the argument
      * @param value the value of the argument as {@code Integer}
      */
     public void addChoice(String key, int value) {
@@ -80,21 +77,12 @@ public class ComboArgument extends InputArgument {
         choices.add(SlashCommandOptionChoice.create(key, value));
     }
 
-    /**
-     * Sets the chosen value
-     *
-     * @param value the chosen value
-     */
-    public void choose(Object value) {
-        this.value = value;
-    }
-
     @Override
     public Object getValue() {
         if (getType() == SlashCommandOptionType.STRING) {
-            return value.toString();
+            return super.getValue().toString();
         }
-        return value;
+        return super.getValue();
     }
 
     @Override

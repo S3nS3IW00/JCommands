@@ -34,12 +34,24 @@ public class StringArgument extends ValueArgument {
         super(name, description, SlashCommandOptionType.STRING, String.class);
     }
 
+    /**
+     * Sets the maximum length for the string
+     * NOTE: this is an inclusive range
+     *
+     * @param max the maximum
+     */
     public void setMaxLength(int max) {
         this.max = max;
     }
 
+    /**
+     * Extends the {@link ValueArgument#isValid(Object)} method with length checking
+     *
+     * @param value the value
+     * @return is the value's length less or equals than the maximum
+     */
     @Override
-    public boolean isValid(Object input) {
-        return super.isValid(input) && input.toString().length() <= max;
+    public boolean isValid(Object value) {
+        return super.isValid(value) && value.toString().length() <= max;
     }
 }
