@@ -20,17 +20,19 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
-import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
-import me.s3ns3iw00.jcommands.argument.type.ValueArgument;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.limitation.Limitation;
-import me.s3ns3iw00.jcommands.limitation.type.*;
+import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
 import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
@@ -186,19 +188,16 @@ public class CommandHandler {
                     } else {
                         return Optional.empty();
                     }
-                } else if (argument instanceof ComboArgument) {
-                    // Simply adjust the argument's value to the option's value and add it to the list
-                    ((ComboArgument) argument).choose(value);
-                    results.add(new ArgumentResult(argument));
-                } else if (argument instanceof ValueArgument) {
-                    /* Check that the option's value is valid for the argument
-                       If it is valid then the validator adjust the argument's value to that value, and it will be added to the list,
+                } else if (argument instanceof InputArgument) {
+                    /* Adjusts the value to the argument and checks that the value is null
+                       If it is not then it will be added to the list,
                             otherwise return an empty optional to tell the caller that one of the argument is not valid
                      */
-                    ValueArgument va = (ValueArgument) argument;
+                    InputArgument ia = (InputArgument) argument;
+                    ia.input(value);
 
-                    if (va.isValid(value)) {
-                        results.add(new ArgumentResult(va));
+                    if (ia.getValue() != null) {
+                        results.add(new ArgumentResult(ia));
                     } else {
                         return Optional.empty();
                     }
@@ -273,8 +272,8 @@ public class CommandHandler {
      * Applies default Discord permissions on command
      *
      * @param command the command
-     * @param id the slash command's id
-     * @param server the server
+     * @param id      the slash command's id
+     * @param server  the server
      */
     private static void applyPermissions(Command command, long id, Server server) {
         List<SlashCommandPermissions> permissions = new ArrayList<>();

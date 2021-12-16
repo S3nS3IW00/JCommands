@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -26,7 +27,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class ChannelArgument extends ValueArgument {
+public class ChannelArgument extends InputArgument {
 
     public ChannelArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);

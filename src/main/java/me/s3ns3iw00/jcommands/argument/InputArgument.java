@@ -18,6 +18,9 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.permission.Role;
+import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -27,6 +30,8 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  */
 public abstract class InputArgument extends Argument {
 
+    private Object input;
+    private final Class<?> resultType;
     private boolean optional = false;
 
     /**
@@ -38,6 +43,42 @@ public abstract class InputArgument extends Argument {
      */
     public InputArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
+
+        Class<?> resultType = Object.class;
+        switch (type) {
+            case STRING:
+                resultType = String.class;
+                break;
+            case INTEGER:
+                resultType = Integer.class;
+                break;
+            case BOOLEAN:
+                resultType = Boolean.class;
+                break;
+            case CHANNEL:
+                resultType = TextChannel.class;
+                break;
+            case ROLE:
+                resultType = Role.class;
+                break;
+            case USER:
+                resultType = User.class;
+                break;
+        }
+        this.resultType = resultType;
+    }
+
+    /**
+     * Runs the default constructor and specifies the result type of the value, that the input will be converted to
+     *
+     * @param name        the argument's name
+     * @param description the argument's description
+     * @param type        the type of the value
+     * @param resultType  the type of the converted value
+     */
+    public InputArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
+        super(name, description, type);
+        this.resultType = resultType;
     }
 
     @Override
@@ -55,6 +96,25 @@ public abstract class InputArgument extends Argument {
      */
     public void setOptional() {
         optional = true;
+    }
+
+    /**
+     * Sets the input
+     *
+     * @param input the input
+     */
+    public void input(Object input) {
+        this.input = input;
+    }
+
+    @Override
+    public Object getValue() {
+        return input;
+    }
+
+    @Override
+    public Class<?> getResultType() {
+        return resultType;
     }
 
 }

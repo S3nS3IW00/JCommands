@@ -34,16 +34,29 @@ public class NumberArgument extends ValueArgument {
         super(name, description, SlashCommandOptionType.INTEGER, Integer.class);
     }
 
+    /**
+     * Sets a range for the number
+     * NOTE: this is an inclusive range
+     *
+     * @param min the minimum
+     * @param max the maximum
+     */
     public void setRange(int min, int max) {
         this.min = min;
         this.max = max;
     }
 
+    /**
+     * Extends the {@link ValueArgument#isValid(Object)} method with range checking
+     *
+     * @param value the value
+     * @return is the value in the range or not
+     */
     @Override
-    public boolean isValid(Object input) {
-        if (super.isValid(input)) {
+    public boolean isValid(Object value) {
+        if (super.isValid(value)) {
             try {
-                return (int) input >= min && (int) input <= max;
+                return (int) value >= min && (int) value <= max;
             } catch (NumberFormatException e) {
                 return false;
             }

@@ -32,11 +32,8 @@ import java.util.regex.Pattern;
  */
 public class ValueArgument extends InputArgument {
 
-    private Object input;
     private Optional<Pattern> validator = Optional.empty();
     private Matcher matcher;
-
-    private Class<?> resultType = Matcher.class;
 
     /**
      * Constructs the argument with the default requirements
@@ -46,7 +43,7 @@ public class ValueArgument extends InputArgument {
      * @param type        the type of the input value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type) {
-        super(name, description, type);
+        super(name, description, type, Matcher.class);
     }
 
     /**
@@ -58,8 +55,7 @@ public class ValueArgument extends InputArgument {
      * @param resultType  the type of the converted value
      */
     public ValueArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
-        this(name, description, type);
-        this.resultType = resultType;
+        super(name, description, type, resultType);
     }
 
     /**
@@ -74,25 +70,42 @@ public class ValueArgument extends InputArgument {
     /**
      * If validator is set checks the user input if it's valid for the argument or not
      *
-     * @param input the user input
+     * @param value the value
      * @return true if validator is not set
      * if validator is set then true or false depends on the validation process result
      */
-    public boolean isValid(Object input) {
-        this.input = input;
-        return validator.map(pattern -> (matcher = pattern.matcher(input.toString())).lookingAt()).orElse(true);
+    public boolean isValid(Object value) {
+        return validator.map(pattern -> (matcher = pattern.matcher(String.valueOf(value))).lookingAt()).orElse(true);
     }
 
+    /**
+     * Checks that the input is valid and adjusts it
+     *
+     * @param input the input
+     */
+    @Override
+    public void input(Object input) {
+        if (isValid(input)) {
+            super.input(input);
+        } else {
+            super.input(null);
+        }
+    }
+
+    /**
+     * Returns the value that depends on a few aspects
+     *
+     * @return null if the validation was failed
+     * the matcher if the result type is {@link Matcher}
+     * otherwise the value itself
+     */
     @Override
     public Object getValue() {
-        if (validator.isPresent() && resultType == Matcher.class) {
+        if (super.getValue() == null) {
+            return null;
+        } else if (validator.isPresent() && getResultType() == Matcher.class) {
             return matcher;
         }
-        return input;
-    }
-
-    @Override
-    public Class<?> getResultType() {
-        return resultType;
+        return super.getValue();
     }
 }
