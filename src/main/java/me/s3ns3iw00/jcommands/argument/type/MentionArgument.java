@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -26,7 +27,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class MentionArgument extends ValueArgument {
+public class MentionArgument extends InputArgument {
 
     public MentionArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.USER, User.class);
