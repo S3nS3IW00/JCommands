@@ -313,7 +313,7 @@ public class CommandHandler {
      *
      * @param builder the builder
      */
-    public static void registerCommandGlobally(CommandBuilder builder) {
+    public static void registerCommand(CommandBuilder builder) {
         registerCommand(builder.getCommand());
     }
 
