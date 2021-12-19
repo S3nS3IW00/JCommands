@@ -25,18 +25,12 @@ import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
-import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
-import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
-import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.limitation.Limitation;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
 import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
-import me.s3ns3iw00.jcommands.type.GlobalCommand;
-import me.s3ns3iw00.jcommands.type.PrivateCommand;
-import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ChannelType;
@@ -305,41 +299,6 @@ public class CommandHandler {
     }
 
     /**
-     * Registers the {@code PrivateCommand} for the listener that is will only available in private
-     *
-     * @param command the command
-     * @deprecated since {@link PrivateCommand} is deprecated
-     */
-    @Deprecated
-    public static void registerPrivateCommand(PrivateCommand command) {
-        registerCommand(command);
-    }
-
-    /**
-     * Registers the {@code ServerCommand} for the listener on the specified servers
-     *
-     * @param command the command
-     * @param servers the list of the servers where the command will be registered
-     * @deprecated use {@link CommandHandler#registerCommand(Command, Server...)} directly
-     */
-    @Deprecated
-    public static void registerServerCommand(ServerCommand command, Server... servers) {
-        registerCommand(command, servers);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
-     *
-     * @param command the command
-     * @param servers the list of the servers where the command will be registered
-     * @deprecated since {@link GlobalCommand} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommand(GlobalCommand command, Server... servers) {
-        registerCommand(command, servers);
-    }
-
-    /**
      * Calls the {@link CommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
      *
      * @param builder the builder
@@ -359,121 +318,12 @@ public class CommandHandler {
     }
 
     /**
-     * Registers the {@code PrivateCommand} for the listener that is will only available in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link PrivateCommandBuilder} is deprecated
-     */
-    @Deprecated
-    public static void registerPrivateCommand(PrivateCommandBuilder builder) {
-        registerCommand(builder);
-    }
-
-    /**
-     * Registers the {@code ServerCommand} for the listener on the specified servers
-     *
-     * @param builder the builder that contains the command
-     * @deprecated use {@link CommandHandler#registerCommand(CommandBuilder, Server...)} directly
-     */
-    @Deprecated
-    public static void registerServerCommand(ServerCommandBuilder builder, Server... servers) {
-        registerCommand(builder, servers);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link GlobalCommandBuilder} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommand(GlobalCommandBuilder builder, Server... servers) {
-        registerCommand(builder, servers);
-    }
-
-    /**
-     * Registers the command on all the servers where the bot on
-     *
-     * @param command the command
-     * @deprecated use {@link CommandHandler#registerCommand(Command)}
-     */
-    @Deprecated
-    private static void registerCommandOnAllServer(Command command) {
-        registerCommand(command, (Server[]) api.getServers().toArray());
-    }
-
-    /**
-     * Registers the {@code ServerCommand} on all the servers where the bot on
-     *
-     * @param command the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    public static void registerServerCommandOnAllServer(ServerCommand command) {
-        registerCommandOnAllServer(command);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
-     *
-     * @param command the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommandOnAllServer(GlobalCommand command) {
-        registerCommandOnAllServer(command);
-    }
-
-    /**
-     * Registers the command on all the servers where the bot on
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    private static void registerCommandOnAllServer(CommandBuilder builder) {
-        registerCommandOnAllServer(builder.getCommand());
-    }
-
-    /**
-     * Registers the {@code ServerCommand} on all the servers where the bot on
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
-     */
-    @Deprecated
-    public static void registerServerCommandOnAllServer(ServerCommandBuilder builder) {
-        registerCommandOnAllServer(builder);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommandOnAllServer(GlobalCommandBuilder builder) {
-        registerCommandOnAllServer(builder);
-    }
-
-    /**
      * Registers an error listener where the errors will be managed
      *
      * @param error the listener interface
      */
     public static void setOnError(CommandErrorListener error) {
         CommandHandler.error = Optional.of(error);
-    }
-
-    /**
-     * Sets the sign what can be determined by when a message is a command
-     *
-     * @param commandChar the sign that following by the command
-     * @deprecated since {@code commandChar} is not exist anymore
-     */
-    @Deprecated
-    public static void setCommandChar(String commandChar) {
     }
 
     /**
@@ -539,15 +389,6 @@ public class CommandHandler {
             return Optional.of(converters.get(clazz));
         }
         return Optional.empty();
-    }
-
-    /**
-     * @return the command sign
-     * @deprecated since Discord specifies the character that the command needs to start with
-     */
-    @Deprecated
-    public static String getCommandChar() {
-        return null;
     }
 
     /**

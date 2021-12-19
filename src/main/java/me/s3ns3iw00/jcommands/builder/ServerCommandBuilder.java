@@ -26,10 +26,6 @@ import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitation;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.permission.Role;
-import org.javacord.api.entity.user.User;
 
 import java.util.Arrays;
 
@@ -53,46 +49,6 @@ public class ServerCommandBuilder extends CommandBuilder {
      */
     public ServerCommandBuilder argument(Argument argument) {
         command.addArgument(argument);
-        return this;
-    }
-
-    /**
-     * Calls {@link ServerCommand#setUsers(boolean, User...) setAllowedUsers}
-     *
-     * @return this class
-     */
-    public ServerCommandBuilder users(boolean allowed, User... users) {
-        command.setUsers(allowed, users);
-        return this;
-    }
-
-    /**
-     * Calls {@link ServerCommand#setChannels(boolean, TextChannel...) setAllowedChannels}
-     *
-     * @return this class
-     */
-    public ServerCommandBuilder channels(boolean allowed, TextChannel... channels) {
-        command.setChannels(allowed, channels);
-        return this;
-    }
-
-    /**
-     * Calls {@link ServerCommand#setCategories(boolean, ChannelCategory...) setAllowedCategories}
-     *
-     * @return this class
-     */
-    public ServerCommandBuilder categories(boolean allowed, ChannelCategory... categories) {
-        command.setCategories(allowed, categories);
-        return this;
-    }
-
-    /**
-     * Calls {@link ServerCommand#setRoles(boolean, Role...) setRoles}
-     *
-     * @return this class
-     */
-    public ServerCommandBuilder roles(boolean needAllRole, Role... roles) {
-        command.setRoles(needAllRole, roles);
         return this;
     }
 

@@ -20,10 +20,8 @@ package me.s3ns3iw00.jcommands.argument;
 
 import me.s3ns3iw00.jcommands.CommandHandler;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
-import me.s3ns3iw00.jcommands.argument.type.RegexArgument;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
 
 /**
  * This class converts string values into the given types
