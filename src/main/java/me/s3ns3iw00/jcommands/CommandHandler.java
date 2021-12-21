@@ -56,7 +56,7 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static Optional<CommandErrorListener> error = Optional.empty();
+    private static CommandErrorListener error;
 
     /**
      * HasMap that contains the converters initiated with default converters
@@ -95,7 +95,7 @@ public class CommandHandler {
                     CategoryLimitable categoryLimitable = (CategoryLimitable) command;
                     if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
                             (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
+                        Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
                         return;
                     }
                 }
@@ -104,7 +104,7 @@ public class CommandHandler {
                 ChannelLimitable channelLimitable = (ChannelLimitable) command;
                 if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
                         (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
+                    Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
                     return;
                 }
             }
@@ -117,7 +117,7 @@ public class CommandHandler {
             command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
                     new CommandResponder(interaction)));
         } else {
-            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
+            Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
         }
     }
 
@@ -323,7 +323,7 @@ public class CommandHandler {
      * @param error the listener interface
      */
     public static void setOnError(CommandErrorListener error) {
-        CommandHandler.error = Optional.of(error);
+        CommandHandler.error = error;
     }
 
     /**

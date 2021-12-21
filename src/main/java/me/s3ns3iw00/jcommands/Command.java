@@ -38,7 +38,7 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
-    private Optional<CommandActionListener> action = Optional.empty();
+    private CommandActionListener action;
 
     /**
      * Default constructor
@@ -93,7 +93,7 @@ public class Command {
      * @param action is the listener object
      */
     public void setAction(CommandActionListener action) {
-        this.action = Optional.of(action);
+        this.action = action;
     }
 
     /**
@@ -121,7 +121,7 @@ public class Command {
      * @return the command action instance
      */
     Optional<CommandActionListener> getAction() {
-        return action;
+        return Optional.ofNullable(action);
     }
 
 }
