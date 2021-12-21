@@ -85,40 +85,45 @@ public class CommandHandler {
     private static void handleCommand(SlashCommandInteraction interaction) {
         User sender = interaction.getUser();
         Optional<TextChannel> channel = interaction.getChannel();
-        Command command = commands.stream().filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName())).findFirst().get();
+        Optional<Command> commandOptional = commands.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName()))
+                .findFirst();
 
-        //Category and channel validation
-        if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
-            Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
-            if (category.isPresent()) {
-                if (command instanceof CategoryLimitable) {
-                    CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                    if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
-                            (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
-                        Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
+        // Check that the command needs to be handled by JCommands
+        commandOptional.ifPresent(command -> {
+            //Category and channel validation
+            if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
+                Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
+                if (category.isPresent()) {
+                    if (command instanceof CategoryLimitable) {
+                        CategoryLimitable categoryLimitable = (CategoryLimitable) command;
+                        if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
+                                (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
+                            Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
+                            return;
+                        }
+                    }
+                }
+                if (command instanceof ChannelLimitable) {
+                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
+                    if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
+                            (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
+                        Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
                         return;
                     }
                 }
             }
-            if (command instanceof ChannelLimitable) {
-                ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
-                        (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
-                    Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
-                    return;
-                }
+
+            //Argument validation
+            Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
+
+            if (resultOptional.isPresent()) {
+                command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
+                        new CommandResponder(interaction)));
+            } else {
+                Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
             }
-        }
-
-        //Argument validation
-        Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
-
-        if (resultOptional.isPresent()) {
-            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
-                    new CommandResponder(interaction)));
-        } else {
-            Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
-        }
+        });
     }
 
     /**
