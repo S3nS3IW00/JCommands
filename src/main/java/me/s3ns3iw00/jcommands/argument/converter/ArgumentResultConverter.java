@@ -23,12 +23,12 @@ package me.s3ns3iw00.jcommands.argument.converter;
  *
  * @author S3nS3IW00
  */
-public interface ArgumentResultConverter {
+public abstract class ArgumentResultConverter {
 
     /**
      * @param value the raw value
      * @return the converted object
      */
-    Object convertTo(Object value);
+    public abstract Object convertTo(Object value);
 
 }
