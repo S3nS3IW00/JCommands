@@ -24,63 +24,84 @@ import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import java.util.Optional;
 
 /**
- * This class converts string values into the given types
+ * This class converts a value into the given type with parsing string values and using {@link ArgumentResultConverter}
  *
  * @author S3nS3IW00
  */
 public class ArgumentResult {
 
     private final Class<?> clazz;
-    private final Object o;
+    private final Object value;
 
     /**
-     * Converts the string value into the type that is specified in the argument.
+     * Default constructor
+     *
+     * @param clazz the class the value need to converted to
+     * @param value the value that need to be converted
+     */
+    public ArgumentResult(Class<?> clazz, Object value) {
+        this.clazz = clazz;
+        this.value = value;
+    }
+
+    /**
+     * Constructs the class with an {@link Argument}
      *
      * @param argument the argument
      */
     public ArgumentResult(Argument argument) {
-        clazz = argument.getResultType();
-        Object value = argument.getValue();
+        this(argument.getResultType(), argument.getValue());
+    }
+
+    /**
+     * Converts the value
+     *
+     * @return the result of the conversion
+     * @throws NullPointerException if converter haven't specified for this type of conversion
+     */
+    private Object process() {
         if (clazz.isAssignableFrom(value.getClass())) {
-            o = value;
+            return value;
         } else {
             Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
             if (converter.isPresent()) {
-                o = converter.get().convertTo(argument.getValue());
+                return converter.get().convertTo(value);
             } else {
                 if (value.getClass() == String.class) {
                     String s = (String) value;
                     if (Boolean.class == clazz) {
-                        o = Boolean.parseBoolean(s);
+                        return Boolean.parseBoolean(s);
                     } else if (Byte.class == clazz) {
-                        o = Byte.parseByte(s);
+                        return Byte.parseByte(s);
                     } else if (Short.class == clazz) {
-                        o = Short.parseShort(s);
+                        return Short.parseShort(s);
                     } else if (Integer.class == clazz) {
-                        o = Integer.parseInt(s);
+                        return Integer.parseInt(s);
                     } else if (Long.class == clazz) {
-                        o = Long.parseLong(s);
+                        return Long.parseLong(s);
                     } else if (Float.class == clazz) {
-                        o = Float.parseFloat(s);
+                        return Float.parseFloat(s);
                     } else if (Double.class == clazz) {
-                        o = Double.parseDouble(s);
+                        return Double.parseDouble(s);
                     } else {
-                        throw new NullPointerException("No converter found for type: " + clazz.getName());
+                        throw new NullPointerException("No converter found for type: " + value.getClass() + " -> " + clazz.getName());
                     }
                 } else {
-                    throw new NullPointerException("No converter found for type: " + clazz.getName());
+                    throw new NullPointerException("No converter found for type: " + value.getClass() + " -> " + clazz.getName());
                 }
             }
         }
     }
 
     /**
+     * Runs the process method and returns its result
+     *
      * @param <T> the type of clazz
      * @return the converted value with T type
      */
     @SuppressWarnings("unchecked")
     public <T> T get() {
-        return (T) clazz.cast(o);
+        return (T) clazz.cast(process());
     }
 
 }
