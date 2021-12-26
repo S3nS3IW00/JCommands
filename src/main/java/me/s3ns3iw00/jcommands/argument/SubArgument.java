@@ -21,6 +21,7 @@ package me.s3ns3iw00.jcommands.argument;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Represents a sub argument
@@ -30,7 +31,7 @@ import java.util.LinkedList;
  */
 public abstract class SubArgument<T extends Argument> extends Argument {
 
-    private final LinkedList<T> arguments = new LinkedList<>();
+    private final List<T> arguments = new LinkedList<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -43,7 +44,7 @@ public abstract class SubArgument<T extends Argument> extends Argument {
         super(name, description, type);
     }
 
-    public LinkedList<T> getArguments() {
+    public List<T> getArguments() {
         return arguments;
     }
 

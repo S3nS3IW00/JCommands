@@ -22,8 +22,9 @@ import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,7 +38,7 @@ public class Command {
      * These guys are nice
      */
     private final String name, description;
-    private final LinkedList<Argument> arguments = new LinkedList<>();
+    private final List<Argument> arguments = new ArrayList<>();
     private CommandActionListener action;
 
     /**
@@ -71,7 +72,7 @@ public class Command {
      * @param argument the argument
      */
     public void addArgument(Argument argument) {
-        if (arguments.size() > 0 && (arguments.getLast() instanceof InputArgument) && ((InputArgument) arguments.getLast()).isOptional()) {
+        if (arguments.size() > 0 && (arguments.get(arguments.size() - 1) instanceof InputArgument) && ((InputArgument) arguments.get(arguments.size() - 1)).isOptional()) {
             throw new IllegalStateException("Cannot add argument after an optional argument!");
         }
 
@@ -113,7 +114,7 @@ public class Command {
     /**
      * @return the list of the arguments
      */
-    public LinkedList<Argument> getArguments() {
+    public List<Argument> getArguments() {
         return arguments;
     }
 
