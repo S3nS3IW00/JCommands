@@ -145,33 +145,7 @@ public class CommandHandler {
             SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
             if (option != null) {
-                // Declare a value object that will be initiated with the value from the option
-                Object value;
-                switch (argument.getCommandOption().getType()) {
-                    case ROLE:
-                        value = option.getRoleValue().get();
-                        break;
-                    case USER:
-                        value = option.getUserValue().get();
-                        break;
-                    case CHANNEL:
-                        value = option.getChannelValue().get();
-                        break;
-                    case MENTIONABLE:
-                        value = option.getMentionableValue().get();
-                        break;
-                    case STRING:
-                        value = option.getStringValue().get();
-                        break;
-                    case INTEGER:
-                        value = option.getIntValue().get();
-                        break;
-                    case BOOLEAN:
-                        value = option.getBooleanValue().get();
-                        break;
-                    default:
-                        value = null;
-                }
+                Object value = getOptionValue(option, argument.getType());
 
                 if (argument instanceof SubArgument) {
                     /* Add the result of the argument to the list, which is basically the name of the argument;
@@ -204,6 +178,43 @@ public class CommandHandler {
             }
         }
         return Optional.of(results);
+    }
+
+    /**
+     * Gets the value of the option based on its type
+     *
+     * @param option the option
+     * @param type   the requested type
+     * @return the value of the option based on its type
+     */
+    private static Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
+        Object value;
+        switch (type) {
+            case ROLE:
+                value = option.getRoleValue().orElse(null);
+                break;
+            case USER:
+                value = option.getUserValue().orElse(null);
+                break;
+            case CHANNEL:
+                value = option.getChannelValue().orElse(null);
+                break;
+            case MENTIONABLE:
+                value = option.getMentionableValue().orElse(null);
+                break;
+            case STRING:
+                value = option.getStringValue().orElse(null);
+                break;
+            case INTEGER:
+                value = option.getIntValue().orElse(null);
+                break;
+            case BOOLEAN:
+                value = option.getBooleanValue().orElse(null);
+                break;
+            default:
+                value = null;
+        }
+        return value;
     }
 
     /**
