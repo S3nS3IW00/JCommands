@@ -135,9 +135,9 @@ public class CommandHandler {
      * @param arguments the list of arguments need to be processed
      * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
-     * otherwise it contains a {@link List} with {@link ArgumentResult}s in it that converts values to the final result
+     * otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
      */
-    private static Optional<List<ArgumentResult>> processArguments(List<Argument> arguments, List<SlashCommandInteractionOption> options) {
+    private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
         List<ArgumentResult> results = new ArrayList<>();
         for (Argument argument : arguments) {
             // Get the argument that has the same name as the option;

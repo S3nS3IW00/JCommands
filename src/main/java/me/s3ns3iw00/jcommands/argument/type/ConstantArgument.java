@@ -57,7 +57,7 @@ public class ConstantArgument extends SubArgument<InputArgument> {
      * @param argument the argument
      */
     public void addArgument(InputArgument argument) {
-        if (getArguments().size() > 0 && (getArguments().get(getArguments().size() - 1) != null) && getArguments().get(getArguments().size() - 1).isOptional()) {
+        if (getArguments().size() > 0 && (getArguments().getLast() != null) && getArguments().getLast().isOptional()) {
             throw new IllegalStateException("Cannot add argument after an optional argument!");
         }
 
