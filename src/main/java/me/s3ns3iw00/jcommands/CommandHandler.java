@@ -120,7 +120,7 @@ public class CommandHandler {
 
             if (resultOptional.isPresent()) {
                 /* -- Argument concatenation --
-                   The results list stores the result of the command that the concatenation process will overwrite with the concatenated values
+                   The results list stores the result of the arguments that the concatenation process will overwrite with the concatenated values
                    The concatenated map caches the finished concatenation's process result to be able to use that in the next concatenation if present
                  */
                 List<ArgumentResult> results = new LinkedList<>(resultOptional.get().values());
@@ -128,7 +128,7 @@ public class CommandHandler {
                 for (Concatenator concatenator : command.getConcatenators().keySet()) {
                     List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator);
 
-                    // Concatenating if the result contains the arguments in the concatenator or if not the argument is optional
+                    // Concatenating if the result contains the arguments in the concatenator or if the argument is optional
                     if (concatenatedArguments.stream().allMatch(arg -> resultOptional.get().containsKey(arg) ||
                             (arg instanceof InputArgument) && ((InputArgument) arg).isOptional())) {
 
