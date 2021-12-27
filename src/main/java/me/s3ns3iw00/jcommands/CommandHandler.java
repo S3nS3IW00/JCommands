@@ -126,7 +126,15 @@ public class CommandHandler {
                 List<ArgumentResult> results = new LinkedList<>(resultOptional.get().values());
                 Map<ArgumentResult, List<Argument>> concatenated = new LinkedHashMap<>();
                 for (Concatenator concatenator : command.getConcatenators().keySet()) {
-                    List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator);
+                    /* Get arguments that need to be concatenated
+                       Except the optional arguments that haven't been specified
+                     */
+                    List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator).stream()
+                            .filter(arg -> !(arg instanceof InputArgument) ||
+                                    !((InputArgument) arg).isOptional() ||
+                                    (((InputArgument) arg).isOptional() &&
+                                            resultOptional.get().containsKey(arg)))
+                            .collect(Collectors.toCollection(LinkedList::new));
 
                     // Concatenating if the result contains the arguments in the concatenator or if the argument is optional
                     if (concatenatedArguments.stream().allMatch(arg -> resultOptional.get().containsKey(arg) ||
