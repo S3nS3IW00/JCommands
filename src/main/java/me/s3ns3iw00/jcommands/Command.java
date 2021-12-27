@@ -71,8 +71,11 @@ public class Command {
      * @param argument the argument
      */
     public void addArgument(Argument argument) {
-        if (arguments.size() > 0 && (arguments.getLast() instanceof InputArgument) && ((InputArgument) arguments.getLast()).isOptional()) {
-            throw new IllegalStateException("Cannot add argument after an optional argument!");
+        if (arguments.size() > 0 &&
+                (arguments.getLast() instanceof InputArgument) &&
+                ((InputArgument) arguments.getLast()).isOptional() &&
+                !((InputArgument) argument).isOptional()) {
+            throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
         }
 
         this.arguments.add(argument);
