@@ -18,6 +18,9 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
+
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -28,5 +31,9 @@ public interface ChannelLimitable {
     void addChannelLimitation(ChannelLimitation limitation);
 
     Set<ChannelLimitation> getChannelLimitations();
+
+    void setOnBadChannel(BadChannelEventListener listener);
+
+    Optional<BadChannelEventListener> getBadChannelListener();
 
 }

@@ -20,12 +20,20 @@ package me.s3ns3iw00.jcommands.listener;
 
 import me.s3ns3iw00.jcommands.CommandErrorType;
 import me.s3ns3iw00.jcommands.CommandResponder;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 
 /**
  * The error listener
  *
  * @author S3nS3IW00
+ * @deprecated because of the new event system
+ * use {@link BadCategoryEventListener},
+ * {@link BadChannelEventListener} and
+ * {@link ArgumentMismatchEventListener} instead
  */
+@Deprecated
 public interface CommandErrorListener {
 
     /**

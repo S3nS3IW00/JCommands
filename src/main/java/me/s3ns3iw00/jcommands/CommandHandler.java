@@ -26,6 +26,13 @@ import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
+import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
+import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
+import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
+import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
 import me.s3ns3iw00.jcommands.limitation.Limitation;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
@@ -57,7 +64,6 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static CommandErrorListener error;
 
     /**
      * HasMap that contains the converters initiated with default converters
@@ -100,7 +106,8 @@ public class CommandHandler {
                         CategoryLimitable categoryLimitable = (CategoryLimitable) command;
                         if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
                                 (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
-                            Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
+                            categoryLimitable.getBadCategoryListener()
+                                    .ifPresent(listener -> listener.onBadCategory(new BadCategoryEvent(command, sender, new CommandResponder(interaction), category.get())));
                             return;
                         }
                     }
@@ -109,14 +116,14 @@ public class CommandHandler {
                     ChannelLimitable channelLimitable = (ChannelLimitable) command;
                     if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
                             (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
-                        Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
+                        channelLimitable.getBadChannelListener().ifPresent(listener -> listener.onBadChannel(new BadChannelEvent(command, sender, new CommandResponder(interaction), channel.get())));
                         return;
                     }
                 }
             }
 
             //Argument validation
-            Optional<Map<Argument, ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
+            Optional<Map<Argument, ArgumentResult>> resultOptional = processArguments(interaction, command.getArguments(), interaction.getOptions());
 
             if (resultOptional.isPresent()) {
                 /* -- Argument concatenation --
@@ -166,10 +173,8 @@ public class CommandHandler {
                     }
                 }
 
-                command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), results.toArray(new ArgumentResult[]{}),
-                        new CommandResponder(interaction)));
-            } else {
-                Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
+                command.getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
+                        new CommandResponder(interaction), channel.get(), results.toArray(new ArgumentResult[0]))));
             }
         });
     }
@@ -185,7 +190,7 @@ public class CommandHandler {
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
      * otherwise it contains a {@link LinkedHashMap} with {@link Argument}s and their {@link ArgumentResult} in it that converts values to the final result
      */
-    private static Optional<Map<Argument, ArgumentResult>> processArguments(List<Argument> arguments, List<SlashCommandInteractionOption> options) {
+    private static Optional<Map<Argument, ArgumentResult>> processArguments(SlashCommandInteraction interaction, List<Argument> arguments, List<SlashCommandInteractionOption> options) {
         Map<Argument, ArgumentResult> results = new LinkedHashMap<>();
         for (Argument argument : arguments) {
             // Get the argument that has the same name as the option;
@@ -203,7 +208,7 @@ public class CommandHandler {
                             and it cannot be determined directly
                     */
                     results.put(argument, new ArgumentResult(argument));
-                    Optional<Map<Argument, ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
+                    Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
                     if (result.isPresent()) {
                         results.putAll(result.get());
                     } else {
@@ -220,6 +225,11 @@ public class CommandHandler {
                     if (ia.getValue() != null) {
                         results.put(argument, new ArgumentResult(ia));
                     } else {
+                        commands.stream()
+                                .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
+                                .findFirst()
+                                .ifPresent(cmd -> cmd.getArgumentMismatchListener()
+                                        .ifPresent(listener -> listener.onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument))));
                         return Optional.empty();
                     }
                 }
@@ -385,9 +395,13 @@ public class CommandHandler {
      * Registers an error listener where the errors will be managed
      *
      * @param error the listener interface
+     * @deprecated because of the new event system
+     * use {@link CategoryLimitable#setOnBadCategory(BadCategoryEventListener)},
+     * {@link ChannelLimitable#setOnBadChannel(BadChannelEventListener)} and
+     * {@link Command#setOnArgumentMismatch(ArgumentMismatchEventListener)} instead
      */
+    @Deprecated
     public static void setOnError(CommandErrorListener error) {
-        CommandHandler.error = error;
     }
 
     /**

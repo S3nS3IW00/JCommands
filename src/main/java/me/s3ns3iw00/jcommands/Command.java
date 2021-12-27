@@ -21,6 +21,8 @@ package me.s3ns3iw00.jcommands;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
+import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
 import java.util.*;
@@ -38,7 +40,9 @@ public class Command {
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
     private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
-    private CommandActionListener action;
+
+    private CommandActionEventListener actionListener;
+    private ArgumentMismatchEventListener argumentMismatchListener;
 
     /**
      * Default constructor
@@ -108,9 +112,29 @@ public class Command {
      * Sets the action listener of the command
      *
      * @param action is the listener object
+     * @deprecated because of the new event system
+     * use {@link Command#setOnAction(CommandActionEventListener)} instead
      */
+    @Deprecated
     public void setAction(CommandActionListener action) {
-        this.action = action;
+    }
+
+    /**
+     * Sets the action listener
+     *
+     * @param listener the listener
+     */
+    public void setOnAction(CommandActionEventListener listener) {
+        this.actionListener = listener;
+    }
+
+    /**
+     * Sets the argument mismatch listener
+     *
+     * @param listener the listener
+     */
+    public void setOnArgumentMismatch(ArgumentMismatchEventListener listener) {
+        this.argumentMismatchListener = listener;
     }
 
     /**
@@ -143,9 +167,31 @@ public class Command {
 
     /**
      * @return the command action instance
+     * @deprecated because of the new event system
      */
-    Optional<CommandActionListener> getAction() {
-        return Optional.ofNullable(action);
+    @Deprecated
+    Optional<CommandActionEventListener> getAction() {
+        return Optional.empty();
+    }
+
+    /**
+     * Gets the action listener
+     *
+     * @return {@link Optional#empty()} when action listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<CommandActionEventListener> getActionListener() {
+        return Optional.ofNullable(actionListener);
+    }
+
+    /**
+     * Gets the argument mismatch listener
+     *
+     * @return {@link Optional#empty()} when argument mismatch listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<ArgumentMismatchEventListener> getArgumentMismatchListener() {
+        return Optional.ofNullable(argumentMismatchListener);
     }
 
 }

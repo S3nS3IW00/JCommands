@@ -19,9 +19,12 @@
 package me.s3ns3iw00.jcommands.type;
 
 import me.s3ns3iw00.jcommands.Command;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 import me.s3ns3iw00.jcommands.limitation.type.*;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -34,6 +37,9 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     private final Set<RoleLimitation> roleLimitations = new HashSet<>();
     private final Set<ChannelLimitation> channelLimitations = new HashSet<>();
     private final Set<CategoryLimitation> categoryLimitations = new HashSet<>();
+
+    private BadCategoryEventListener badCategoryListener;
+    private BadChannelEventListener badChannelListener;
 
     public ServerCommand(String name, String description) {
         super(name, description);
@@ -78,4 +84,43 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     public Set<UserLimitation> getUserLimitations() {
         return userLimitations;
     }
+
+    /**
+     * Sets the bad category listener
+     *
+     * @param listener the listener
+     */
+    public void setOnBadCategory(BadCategoryEventListener listener) {
+        this.badCategoryListener = listener;
+    }
+
+    /**
+     * Sets the bad channel listener
+     *
+     * @param listener the listener
+     */
+    public void setOnBadChannel(BadChannelEventListener listener) {
+        this.badChannelListener = listener;
+    }
+
+    /**
+     * Gets the bad category listener
+     *
+     * @return {@link Optional#empty()} when bad category listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<BadCategoryEventListener> getBadCategoryListener() {
+        return Optional.ofNullable(badCategoryListener);
+    }
+
+    /**
+     * Gets the bad channel mismatch listener
+     *
+     * @return {@link Optional#empty()} when bad channel listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<BadChannelEventListener> getBadChannelListener() {
+        return Optional.ofNullable(badChannelListener);
+    }
+
 }
