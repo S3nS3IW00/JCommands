@@ -20,11 +20,10 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A class that represents a command
@@ -38,6 +37,7 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
+    private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
     private CommandActionListener action;
 
     /**
@@ -88,6 +88,20 @@ public class Command {
     }
 
     /**
+     * Adds a concatenator to the command
+     * Every argument in the list must belong to this command, otherwise the concatenation won't proceed
+     *
+     * @param concatenator the concatenator
+     * @param arguments    the list of arguments
+     */
+    public void addConcatenator(Concatenator concatenator, Argument... arguments) {
+        if (!concatenators.containsKey(concatenator)) {
+            concatenators.put(concatenator, new LinkedList<>());
+        }
+        concatenators.get(concatenator).addAll(Arrays.asList(arguments));
+    }
+
+    /**
      * Sets the action listener of the command
      *
      * @param action is the listener object
@@ -113,8 +127,15 @@ public class Command {
     /**
      * @return the list of the arguments
      */
-    public LinkedList<Argument> getArguments() {
+    public List<Argument> getArguments() {
         return arguments;
+    }
+
+    /**
+     * @return the map of concatenators
+     */
+    public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
+        return concatenators;
     }
 
     /**

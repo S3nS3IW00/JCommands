@@ -22,6 +22,7 @@ import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
+import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
@@ -115,10 +116,49 @@ public class CommandHandler {
             }
 
             //Argument validation
-            Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
+            Optional<Map<Argument, ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
 
             if (resultOptional.isPresent()) {
-                command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
+                /* -- Argument concatenation --
+                   The results list stores the result of the command that the concatenation process will overwrite with the concatenated values
+                   The concatenated map caches the finished concatenation's process result to be able to use that in the next concatenation if present
+                 */
+                List<ArgumentResult> results = new LinkedList<>(resultOptional.get().values());
+                Map<ArgumentResult, List<Argument>> concatenated = new LinkedHashMap<>();
+                for (Concatenator concatenator : command.getConcatenators().keySet()) {
+                    List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator);
+
+                    // Concatenating if the result contains the arguments in the concatenator or if not the argument is optional
+                    if (concatenatedArguments.stream().allMatch(arg -> resultOptional.get().containsKey(arg) ||
+                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional())) {
+
+                        /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
+                           That means if there is multiple concatenation and the concatenator uses arguments that have been concatenated before,
+                           then it should use the concatenated value instead of the arguments' value
+                         */
+                        List<ArgumentResult> concatenateResults = concatenatedArguments.stream()
+                                .map(arg -> resultOptional.get().get(arg))
+                                .collect(Collectors.toCollection(LinkedList::new));
+                        for (ArgumentResult concatenatedResult : concatenated.keySet()) {
+                            List<Argument> alreadyConcatenatedArguments = concatenated.get(concatenatedResult);
+                            if (concatenatedArguments.containsAll(alreadyConcatenatedArguments)) {
+                                alreadyConcatenatedArguments.forEach(arg -> concatenateResults.remove(resultOptional.get().get(arg)));
+                                concatenateResults.add(concatenatedArguments.indexOf(alreadyConcatenatedArguments.get(0)), concatenatedResult);
+                            }
+                        }
+
+                        /* Runs the concatenating process and adds its result to the results at the index of the first argument in the concatenation process
+                           Replaces the concatenated arguments to the result of the concatenation
+                         */
+                        ArgumentResult result = new ArgumentResult(concatenator.getResultType(),
+                                concatenator.concatenate(concatenateResults.toArray(new ArgumentResult[0])));
+                        results.add(results.indexOf(concatenateResults.get(0)), result);
+                        concatenateResults.forEach(results::remove);
+                        concatenated.put(result, concatenatedArguments);
+                    }
+                }
+
+                command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), results.toArray(new ArgumentResult[]{}),
                         new CommandResponder(interaction)));
             } else {
                 Optional.ofNullable(error).ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
@@ -135,10 +175,10 @@ public class CommandHandler {
      * @param arguments the list of arguments need to be processed
      * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
-     * otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
+     * otherwise it contains a {@link LinkedHashMap} with {@link Argument}s and their {@link ArgumentResult} in it that converts values to the final result
      */
-    private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
-        List<ArgumentResult> results = new ArrayList<>();
+    private static Optional<Map<Argument, ArgumentResult>> processArguments(List<Argument> arguments, List<SlashCommandInteractionOption> options) {
+        Map<Argument, ArgumentResult> results = new LinkedHashMap<>();
         for (Argument argument : arguments) {
             // Get the argument that has the same name as the option;
             // Option is null when the argument is marked as optional, and was not specified
@@ -154,10 +194,10 @@ public class CommandHandler {
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                    results.add(new ArgumentResult(argument));
-                    Optional<List<ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
+                    results.put(argument, new ArgumentResult(argument));
+                    Optional<Map<Argument, ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
                     if (result.isPresent()) {
-                        results.addAll(result.get());
+                        results.putAll(result.get());
                     } else {
                         return Optional.empty();
                     }
@@ -170,7 +210,7 @@ public class CommandHandler {
                     ia.input(value);
 
                     if (ia.getValue() != null) {
-                        results.add(new ArgumentResult(ia));
+                        results.put(argument, new ArgumentResult(ia));
                     } else {
                         return Optional.empty();
                     }
