@@ -129,15 +129,6 @@ public class Command {
     }
 
     /**
-     * Sets the argument mismatch listener
-     *
-     * @param listener the listener
-     */
-    public void setOnArgumentMismatch(ArgumentMismatchEventListener listener) {
-        this.argumentMismatchListener = listener;
-    }
-
-    /**
      * @return the command's name
      */
     public String getName() {
@@ -182,16 +173,6 @@ public class Command {
      */
     public Optional<CommandActionEventListener> getActionListener() {
         return Optional.ofNullable(actionListener);
-    }
-
-    /**
-     * Gets the argument mismatch listener
-     *
-     * @return {@link Optional#empty()} when argument mismatch listener is not specified,
-     * otherwise {@link Optional#of(Object)} with the listener
-     */
-    public Optional<ArgumentMismatchEventListener> getArgumentMismatchListener() {
-        return Optional.ofNullable(argumentMismatchListener);
     }
 
 }

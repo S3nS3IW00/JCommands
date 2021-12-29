@@ -228,7 +228,7 @@ public class CommandHandler {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
-                                .ifPresent(cmd -> cmd.getArgumentMismatchListener()
+                                .ifPresent(cmd -> argument.getMismatchListener()
                                         .ifPresent(listener -> listener.onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument))));
                         return Optional.empty();
                     }
@@ -398,7 +398,7 @@ public class CommandHandler {
      * @deprecated because of the new event system
      * use {@link CategoryLimitable#setOnBadCategory(BadCategoryEventListener)},
      * {@link ChannelLimitable#setOnBadChannel(BadChannelEventListener)} and
-     * {@link Command#setOnArgumentMismatch(ArgumentMismatchEventListener)} instead
+     * {@link Argument#setOnMismatch(ArgumentMismatchEventListener)} instead
      */
     @Deprecated
     public static void setOnError(CommandErrorListener error) {
