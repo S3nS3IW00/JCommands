@@ -174,7 +174,7 @@ public class CommandHandler {
                 }
 
                 command.getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
-                        new CommandResponder(interaction), channel.get(), results.toArray(new ArgumentResult[0]))));
+                        new CommandResponder(interaction), channel.orElse(null), results.toArray(new ArgumentResult[0]))));
             }
         });
     }

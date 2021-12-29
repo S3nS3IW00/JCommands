@@ -8,6 +8,8 @@ import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.user.User;
 
+import java.util.Optional;
+
 /**
  * An event that is provided by {@link me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener}
  * <p>
@@ -25,8 +27,14 @@ public class CommandActionEvent extends CommandEvent {
         this.arguments = arguments;
     }
 
-    public TextChannel getChannel() {
-        return channel;
+    /**
+     * Gets the channel where the action has been happened
+     *
+     * @return an {@link Optional#empty()} when the action happened in private message,
+     * otherwise an {@link Optional#of(Object)} with the channel
+     */
+    public Optional<TextChannel> getChannel() {
+        return Optional.ofNullable(channel);
     }
 
     public ArgumentResult[] getArguments() {
