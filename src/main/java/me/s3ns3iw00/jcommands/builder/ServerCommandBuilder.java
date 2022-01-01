@@ -19,7 +19,8 @@
 package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
-import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
@@ -34,22 +35,12 @@ import java.util.Arrays;
  *
  * @author S3nS3IW00
  */
-public class ServerCommandBuilder extends CommandBuilder {
+public class ServerCommandBuilder extends CommandBuilder<ServerCommandBuilder> {
 
     private final ServerCommand command;
 
     public ServerCommandBuilder(String name, String description) {
         command = new ServerCommand(name, description);
-    }
-
-    /**
-     * Calls {@link ServerCommand#addArgument(Argument) addArguments}
-     *
-     * @return this class
-     */
-    public ServerCommandBuilder argument(Argument argument) {
-        command.addArgument(argument);
-        return this;
     }
 
     /**
@@ -96,9 +87,31 @@ public class ServerCommandBuilder extends CommandBuilder {
      * Calls {@link ServerCommand#setAction(CommandActionListener) setAction}
      *
      * @return this class
+     * @deprecated because of the new event system
      */
+    @Deprecated
     public ServerCommandBuilder action(CommandActionListener action) {
         command.setAction(action);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#setOnBadCategory(BadCategoryEventListener)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder onBadCategory(BadCategoryEventListener listener) {
+        command.setOnBadCategory(listener);
+        return this;
+    }
+
+    /**
+     * Calls {@link ServerCommand#setOnBadChannel(BadChannelEventListener)}
+     *
+     * @return this class
+     */
+    public ServerCommandBuilder onBadChannel(BadChannelEventListener listener) {
+        command.setOnBadChannel(listener);
         return this;
     }
 
