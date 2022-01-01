@@ -298,11 +298,22 @@ public class CommandHandler {
             }
             serverCommands.get(server).add(command);
 
-            long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+            /* Check if the command with the name is already registered
+               If it is, then just update it, otherwise register it
+            */
+            Optional<SlashCommand> slashCommandOptional = api.getServerSlashCommands(server).join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
+            long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
+                    .setName(command.getName())
+                    .setDescription(command.getDescription())
+                    .setDefaultPermission(defPermissions)
+                    .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                    .updateForServer(server)
+                    .join()
+                    .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
                     .setDefaultPermission(defPermissions)
                     .createForServer(server)
                     .join()
-                    .getId();
+                    .getId());
 
             applyPermissions(command, id, server);
         }
@@ -325,11 +336,22 @@ public class CommandHandler {
         boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
                 (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
 
-        long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+        /* Check if the command with the name is already registered
+           If it is, then just update it, otherwise register it
+         */
+        Optional<SlashCommand> slashCommandOptional = api.getGlobalSlashCommands().join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
+        long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
+                .setName(command.getName())
+                .setDescription(command.getDescription())
+                .setDefaultPermission(defPermissions)
+                .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                .updateGlobal(api)
+                .join()
+                .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
                 .setDefaultPermission(defPermissions)
                 .createGlobal(api)
                 .join()
-                .getId();
+                .getId());
 
         for (Server server : api.getServers()) {
             applyPermissions(command, id, server);
