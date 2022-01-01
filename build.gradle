@@ -5,23 +5,6 @@ plugins {
 group 'me.s3ns3iw00'
 version '4.0.2'
 
-sourceCompatibility = 1.8
-targetCompatibility  = 1.8
-
-defaultTasks 'build'
-
-tasks.withType(JavaCompile) {
-    options.encoding 'UTF-8'
-}
-
-sourceSets {
-    main {
-        resources {
-            srcDirs "src/main/resources"
-        }
-    }
-}
-
 repositories {
     mavenCentral()
 }
