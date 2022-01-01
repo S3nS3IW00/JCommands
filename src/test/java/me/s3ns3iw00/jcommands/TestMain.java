@@ -89,12 +89,14 @@ public class TestMain {
         });
         // Add arguments to the command
         introduceCommand.addArgument(nameArgument, genderArgument, ageArgument, bestFriendArgument, favouriteChannelArgument, funnyPictureArgument);
+        // Handle event that gets triggered when the command is used in a category where it is not allowed
         introduceCommand.setOnBadCategory(event -> {
             event.getResponder().respondNow()
                     .setContent("This command cannot be used in this category. :face_with_raised_eyebrow:")
                     .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
         });
+        // Handle event that gets triggered when the command is used in a channel where it is not allowed
         introduceCommand.setOnBadChannel(event -> {
             event.getResponder().respondNow()
                     .setContent("This command cannot be used in this channel. :face_with_raised_eyebrow:")
@@ -102,8 +104,8 @@ public class TestMain {
                     .respond();
         });
         // Let's make an action listener where we can listen for inputs.
-        // user is the sender, args is an array of the converted arguments and responder is a class that manages responses
         introduceCommand.setOnAction(event -> {
+            // Get the arguments from the event
             ArgumentResult[] args = event.getArguments();
 
             // ValueArgument return as a Matcher by default
@@ -138,7 +140,7 @@ public class TestMain {
                 responseMessage.append(" Here is your funny picture: " + funnyPictureUrl);
             }
 
-            // Send the response message to the user
+            // Send the response message to the user with the responder from the event
             // EPHEMERAL flag means that the response will only be visible for the user
             event.getResponder().respondNow()
                     .setContent(responseMessage.getStringBuilder().toString())
