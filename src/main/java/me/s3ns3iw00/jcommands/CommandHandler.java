@@ -49,6 +49,7 @@ import org.javacord.api.interaction.*;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -141,10 +142,11 @@ public class CommandHandler {
                                             resultOptional.get().containsKey(arg)))
                             .collect(Collectors.toCollection(LinkedList::new));
 
-                    // Concatenating if the result contains the arguments in the concatenator or if the argument is optional
-                    if (concatenatedArguments.stream().allMatch(arg -> resultOptional.get().containsKey(arg) ||
-                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional())) {
-
+                    // Checks whether an argument's result is exist (so it has a value) or it is optional (so it does not need to have a value)
+                    Predicate<Argument> argumentExistenceChecker = arg -> resultOptional.get().containsKey(arg) ||
+                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional();
+                    // Concatenating if the result contains all the arguments in the concatenator or if the argument is optional
+                    if (concatenatedArguments.stream().allMatch(argumentExistenceChecker)) {
                         /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
                            That means if there is multiple concatenation and the concatenator uses arguments that have been concatenated before,
                            then it should use the concatenated value instead of the arguments' value
@@ -168,6 +170,13 @@ public class CommandHandler {
                         results.add(results.indexOf(concatenateResults.get(0)), result);
                         concatenateResults.forEach(results::remove);
                         concatenated.put(result, concatenatedArguments);
+                    } else if (concatenatedArguments.stream().anyMatch(argumentExistenceChecker)) {
+                        /* Occurs when not all the required argument's value exist in the result but there is at least one that does
+                           That means there is at least one argument that has not been registered on the command or not in the same scope as the other arguments in the concatenation process
+                           When an argument is in different scope as the others that could be because the argument belongs to different SUB_COMMAND than the others,
+                           and for that the arguments cannot be concatenated because its value is missing
+                        */
+                        throw new IllegalStateException("All non-optional arguments need to belong to the same group and have a value in the same concatenation process! Maybe an arguments is not registered?");
                     }
                 }
 
