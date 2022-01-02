@@ -24,7 +24,6 @@ import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * Represents a type of {@link Concatenator}
@@ -62,31 +61,45 @@ public class TypeConcatenator extends Concatenator {
      */
     public static Object createInstance(Class<?> clazz, ArgumentResult... parameters)
             throws InvocationTargetException, InstantiationException, IllegalAccessException {
-        Optional<Constructor<?>> constructor = Arrays.stream(clazz.getConstructors())
-                .filter(cons ->
-                        cons.getParameterCount() == parameters.length &&
-                                Arrays.stream(cons.getParameterTypes())
-                                        .filter(consParam ->
-                                                Arrays.stream(parameters)
-                                                        .map(param -> param.get().getClass())
-                                                        .anyMatch(param ->
-                                                                (consParam == param) ||
-                                                                        (consParam.isPrimitive() &&
-                                                                                ((consParam == byte.class && param != Integer.class) ||
-                                                                                        (consParam == short.class && param == Short.class) ||
-                                                                                        (consParam == int.class && param == Integer.class) ||
-                                                                                        (consParam == long.class && param == Long.class) ||
-                                                                                        (consParam == float.class && param == Float.class) ||
-                                                                                        (consParam == double.class && param == Double.class) ||
-                                                                                        (consParam == boolean.class && param == Boolean.class) ||
-                                                                                        (consParam == char.class && param == Character.class)))
-                                                        )
-                                        ).count() == cons.getParameterCount()
-                )
-                .findFirst();
+        int i = 0;
+        boolean match = false;
+        while (i < clazz.getConstructors().length && !match) {
+            Constructor<?> cons = clazz.getConstructors()[i];
 
-        if (constructor.isPresent()) {
-            return constructor.get().newInstance(Arrays.stream(parameters).map(ArgumentResult::get).toArray());
+            if (cons.getParameterCount() == parameters.length) {
+                int j = 0;
+                boolean paramMatch = true;
+                while (j < cons.getParameterCount() && paramMatch) {
+                    Class<?> consParam = cons.getParameterTypes()[j];
+                    Class<?> param = parameters[j].get().getClass();
+                    if ((consParam != param) &&
+                            (!consParam.isPrimitive() ||
+                                    ((consParam == byte.class && param != Byte.class) ||
+                                            (consParam == short.class && param != Short.class) ||
+                                            (consParam == int.class && param != Integer.class) ||
+                                            (consParam == long.class && param != Long.class) ||
+                                            (consParam == float.class && param != Float.class) ||
+                                            (consParam == double.class && param != Double.class) ||
+                                            (consParam == boolean.class && param != Boolean.class) ||
+                                            (consParam == char.class && param != Character.class)))) {
+                        paramMatch = false;
+                    } else {
+                        j++;
+                    }
+                }
+
+                if (j < cons.getParameterCount()) {
+                    i++;
+                } else {
+                    match = true;
+                }
+            } else {
+                i++;
+            }
+        }
+
+        if (i < clazz.getConstructors().length) {
+            return clazz.getConstructors()[i].newInstance(Arrays.stream(parameters).map(ArgumentResult::get).toArray());
         } else {
             throw new NullPointerException("No constructor found that matches with parameters count, type and order");
         }
