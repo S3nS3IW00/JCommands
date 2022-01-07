@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -27,8 +27,8 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * A class that takes methods out from {@link SlashCommandInteraction} that are to respond to a command
- *
- * {@link CommandHandler} returns it inside {@link me.s3ns3iw00.jcommands.listener.CommandActionListener}
+ * <p>
+ * {@link CommandHandler} returns it with various events to be able to respond them
  */
 public class CommandResponder {
 

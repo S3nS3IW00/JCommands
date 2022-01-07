@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -22,21 +22,23 @@ import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
+import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
-import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
-import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
-import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
+import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
+import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
+import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
+import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
 import me.s3ns3iw00.jcommands.limitation.Limitation;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
 import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
-import me.s3ns3iw00.jcommands.type.GlobalCommand;
-import me.s3ns3iw00.jcommands.type.PrivateCommand;
-import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ChannelType;
@@ -47,6 +49,7 @@ import org.javacord.api.interaction.*;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -62,7 +65,6 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-    private static Optional<CommandErrorListener> error = Optional.empty();
 
     /**
      * HasMap that contains the converters initiated with default converters
@@ -78,9 +80,7 @@ public class CommandHandler {
      */
     public static void setApi(DiscordApi api) {
         CommandHandler.api = api;
-        api.addSlashCommandCreateListener(event -> {
-            handleCommand(event.getSlashCommandInteraction());
-        });
+        api.addSlashCommandCreateListener(event -> handleCommand(event.getSlashCommandInteraction()));
     }
 
     /**
@@ -91,40 +91,99 @@ public class CommandHandler {
     private static void handleCommand(SlashCommandInteraction interaction) {
         User sender = interaction.getUser();
         Optional<TextChannel> channel = interaction.getChannel();
-        Command command = commands.stream().filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName())).findFirst().get();
+        Optional<Command> commandOptional = commands.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName()))
+                .findFirst();
 
-        //Category and channel validation
-        if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
-            Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
-            if (category.isPresent()) {
-                if (command instanceof CategoryLimitable) {
-                    CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                    if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
-                            (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
-                        error.ifPresent(e -> e.onError(CommandErrorType.BAD_CATEGORY, new CommandResponder(interaction)));
+        // Check that the command needs to be handled by JCommands
+        commandOptional.ifPresent(command -> {
+            //Category and channel validation
+            if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
+                Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
+                if (category.isPresent()) {
+                    if (command instanceof CategoryLimitable) {
+                        CategoryLimitable categoryLimitable = (CategoryLimitable) command;
+                        if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
+                                (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
+                            categoryLimitable.getBadCategoryListener()
+                                    .ifPresent(listener -> listener.onBadCategory(new BadCategoryEvent(command, sender, new CommandResponder(interaction), category.get())));
+                            return;
+                        }
+                    }
+                }
+                if (command instanceof ChannelLimitable) {
+                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
+                    if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
+                            (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
+                        channelLimitable.getBadChannelListener().ifPresent(listener -> listener.onBadChannel(new BadChannelEvent(command, sender, new CommandResponder(interaction), channel.get())));
                         return;
                     }
                 }
             }
-            if (command instanceof ChannelLimitable) {
-                ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
-                        (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
-                    error.ifPresent(e -> e.onError(CommandErrorType.BAD_CHANNEL, new CommandResponder(interaction)));
-                    return;
+
+            //Argument validation
+            Optional<Map<Argument, ArgumentResult>> resultOptional = processArguments(interaction, command.getArguments(), interaction.getOptions());
+
+            if (resultOptional.isPresent()) {
+                /* -- Argument concatenation --
+                   The results list stores the result of the arguments that the concatenation process will overwrite with the concatenated values
+                   The concatenated map caches the finished concatenation's process result to be able to use that in the next concatenation if present
+                 */
+                List<ArgumentResult> results = new LinkedList<>(resultOptional.get().values());
+                Map<ArgumentResult, List<Argument>> concatenated = new LinkedHashMap<>();
+                for (Concatenator concatenator : command.getConcatenators().keySet()) {
+                    /* Get arguments that need to be concatenated
+                       Except the optional arguments that haven't been specified
+                     */
+                    List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator).stream()
+                            .filter(arg -> !(arg instanceof InputArgument) ||
+                                    !((InputArgument) arg).isOptional() ||
+                                    (((InputArgument) arg).isOptional() &&
+                                            resultOptional.get().containsKey(arg)))
+                            .collect(Collectors.toCollection(LinkedList::new));
+
+                    // Checks whether an argument's result is exist (so it has a value) or it is optional (so it does not need to have a value)
+                    Predicate<Argument> argumentExistenceChecker = arg -> resultOptional.get().containsKey(arg) ||
+                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional();
+                    // Concatenating if the result contains all the arguments in the concatenator or if the argument is optional
+                    if (concatenatedArguments.stream().allMatch(argumentExistenceChecker)) {
+                        /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
+                           That means if there is multiple concatenation and the concatenator uses arguments that have been concatenated before,
+                           then it should use the concatenated value instead of the arguments' value
+                         */
+                        List<ArgumentResult> concatenateResults = concatenatedArguments.stream()
+                                .map(arg -> resultOptional.get().get(arg))
+                                .collect(Collectors.toCollection(LinkedList::new));
+                        for (ArgumentResult concatenatedResult : concatenated.keySet()) {
+                            List<Argument> alreadyConcatenatedArguments = concatenated.get(concatenatedResult);
+                            if (concatenatedArguments.containsAll(alreadyConcatenatedArguments)) {
+                                alreadyConcatenatedArguments.forEach(arg -> concatenateResults.remove(resultOptional.get().get(arg)));
+                                concatenateResults.add(concatenatedArguments.indexOf(alreadyConcatenatedArguments.get(0)), concatenatedResult);
+                            }
+                        }
+
+                        /* Runs the concatenating process and adds its result to the results at the index of the first argument in the concatenation process
+                           Replaces the concatenated arguments to the result of the concatenation
+                         */
+                        ArgumentResult result = new ArgumentResult(concatenator.getResultType(),
+                                concatenator.concatenate(concatenateResults.toArray(new ArgumentResult[0])));
+                        results.add(results.indexOf(concatenateResults.get(0)), result);
+                        concatenateResults.forEach(results::remove);
+                        concatenated.put(result, concatenatedArguments);
+                    } else if (concatenatedArguments.stream().anyMatch(argumentExistenceChecker)) {
+                        /* Occurs when not all the required argument's value exist in the result but there is at least one that does
+                           That means there is at least one argument that has not been registered on the command or not in the same scope as the other arguments in the concatenation process
+                           When an argument is in different scope as the others that could be because the argument belongs to different SUB_COMMAND than the others,
+                           and for that the arguments cannot be concatenated because its value is missing
+                        */
+                        throw new IllegalStateException("All non-optional arguments need to belong to the same group and have a value in the same concatenation process! Maybe an arguments is not registered?");
+                    }
                 }
+
+                command.getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
+                        new CommandResponder(interaction), channel.orElse(null), results.toArray(new ArgumentResult[0]))));
             }
-        }
-
-        //Argument validation
-        Optional<List<ArgumentResult>> resultOptional = processArguments(command.getArguments(), interaction.getOptions());
-
-        if (resultOptional.isPresent()) {
-            command.getAction().ifPresent(action -> action.onCommand(interaction.getUser(), resultOptional.get().toArray(new ArgumentResult[]{}),
-                    new CommandResponder(interaction)));
-        } else {
-            error.ifPresent(e -> e.onError(CommandErrorType.BAD_ARGUMENTS, new CommandResponder(interaction)));
-        }
+        });
     }
 
     /**
@@ -136,43 +195,17 @@ public class CommandHandler {
      * @param arguments the list of arguments need to be processed
      * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
-     * otherwise it contains a {@link LinkedList} with {@link ArgumentResult}s in it that converts values to the final result
+     * otherwise it contains a {@link LinkedHashMap} with {@link Argument}s and their {@link ArgumentResult} in it that converts values to the final result
      */
-    private static Optional<List<ArgumentResult>> processArguments(LinkedList<Argument> arguments, List<SlashCommandInteractionOption> options) {
-        List<ArgumentResult> results = new ArrayList<>();
+    private static Optional<Map<Argument, ArgumentResult>> processArguments(SlashCommandInteraction interaction, List<Argument> arguments, List<SlashCommandInteractionOption> options) {
+        Map<Argument, ArgumentResult> results = new LinkedHashMap<>();
         for (Argument argument : arguments) {
             // Get the argument that has the same name as the option;
             // Option is null when the argument is marked as optional, and was not specified
             SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
             if (option != null) {
-                // Declare a value object that will be initiated with the value from the option
-                Object value;
-                switch (argument.getCommandOption().getType()) {
-                    case ROLE:
-                        value = option.getRoleValue().get();
-                        break;
-                    case USER:
-                        value = option.getUserValue().get();
-                        break;
-                    case CHANNEL:
-                        value = option.getChannelValue().get();
-                        break;
-                    case MENTIONABLE:
-                        value = option.getMentionableValue().get();
-                        break;
-                    case STRING:
-                        value = option.getStringValue().get();
-                        break;
-                    case INTEGER:
-                        value = option.getIntValue().get();
-                        break;
-                    case BOOLEAN:
-                        value = option.getBooleanValue().get();
-                        break;
-                    default:
-                        value = null;
-                }
+                Object value = getOptionValue(option, argument.getType());
 
                 if (argument instanceof SubArgument) {
                     /* Add the result of the argument to the list, which is basically the name of the argument;
@@ -181,10 +214,10 @@ public class CommandHandler {
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                    results.add(new ArgumentResult(argument));
-                    Optional<List<ArgumentResult>> result = processArguments(((SubArgument) argument).getArguments(), option.getOptions());
+                    results.put(argument, new ArgumentResult(argument));
+                    Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
                     if (result.isPresent()) {
-                        results.addAll(result.get());
+                        results.putAll(result.get());
                     } else {
                         return Optional.empty();
                     }
@@ -197,14 +230,56 @@ public class CommandHandler {
                     ia.input(value);
 
                     if (ia.getValue() != null) {
-                        results.add(new ArgumentResult(ia));
+                        results.put(argument, new ArgumentResult(ia));
                     } else {
+                        commands.stream()
+                                .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
+                                .findFirst()
+                                .ifPresent(cmd -> argument.getMismatchListener()
+                                        .ifPresent(listener -> listener.onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument))));
                         return Optional.empty();
                     }
                 }
             }
         }
         return Optional.of(results);
+    }
+
+    /**
+     * Gets the value of the option based on its type
+     *
+     * @param option the option
+     * @param type   the requested type
+     * @return the value of the option based on its type
+     */
+    private static Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
+        Object value;
+        switch (type) {
+            case ROLE:
+                value = option.getRoleValue().orElse(null);
+                break;
+            case USER:
+                value = option.getUserValue().orElse(null);
+                break;
+            case CHANNEL:
+                value = option.getChannelValue().orElse(null);
+                break;
+            case MENTIONABLE:
+                value = option.getMentionableValue().orElse(null);
+                break;
+            case STRING:
+                value = option.getStringValue().orElse(null);
+                break;
+            case INTEGER:
+                value = option.getIntValue().orElse(null);
+                break;
+            case BOOLEAN:
+                value = option.getBooleanValue().orElse(null);
+                break;
+            default:
+                value = null;
+        }
+        return value;
     }
 
     /**
@@ -230,11 +305,22 @@ public class CommandHandler {
             }
             serverCommands.get(server).add(command);
 
-            long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+            /* Check if the command with the name is already registered
+               If it is, then just update it, otherwise register it
+            */
+            Optional<SlashCommand> slashCommandOptional = api.getServerSlashCommands(server).join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
+            long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
+                    .setName(command.getName())
+                    .setDescription(command.getDescription())
+                    .setDefaultPermission(defPermissions)
+                    .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                    .updateForServer(server)
+                    .join()
+                    .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
                     .setDefaultPermission(defPermissions)
                     .createForServer(server)
                     .join()
-                    .getId();
+                    .getId());
 
             applyPermissions(command, id, server);
         }
@@ -257,11 +343,22 @@ public class CommandHandler {
         boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
                 (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
 
-        long id = SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+        /* Check if the command with the name is already registered
+           If it is, then just update it, otherwise register it
+         */
+        Optional<SlashCommand> slashCommandOptional = api.getGlobalSlashCommands().join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
+        long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
+                .setName(command.getName())
+                .setDescription(command.getDescription())
+                .setDefaultPermission(defPermissions)
+                .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
+                .updateGlobal(api)
+                .join()
+                .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
                 .setDefaultPermission(defPermissions)
                 .createGlobal(api)
                 .join()
-                .getId();
+                .getId());
 
         for (Server server : api.getServers()) {
             applyPermissions(command, id, server);
@@ -305,47 +402,12 @@ public class CommandHandler {
     }
 
     /**
-     * Registers the {@code PrivateCommand} for the listener that is will only available in private
-     *
-     * @param command the command
-     * @deprecated since {@link PrivateCommand} is deprecated
-     */
-    @Deprecated
-    public static void registerPrivateCommand(PrivateCommand command) {
-        registerCommand(command);
-    }
-
-    /**
-     * Registers the {@code ServerCommand} for the listener on the specified servers
-     *
-     * @param command the command
-     * @param servers the list of the servers where the command will be registered
-     * @deprecated use {@link CommandHandler#registerCommand(Command, Server...)} directly
-     */
-    @Deprecated
-    public static void registerServerCommand(ServerCommand command, Server... servers) {
-        registerCommand(command, servers);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
-     *
-     * @param command the command
-     * @param servers the list of the servers where the command will be registered
-     * @deprecated since {@link GlobalCommand} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommand(GlobalCommand command, Server... servers) {
-        registerCommand(command, servers);
-    }
-
-    /**
      * Calls the {@link CommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
      *
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(CommandBuilder builder, Server... servers) {
+    public static void registerCommand(CommandBuilder<?> builder, Server... servers) {
         registerCommand(builder.getCommand(), servers);
     }
 
@@ -354,126 +416,21 @@ public class CommandHandler {
      *
      * @param builder the builder
      */
-    public static void registerCommandGlobally(CommandBuilder builder) {
+    public static void registerCommand(CommandBuilder<?> builder) {
         registerCommand(builder.getCommand());
-    }
-
-    /**
-     * Registers the {@code PrivateCommand} for the listener that is will only available in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link PrivateCommandBuilder} is deprecated
-     */
-    @Deprecated
-    public static void registerPrivateCommand(PrivateCommandBuilder builder) {
-        registerCommand(builder);
-    }
-
-    /**
-     * Registers the {@code ServerCommand} for the listener on the specified servers
-     *
-     * @param builder the builder that contains the command
-     * @deprecated use {@link CommandHandler#registerCommand(CommandBuilder, Server...)} directly
-     */
-    @Deprecated
-    public static void registerServerCommand(ServerCommandBuilder builder, Server... servers) {
-        registerCommand(builder, servers);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} for the listener on the specified servers and in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link GlobalCommandBuilder} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommand(GlobalCommandBuilder builder, Server... servers) {
-        registerCommand(builder, servers);
-    }
-
-    /**
-     * Registers the command on all the servers where the bot on
-     *
-     * @param command the command
-     * @deprecated use {@link CommandHandler#registerCommand(Command)}
-     */
-    @Deprecated
-    private static void registerCommandOnAllServer(Command command) {
-        registerCommand(command, (Server[]) api.getServers().toArray());
-    }
-
-    /**
-     * Registers the {@code ServerCommand} on all the servers where the bot on
-     *
-     * @param command the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    public static void registerServerCommandOnAllServer(ServerCommand command) {
-        registerCommandOnAllServer(command);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
-     *
-     * @param command the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommandOnAllServer(GlobalCommand command) {
-        registerCommandOnAllServer(command);
-    }
-
-    /**
-     * Registers the command on all the servers where the bot on
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(Command)} is deprecated
-     */
-    @Deprecated
-    private static void registerCommandOnAllServer(CommandBuilder builder) {
-        registerCommandOnAllServer(builder.getCommand());
-    }
-
-    /**
-     * Registers the {@code ServerCommand} on all the servers where the bot on
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
-     */
-    @Deprecated
-    public static void registerServerCommandOnAllServer(ServerCommandBuilder builder) {
-        registerCommandOnAllServer(builder);
-    }
-
-    /**
-     * Registers the {@code GlobalCommand} on all the servers where the bot on and in private
-     *
-     * @param builder the builder that contains the command
-     * @deprecated since {@link CommandHandler#registerCommandOnAllServer(CommandBuilder)} is deprecated
-     */
-    @Deprecated
-    public static void registerGlobalCommandOnAllServer(GlobalCommandBuilder builder) {
-        registerCommandOnAllServer(builder);
     }
 
     /**
      * Registers an error listener where the errors will be managed
      *
      * @param error the listener interface
-     */
-    public static void setOnError(CommandErrorListener error) {
-        CommandHandler.error = Optional.of(error);
-    }
-
-    /**
-     * Sets the sign what can be determined by when a message is a command
-     *
-     * @param commandChar the sign that following by the command
-     * @deprecated since {@code commandChar} is not exist anymore
+     * @deprecated because of the new event system
+     * use {@link CategoryLimitable#setOnBadCategory(BadCategoryEventListener)},
+     * {@link ChannelLimitable#setOnBadChannel(BadChannelEventListener)} and
+     * {@link Argument#setOnMismatch(ArgumentMismatchEventListener)} instead
      */
     @Deprecated
-    public static void setCommandChar(String commandChar) {
+    public static void setOnError(CommandErrorListener error) {
     }
 
     /**
@@ -539,15 +496,6 @@ public class CommandHandler {
             return Optional.of(converters.get(clazz));
         }
         return Optional.empty();
-    }
-
-    /**
-     * @return the command sign
-     * @deprecated since Discord specifies the character that the command needs to start with
-     */
-    @Deprecated
-    public static String getCommandChar() {
-        return null;
     }
 
     /**

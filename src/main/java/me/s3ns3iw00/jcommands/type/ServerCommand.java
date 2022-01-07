@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -19,14 +19,12 @@
 package me.s3ns3iw00.jcommands.type;
 
 import me.s3ns3iw00.jcommands.Command;
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 import me.s3ns3iw00.jcommands.limitation.type.*;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.permission.Role;
-import org.javacord.api.entity.user.User;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -40,123 +38,11 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     private final Set<ChannelLimitation> channelLimitations = new HashSet<>();
     private final Set<CategoryLimitation> categoryLimitations = new HashSet<>();
 
+    private BadCategoryEventListener badCategoryListener;
+    private BadChannelEventListener badChannelListener;
+
     public ServerCommand(String name, String description) {
         super(name, description);
-    }
-
-    /**
-     * Sets the users who can use this command
-     *
-     * @param users the list of the users
-     * @deprecated because of the new limit system
-     *             use {@link ServerCommand#addUserLimitation(UserLimitation)} instead
-     */
-    @Deprecated
-    public void setUsers(boolean allowed, User... users) {
-    }
-
-    /**
-     * Sets the roles which can use this command with
-     *
-     * @param roles        the list of the roles
-     * @deprecated because of the new limit system
-     *             use {@link ServerCommand#addRoleLimitation(RoleLimitation)} instead
-     */
-    @Deprecated
-    public void setRoles(boolean allowedRoles, Role... roles) {
-    }
-
-    /**
-     * Sets the channels where the command will be allowed
-     *
-     * @param channels the list of the channels
-     * @deprecated because of the new limit system
-     *             use {@link ServerCommand#addChannelLimitation(ChannelLimitation)} instead
-     */
-    @Deprecated
-    public void setChannels(boolean allowed, TextChannel... channels) {
-    }
-
-    /**
-     * Sets the categories where the command will be allowed
-     *
-     * @deprecated because of the new limit system
-     *             use {@link ServerCommand#addCategoryLimitation(CategoryLimitation)} instead
-     */
-    @Deprecated
-    public void setCategories(boolean allowed, ChannelCategory... categories) {
-    }
-
-    /**
-     * @return the list of the users
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public List<User> getUsers() {
-        return null;
-    }
-
-    /**
-     * @return the list of the roles
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public List<Role> getRoles() {
-        return null;
-    }
-
-    /**
-     * @return true or false depends on if the user needs all the roles to use this command
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public boolean isAllowedRoles() {
-        return false;
-    }
-
-    /**
-     * @return the list of the channels
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public List<TextChannel> getChannels() {
-        return null;
-    }
-
-    /**
-     * @return the list of the categories
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public List<ChannelCategory> getCategories() {
-        return null;
-    }
-
-    /**
-     * @return true or false depends on if the category limitation is allowing or disallowing
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public boolean isAllowedCategories() {
-        return false;
-    }
-
-    /**
-     * @return true or false depends on if the channel limitation is allowing or disallowing
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public boolean isAllowedChannels() {
-        return false;
-    }
-
-    /**
-     * @return true or false depends on if the user limitation is allowing or disallowing
-     * @deprecated because of the new limit system
-     */
-    @Deprecated
-    public boolean isAllowedUsers() {
-        return false;
     }
 
     @Override
@@ -198,4 +84,43 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     public Set<UserLimitation> getUserLimitations() {
         return userLimitations;
     }
+
+    /**
+     * Sets the bad category listener
+     *
+     * @param listener the listener
+     */
+    public void setOnBadCategory(BadCategoryEventListener listener) {
+        this.badCategoryListener = listener;
+    }
+
+    /**
+     * Sets the bad channel listener
+     *
+     * @param listener the listener
+     */
+    public void setOnBadChannel(BadChannelEventListener listener) {
+        this.badChannelListener = listener;
+    }
+
+    /**
+     * Gets the bad category listener
+     *
+     * @return {@link Optional#empty()} when bad category listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<BadCategoryEventListener> getBadCategoryListener() {
+        return Optional.ofNullable(badCategoryListener);
+    }
+
+    /**
+     * Gets the bad channel mismatch listener
+     *
+     * @return {@link Optional#empty()} when bad channel listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<BadChannelEventListener> getBadChannelListener() {
+        return Optional.ofNullable(badChannelListener);
+    }
+
 }

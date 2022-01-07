@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,8 +18,11 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
+
+import java.util.Optional;
 
 /**
  * Represents an argument
@@ -30,6 +33,8 @@ public abstract class Argument {
 
     private final String name, description;
     private final SlashCommandOptionType type;
+
+    private ArgumentMismatchEventListener mismatchListener;
 
     /**
      * Default constructor
@@ -93,5 +98,24 @@ public abstract class Argument {
      * @return the command option that need for to register the argument
      */
     public abstract SlashCommandOption getCommandOption();
+
+    /**
+     * Sets the argument mismatch listener
+     *
+     * @param listener the listener
+     */
+    public void setOnMismatch(ArgumentMismatchEventListener listener) {
+        this.mismatchListener = listener;
+    }
+
+    /**
+     * Gets the argument mismatch listener
+     *
+     * @return {@link Optional#empty()} when argument mismatch listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<ArgumentMismatchEventListener> getMismatchListener() {
+        return Optional.ofNullable(mismatchListener);
+    }
 
 }

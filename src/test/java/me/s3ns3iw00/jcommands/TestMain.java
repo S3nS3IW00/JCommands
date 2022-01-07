@@ -1,5 +1,6 @@
 package me.s3ns3iw00.jcommands;
 
+import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.type.*;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
@@ -9,6 +10,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOptionType;
@@ -33,26 +35,6 @@ public class TestMain {
         // -- DON'T FORGET TO REPLACE THIS WITH YOUR SERVER ID --
         Server myServer = api.getServerById(787364551598407700L).get();
 
-        // Registering the error listener
-        CommandHandler.setOnError((type, responder) -> {
-            String errorMessage = null;
-            switch (type) {
-                // Occurs when one or more of the arguments are missing or not matching the pattern.
-                case BAD_ARGUMENTS:
-                    errorMessage = "Something went wrong! :face_with_raised_eyebrow:";
-                    break;
-                // Occurs when the sender wants to use the command in a category where it is not allowed.
-                case BAD_CATEGORY:
-                    // Occurs when the sender wants to use the command in a channel where it is not allowed.
-                case BAD_CHANNEL:
-                    errorMessage = "I'm not sure about that this is the best place to use this command. :face_with_raised_eyebrow:";
-                    break;
-            }
-            responder.respondNow()
-                    .setContent(errorMessage)
-                    .respond();
-        });
-
         // Creating a command
         // -- DON'T FORGET TO REPLACE CATEGORY, CHANNEL AND ROLE IDs WITH YOURS --
 
@@ -69,6 +51,14 @@ public class TestMain {
         ValueArgument nameArgument = new ValueArgument("fullname", "Your first and last name separated with comma (Firstname,Lastname)", SlashCommandOptionType.STRING);
         // This argument only accepts two word separated with comma and each word started with capitalized letter.
         nameArgument.validate("(?<first>[A-Z][a-z]+),(?<last>[A-Z][a-z]+)");
+        // Send back a message to the user when the user's input is not valid for the pattern
+        // EPHEMERAL flag means that the response will only be visible for the user
+        nameArgument.setOnMismatch(event -> {
+            event.getResponder().respondNow()
+                    .setContent("The name is not valid for the pattern. :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
         // We want to know the user's gender so make an argument that has two acceptable values.
         ComboArgument genderArgument = new ComboArgument("gender", "Your gender", SlashCommandOptionType.INTEGER);
         genderArgument.addChoice("male", 0);
@@ -76,6 +66,13 @@ public class TestMain {
         // How old is the user? The user can give numbers from 0 to 99.
         NumberArgument ageArgument = new NumberArgument("age", "Your age (number between 0 and 99)");
         ageArgument.setRange(0, 99);
+        // Send back a message to the user when the user's input is not between 0 and 99
+        ageArgument.setOnMismatch(event -> {
+            event.getResponder().respondNow()
+                    .setContent("The age must between 0 and 99. :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
         // Let's ask the user to mention his or her best friend,
         MentionArgument bestFriendArgument = new MentionArgument("bestfriend", "Your best friend on Discord");
         // to mention his or her favourite channel on this server
@@ -83,11 +80,34 @@ public class TestMain {
         // and to send us a funny picture's url, that is just an optional argument
         URLArgument funnyPictureArgument = new URLArgument("funnypicture", "A funny picture's url");
         funnyPictureArgument.setOptional();
+        // URL is not built-in argument type, so the user can give text that is not a valid url, so we need to send an error message to the user
+        funnyPictureArgument.setOnMismatch(event -> {
+            event.getResponder().respondNow()
+                    .setContent("The given URL is not a valid URL. :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
         // Add arguments to the command
         introduceCommand.addArgument(nameArgument, genderArgument, ageArgument, bestFriendArgument, favouriteChannelArgument, funnyPictureArgument);
+        // Handle event that gets triggered when the command is used in a category where it is not allowed
+        introduceCommand.setOnBadCategory(event -> {
+            event.getResponder().respondNow()
+                    .setContent("This command cannot be used in this category. :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
+        // Handle event that gets triggered when the command is used in a channel where it is not allowed
+        introduceCommand.setOnBadChannel(event -> {
+            event.getResponder().respondNow()
+                    .setContent("This command cannot be used in this channel. :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
         // Let's make an action listener where we can listen for inputs.
-        // user is the sender, args is an array of the converted arguments and responder is a class that manages responses
-        introduceCommand.setAction((sender, args, responder) -> {
+        introduceCommand.setOnAction(event -> {
+            // Get the arguments from the event
+            ArgumentResult[] args = event.getArguments();
+
             // ValueArgument return as a Matcher by default
             Matcher fullName = args[0].get();
             String firstName = fullName.group("first");
@@ -117,12 +137,14 @@ public class TestMain {
                 responseMessage.append(" That's my favourite channel too!");
             }
             if (funnyPictureUrl != null) {
-                responseMessage.append(" Here is your funny picture: " + funnyPictureUrl.toString());
+                responseMessage.append(" Here is your funny picture: " + funnyPictureUrl);
             }
 
-            // Send the response message to the user
-            responder.respondNow()
+            // Send the response message to the user with the responder from the event
+            // EPHEMERAL flag means that the response will only be visible for the user
+            event.getResponder().respondNow()
                     .setContent(responseMessage.getStringBuilder().toString())
+                    .setFlags(MessageFlag.EPHEMERAL)
                     .respond();
         });
         // And don't forget to register the command on the server(s). (I always forget it and never know what's wrong :D)

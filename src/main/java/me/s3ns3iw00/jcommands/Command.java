@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -20,11 +20,12 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
+import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A class that represents a command
@@ -38,7 +39,10 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
-    private Optional<CommandActionListener> action = Optional.empty();
+    private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
+
+    private CommandActionEventListener actionListener;
+    private ArgumentMismatchEventListener argumentMismatchListener;
 
     /**
      * Default constructor
@@ -71,8 +75,11 @@ public class Command {
      * @param argument the argument
      */
     public void addArgument(Argument argument) {
-        if (arguments.size() > 0 && (arguments.getLast() instanceof InputArgument) && ((InputArgument) arguments.getLast()).isOptional()) {
-            throw new IllegalStateException("Cannot add argument after an optional argument!");
+        if (arguments.size() > 0 &&
+                (arguments.getLast() instanceof InputArgument) &&
+                ((InputArgument) arguments.getLast()).isOptional() &&
+                !((InputArgument) argument).isOptional()) {
+            throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
         }
 
         this.arguments.add(argument);
@@ -88,12 +95,37 @@ public class Command {
     }
 
     /**
+     * Adds a concatenator to the command
+     * Every argument in the list must belong to this command, otherwise the concatenation won't proceed
+     *
+     * @param concatenator the concatenator
+     * @param arguments    the list of arguments
+     */
+    public void addConcatenator(Concatenator concatenator, Argument... arguments) {
+        if (!concatenators.containsKey(concatenator)) {
+            concatenators.put(concatenator, new LinkedList<>());
+        }
+        concatenators.get(concatenator).addAll(Arrays.asList(arguments));
+    }
+
+    /**
      * Sets the action listener of the command
      *
      * @param action is the listener object
+     * @deprecated because of the new event system
+     * use {@link Command#setOnAction(CommandActionEventListener)} instead
      */
+    @Deprecated
     public void setAction(CommandActionListener action) {
-        this.action = Optional.of(action);
+    }
+
+    /**
+     * Sets the action listener
+     *
+     * @param listener the listener
+     */
+    public void setOnAction(CommandActionEventListener listener) {
+        this.actionListener = listener;
     }
 
     /**
@@ -113,15 +145,34 @@ public class Command {
     /**
      * @return the list of the arguments
      */
-    public LinkedList<Argument> getArguments() {
+    public List<Argument> getArguments() {
         return arguments;
     }
 
     /**
-     * @return the command action instance
+     * @return the map of concatenators
      */
-    Optional<CommandActionListener> getAction() {
-        return action;
+    public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
+        return concatenators;
+    }
+
+    /**
+     * @return the command action instance
+     * @deprecated because of the new event system
+     */
+    @Deprecated
+    Optional<CommandActionEventListener> getAction() {
+        return Optional.empty();
+    }
+
+    /**
+     * Gets the action listener
+     *
+     * @return {@link Optional#empty()} when action listener is not specified,
+     * otherwise {@link Optional#of(Object)} with the listener
+     */
+    public Optional<CommandActionEventListener> getActionListener() {
+        return Optional.ofNullable(actionListener);
     }
 
 }

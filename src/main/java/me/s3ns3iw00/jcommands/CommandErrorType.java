@@ -22,7 +22,9 @@ package me.s3ns3iw00.jcommands;
  * Enum with error type constants
  *
  * @author S3nS3IW00
+ * @deprecated see {@link me.s3ns3iw00.jcommands.listener.CommandErrorListener} for more information
  */
+@Deprecated
 public enum CommandErrorType {
 
     /**

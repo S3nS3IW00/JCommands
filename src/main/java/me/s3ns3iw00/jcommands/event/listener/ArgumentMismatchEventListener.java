@@ -16,21 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.type;
+package me.s3ns3iw00.jcommands.event.listener;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
-import org.javacord.api.entity.user.User;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 
 /**
- * An argument that has a regex that only accepts inputs what are mention tags
- *
- * @author S3nS3IW00
+ * A listener that gets triggered when an argument is not valid
  */
-public class MentionArgument extends InputArgument {
+public interface ArgumentMismatchEventListener {
 
-    public MentionArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.USER, User.class);
-    }
+    void onArgumentMismatch(ArgumentMismatchEvent event);
 
 }

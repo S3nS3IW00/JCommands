@@ -20,13 +20,17 @@ package me.s3ns3iw00.jcommands.listener;
 
 import me.s3ns3iw00.jcommands.CommandResponder;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import org.javacord.api.entity.user.User;
 
 /**
  * The action listener
  *
  * @author S3nS3IW00
+ * @deprecated because of the new event system
+ * use {@link CommandActionEventListener} instead
  */
+@Deprecated
 public interface CommandActionListener {
 
     /**

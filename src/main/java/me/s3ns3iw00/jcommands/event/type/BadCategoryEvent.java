@@ -16,21 +16,30 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.type;
+package me.s3ns3iw00.jcommands.event.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.Command;
+import me.s3ns3iw00.jcommands.CommandResponder;
+import me.s3ns3iw00.jcommands.event.CommandEvent;
+import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.user.User;
-import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that has a regex that only accepts inputs what are mention tags
- *
- * @author S3nS3IW00
+ * An event that is provided by {@link me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener}
+ * <p>
+ * Contains the {@link ChannelCategory} where the command was used
  */
-public class MentionArgument extends InputArgument {
+public class BadCategoryEvent extends CommandEvent {
 
-    public MentionArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.USER, User.class);
+    private final ChannelCategory category;
+
+    public BadCategoryEvent(Command command, User sender, CommandResponder responder, ChannelCategory category) {
+        super(command, sender, responder);
+        this.category = category;
+    }
+
+    public ChannelCategory getCategory() {
+        return category;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -18,6 +18,9 @@
  */
 package me.s3ns3iw00.jcommands.limitation.type;
 
+import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
+
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -28,5 +31,9 @@ public interface CategoryLimitable {
     void addCategoryLimitation(CategoryLimitation limitation);
 
     Set<CategoryLimitation> getCategoryLimitations();
+
+    void setOnBadCategory(BadCategoryEventListener listener);
+
+    Optional<BadCategoryEventListener> getBadCategoryListener();
 
 }
