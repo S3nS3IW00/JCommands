@@ -49,8 +49,8 @@ public abstract class InputArgument extends Argument {
             case STRING:
                 resultType = String.class;
                 break;
-            case INTEGER:
-                resultType = Integer.class;
+            case LONG:
+                resultType = Long.class;
                 break;
             case BOOLEAN:
                 resultType = Boolean.class;
