@@ -11,5 +11,5 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation  'org.javacord:javacord:3.3.2'
+    implementation 'org.javacord:javacord:3.4.0'
 }

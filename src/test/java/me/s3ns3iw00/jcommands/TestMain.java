@@ -10,10 +10,10 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.Channel;
 import org.javacord.api.entity.message.MessageBuilder;
-import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.callback.InteractionCallbackDataFlag;
 
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -56,11 +56,11 @@ public class TestMain {
         nameArgument.setOnMismatch(event -> {
             event.getResponder().respondNow()
                     .setContent("The name is not valid for the pattern. :face_with_raised_eyebrow:")
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // We want to know the user's gender so make an argument that has two acceptable values.
-        ComboArgument genderArgument = new ComboArgument("gender", "Your gender", SlashCommandOptionType.INTEGER);
+        ComboArgument genderArgument = new ComboArgument("gender", "Your gender", SlashCommandOptionType.LONG);
         genderArgument.addChoice("male", 0);
         genderArgument.addChoice("female", 1);
         // How old is the user? The user can give numbers from 0 to 99.
@@ -70,7 +70,7 @@ public class TestMain {
         ageArgument.setOnMismatch(event -> {
             event.getResponder().respondNow()
                     .setContent("The age must between 0 and 99. :face_with_raised_eyebrow:")
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // Let's ask the user to mention his or her best friend,
@@ -84,7 +84,7 @@ public class TestMain {
         funnyPictureArgument.setOnMismatch(event -> {
             event.getResponder().respondNow()
                     .setContent("The given URL is not a valid URL. :face_with_raised_eyebrow:")
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // Add arguments to the command
@@ -93,14 +93,14 @@ public class TestMain {
         introduceCommand.setOnBadCategory(event -> {
             event.getResponder().respondNow()
                     .setContent("This command cannot be used in this category. :face_with_raised_eyebrow:")
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // Handle event that gets triggered when the command is used in a channel where it is not allowed
         introduceCommand.setOnBadChannel(event -> {
             event.getResponder().respondNow()
                     .setContent("This command cannot be used in this channel. :face_with_raised_eyebrow:")
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // Let's make an action listener where we can listen for inputs.
@@ -144,7 +144,7 @@ public class TestMain {
             // EPHEMERAL flag means that the response will only be visible for the user
             event.getResponder().respondNow()
                     .setContent(responseMessage.getStringBuilder().toString())
-                    .setFlags(MessageFlag.EPHEMERAL)
+                    .setFlags(InteractionCallbackDataFlag.EPHEMERAL)
                     .respond();
         });
         // And don't forget to register the command on the server(s). (I always forget it and never know what's wrong :D)
