@@ -30,7 +30,10 @@ import me.s3ns3iw00.jcommands.builder.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.PrivateCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.limitation.Limitation;
-import me.s3ns3iw00.jcommands.limitation.type.*;
+import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
+import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
 import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
 import me.s3ns3iw00.jcommands.type.PrivateCommand;
@@ -162,8 +165,8 @@ public class CommandHandler {
                     case STRING:
                         value = option.getStringValue().get();
                         break;
-                    case INTEGER:
-                        value = option.getIntValue().get();
+                    case LONG:
+                        value = option.getLongValue().get();
                         break;
                     case BOOLEAN:
                         value = option.getBooleanValue().get();
@@ -277,13 +280,13 @@ public class CommandHandler {
      * @param server the server
      */
     private static void applyPermissions(Command command, long id, Server server) {
-        List<SlashCommandPermissions> permissions = new ArrayList<>();
+        List<ApplicationCommandPermissions> permissions = new ArrayList<>();
         if (command instanceof UserLimitable) {
             UserLimitable userLimitable = (UserLimitable) command;
             permissions.addAll(userLimitable.getUserLimitations().stream()
                     .filter(user -> user.getServer().getId() == server.getId())
-                    .map(user -> SlashCommandPermissions.create(user.getEntity().getId(),
-                            SlashCommandPermissionType.USER,
+                    .map(user -> ApplicationCommandPermissions.create(user.getEntity().getId(),
+                            ApplicationCommandPermissionType.USER,
                             user.isPermit()))
                     .collect(Collectors.toList()));
         }
@@ -291,14 +294,14 @@ public class CommandHandler {
             RoleLimitable roleLimitable = (RoleLimitable) command;
             permissions.addAll(roleLimitable.getRoleLimitations().stream()
                     .filter(user -> user.getServer().getId() == server.getId())
-                    .map(role -> SlashCommandPermissions.create(role.getEntity().getId(),
-                            SlashCommandPermissionType.ROLE,
+                    .map(role -> ApplicationCommandPermissions.create(role.getEntity().getId(),
+                            ApplicationCommandPermissionType.ROLE,
                             role.isPermit()))
                     .collect(Collectors.toList()));
         }
 
         if (permissions.size() > 0) {
-            new SlashCommandPermissionsUpdater(server)
+            new ApplicationCommandPermissionsUpdater(server)
                     .setPermissions(permissions)
                     .update(id)
                     .join();
