@@ -28,7 +28,7 @@ import java.util.LinkedList;
 /**
  * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
  * The values are key value pairs
- * The key is {@code String} and the value can be {@code String} or {@code Integer}
+ * The key is {@code String} and the value can be {@code String} or {@code Long}
  */
 public class ComboArgument extends InputArgument {
 
@@ -39,12 +39,12 @@ public class ComboArgument extends InputArgument {
      *
      * @param name        the argument's name
      * @param description the argument's description
-     * @param type        the type of the input value, can be {@code STRING} or {@code INTEGER}
+     * @param type        the type of the input value, can be {@code STRING} or {@code LONG}
      */
     public ComboArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
 
-        if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.INTEGER) {
+        if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.LONG) {
             throw new IllegalArgumentException("type can be only String or Integer");
         }
     }
@@ -56,7 +56,7 @@ public class ComboArgument extends InputArgument {
      * @param value is the value of the argument as {@code String}
      */
     public void addChoice(String key, String value) {
-        if (getType() == SlashCommandOptionType.INTEGER) {
+        if (getType() == SlashCommandOptionType.LONG) {
             throw new IllegalStateException("Value must match with the argument's type: Integer");
         }
 
@@ -67,7 +67,7 @@ public class ComboArgument extends InputArgument {
      * Adds a choice
      *
      * @param key   the name of the argument
-     * @param value the value of the argument as {@code Integer}
+     * @param value the value of the argument as {@code Long}
      */
     public void addChoice(String key, int value) {
         if (getType() == SlashCommandOptionType.STRING) {

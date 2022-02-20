@@ -21,17 +21,17 @@ package me.s3ns3iw00.jcommands.argument.type;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that only accepts number inputs inside integer's range (from -2147483648 to 2147483647)
+ * An argument that only accepts number inputs inside long's range
  *
  * @author S3nS3IW00
  */
 public class NumberArgument extends ValueArgument {
 
     // Define default range
-    private int min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
+    private long min = Long.MIN_VALUE, max = Long.MAX_VALUE;
 
     public NumberArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.INTEGER, Integer.class);
+        super(name, description, SlashCommandOptionType.LONG, Long.class);
     }
 
     /**
@@ -41,7 +41,7 @@ public class NumberArgument extends ValueArgument {
      * @param min the minimum
      * @param max the maximum
      */
-    public void setRange(int min, int max) {
+    public void setRange(long min, long max) {
         this.min = min;
         this.max = max;
     }
@@ -56,7 +56,7 @@ public class NumberArgument extends ValueArgument {
     public boolean isValid(Object value) {
         if (super.isValid(value)) {
             try {
-                return (int) value >= min && (int) value <= max;
+                return (long) value >= min && (long) value <= max;
             } catch (NumberFormatException e) {
                 return false;
             }

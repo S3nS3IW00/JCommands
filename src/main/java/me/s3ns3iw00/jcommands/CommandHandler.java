@@ -270,8 +270,8 @@ public class CommandHandler {
             case STRING:
                 value = option.getStringValue().orElse(null);
                 break;
-            case INTEGER:
-                value = option.getIntValue().orElse(null);
+            case LONG:
+                value = option.getLongValue().orElse(null);
                 break;
             case BOOLEAN:
                 value = option.getBooleanValue().orElse(null);
