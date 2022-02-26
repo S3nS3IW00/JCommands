@@ -25,7 +25,6 @@ import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitation;
-import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 import me.s3ns3iw00.jcommands.type.ServerCommand;
 
 import java.util.Arrays;
@@ -80,18 +79,6 @@ public class ServerCommandBuilder extends CommandBuilder<ServerCommandBuilder> {
      */
     public ServerCommandBuilder roleLimitations(RoleLimitation... limitations) {
         Arrays.stream(limitations).forEach(command::addRoleLimitation);
-        return this;
-    }
-
-    /**
-     * Calls {@link ServerCommand#setAction(CommandActionListener) setAction}
-     *
-     * @return this class
-     * @deprecated because of the new event system
-     */
-    @Deprecated
-    public ServerCommandBuilder action(CommandActionListener action) {
-        command.setAction(action);
         return this;
     }
 

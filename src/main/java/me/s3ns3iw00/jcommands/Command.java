@@ -23,7 +23,6 @@ import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
-import me.s3ns3iw00.jcommands.listener.CommandActionListener;
 
 import java.util.*;
 
@@ -109,17 +108,6 @@ public class Command {
     }
 
     /**
-     * Sets the action listener of the command
-     *
-     * @param action is the listener object
-     * @deprecated because of the new event system
-     * use {@link Command#setOnAction(CommandActionEventListener)} instead
-     */
-    @Deprecated
-    public void setAction(CommandActionListener action) {
-    }
-
-    /**
      * Sets the action listener
      *
      * @param listener the listener
@@ -154,15 +142,6 @@ public class Command {
      */
     public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
         return concatenators;
-    }
-
-    /**
-     * @return the command action instance
-     * @deprecated because of the new event system
-     */
-    @Deprecated
-    Optional<CommandActionEventListener> getAction() {
-        return Optional.empty();
     }
 
     /**

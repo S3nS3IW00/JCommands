@@ -26,9 +26,6 @@ import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
-import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
-import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
-import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
 import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
@@ -38,7 +35,6 @@ import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
-import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ChannelType;
@@ -418,19 +414,6 @@ public class CommandHandler {
      */
     public static void registerCommand(CommandBuilder<?> builder) {
         registerCommand(builder.getCommand());
-    }
-
-    /**
-     * Registers an error listener where the errors will be managed
-     *
-     * @param error the listener interface
-     * @deprecated because of the new event system
-     * use {@link CategoryLimitable#setOnBadCategory(BadCategoryEventListener)},
-     * {@link ChannelLimitable#setOnBadChannel(BadChannelEventListener)} and
-     * {@link Argument#setOnMismatch(ArgumentMismatchEventListener)} instead
-     */
-    @Deprecated
-    public static void setOnError(CommandErrorListener error) {
     }
 
     /**
