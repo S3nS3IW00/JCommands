@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.argument.util.Optionality;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -28,7 +29,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
  */
-public abstract class InputArgument extends Argument {
+public abstract class InputArgument extends Argument implements Optionality {
 
     private Object input;
     private final Class<?> resultType;
@@ -86,6 +87,7 @@ public abstract class InputArgument extends Argument {
         return SlashCommandOption.create(getType(), getName(), getDescription(), !optional);
     }
 
+    @Override
     public boolean isOptional() {
         return optional;
     }
