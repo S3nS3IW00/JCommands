@@ -57,7 +57,7 @@ public class ComboArgument extends InputArgument {
      */
     public void addChoice(String key, String value) {
         if (getType() == SlashCommandOptionType.LONG) {
-            throw new IllegalStateException("Value must match with the argument's type: Integer");
+            throw new IllegalStateException("Value must match with the argument's type: Long");
         }
 
         choices.add(SlashCommandOptionChoice.create(key, value));
@@ -69,7 +69,7 @@ public class ComboArgument extends InputArgument {
      * @param key   the name of the argument
      * @param value the value of the argument as {@code Long}
      */
-    public void addChoice(String key, int value) {
+    public void addChoice(String key, long value) {
         if (getType() == SlashCommandOptionType.STRING) {
             throw new IllegalStateException("Value must match with the argument's type: String");
         }
@@ -87,7 +87,7 @@ public class ComboArgument extends InputArgument {
 
     @Override
     public Class<?> getResultType() {
-        return getType() == SlashCommandOptionType.STRING ? String.class : Integer.class;
+        return getType() == SlashCommandOptionType.STRING ? String.class : Long.class;
     }
 
     @Override
