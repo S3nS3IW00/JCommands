@@ -113,12 +113,12 @@ public class TestMain {
             String firstName = fullName.group("first");
             String lastName = fullName.group("last");
 
-            // The gender contains integer values based on the key
-            int gender = args[1].get();
+            // The gender contains long values based on the key
+            long gender = args[1].get();
 
             // The age from a NumberArgument so it's a number by default
             // It has been validated so range checking is unnecessary
-            int age = args[2].get();
+            long age = args[2].get();
 
             User bestFriend = args[3].get();
             Channel favouriteChannel = args[4].get();
