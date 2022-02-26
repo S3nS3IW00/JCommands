@@ -19,11 +19,12 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.util.Choice;
 import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
@@ -32,7 +33,7 @@ import java.util.LinkedList;
  */
 public class ComboArgument extends InputArgument {
 
-    private final LinkedList<SlashCommandOptionChoice> choices = new LinkedList<>();
+    private final LinkedList<Choice> choices = new LinkedList<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -60,7 +61,7 @@ public class ComboArgument extends InputArgument {
             throw new IllegalStateException("Value must match with the argument's type: Long");
         }
 
-        choices.add(SlashCommandOptionChoice.create(key, value));
+        choices.add(new Choice(key, value));
     }
 
     /**
@@ -74,7 +75,7 @@ public class ComboArgument extends InputArgument {
             throw new IllegalStateException("Value must match with the argument's type: String");
         }
 
-        choices.add(SlashCommandOptionChoice.create(key, value));
+        choices.add(new Choice(key, value));
     }
 
     @Override
@@ -93,6 +94,6 @@ public class ComboArgument extends InputArgument {
     @Override
     public SlashCommandOption getCommandOption() {
         return SlashCommandOption.createWithChoices(getType(),
-                getName(), getDescription(), !isOptional(), choices);
+                getName(), getDescription(), !isOptional(), choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
     }
 }
