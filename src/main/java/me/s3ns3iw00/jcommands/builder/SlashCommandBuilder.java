@@ -25,7 +25,7 @@ import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitation;
-import me.s3ns3iw00.jcommands.type.ServerCommand;
+import me.s3ns3iw00.jcommands.type.SlashCommand;
 
 import java.util.Arrays;
 
@@ -34,70 +34,70 @@ import java.util.Arrays;
  *
  * @author S3nS3IW00
  */
-public class ServerCommandBuilder extends CommandBuilder<ServerCommandBuilder> {
+public class SlashCommandBuilder extends CommandBuilder<SlashCommandBuilder> {
 
-    private final ServerCommand command;
+    private final SlashCommand command;
 
-    public ServerCommandBuilder(String name, String description) {
-        command = new ServerCommand(name, description);
+    public SlashCommandBuilder(String name, String description) {
+        command = new SlashCommand(name, description);
     }
 
     /**
-     * Calls {@link ServerCommand#addUserLimitation(UserLimitation)}
+     * Calls {@link SlashCommand#addUserLimitation(UserLimitation)}
      *
      * @return this class
      */
-    public ServerCommandBuilder userLimitations(UserLimitation... limitations) {
+    public SlashCommandBuilder userLimitations(UserLimitation... limitations) {
         Arrays.stream(limitations).forEach(command::addUserLimitation);
         return this;
     }
 
     /**
-     * Calls {@link ServerCommand#addChannelLimitation(ChannelLimitation)}
+     * Calls {@link SlashCommand#addChannelLimitation(ChannelLimitation)}
      *
      * @return this class
      */
-    public ServerCommandBuilder channelLimitations(ChannelLimitation... limitations) {
+    public SlashCommandBuilder channelLimitations(ChannelLimitation... limitations) {
         Arrays.stream(limitations).forEach(command::addChannelLimitation);
         return this;
     }
 
     /**
-     * Calls {@link ServerCommand#addCategoryLimitation(CategoryLimitation)}
+     * Calls {@link SlashCommand#addCategoryLimitation(CategoryLimitation)}
      *
      * @return this class
      */
-    public ServerCommandBuilder categoryLimitations(CategoryLimitation... limitations) {
+    public SlashCommandBuilder categoryLimitations(CategoryLimitation... limitations) {
         Arrays.stream(limitations).forEach(command::addCategoryLimitation);
         return this;
     }
 
     /**
-     * Calls {@link ServerCommand#addRoleLimitation(RoleLimitation)}
+     * Calls {@link SlashCommand#addRoleLimitation(RoleLimitation)}
      *
      * @return this class
      */
-    public ServerCommandBuilder roleLimitations(RoleLimitation... limitations) {
+    public SlashCommandBuilder roleLimitations(RoleLimitation... limitations) {
         Arrays.stream(limitations).forEach(command::addRoleLimitation);
         return this;
     }
 
     /**
-     * Calls {@link ServerCommand#setOnBadCategory(BadCategoryEventListener)}
+     * Calls {@link SlashCommand#setOnBadCategory(BadCategoryEventListener)}
      *
      * @return this class
      */
-    public ServerCommandBuilder onBadCategory(BadCategoryEventListener listener) {
+    public SlashCommandBuilder onBadCategory(BadCategoryEventListener listener) {
         command.setOnBadCategory(listener);
         return this;
     }
 
     /**
-     * Calls {@link ServerCommand#setOnBadChannel(BadChannelEventListener)}
+     * Calls {@link SlashCommand#setOnBadChannel(BadChannelEventListener)}
      *
      * @return this class
      */
-    public ServerCommandBuilder onBadChannel(BadChannelEventListener listener) {
+    public SlashCommandBuilder onBadChannel(BadChannelEventListener listener) {
         command.setOnBadChannel(listener);
         return this;
     }

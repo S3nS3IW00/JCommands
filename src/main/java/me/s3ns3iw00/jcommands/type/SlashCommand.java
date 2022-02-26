@@ -31,7 +31,7 @@ import java.util.Set;
  * A {@code Command} that only can be used on servers where the command has been registered.<br>
  * Can be limited for users, roles, channels and categories.
  */
-public class ServerCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
+public class SlashCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
 
     private final Set<UserLimitation> userLimitations = new HashSet<>();
     private final Set<RoleLimitation> roleLimitations = new HashSet<>();
@@ -41,7 +41,7 @@ public class ServerCommand extends Command implements UserLimitable, RoleLimitab
     private BadCategoryEventListener badCategoryListener;
     private BadChannelEventListener badChannelListener;
 
-    public ServerCommand(String name, String description) {
+    public SlashCommand(String name, String description) {
         super(name, description);
     }
 
