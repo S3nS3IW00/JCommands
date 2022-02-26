@@ -18,8 +18,9 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
+import me.s3ns3iw00.jcommands.argument.util.Optionality;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -31,9 +32,11 @@ import java.util.stream.Collectors;
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Long}
  */
-public class ComboArgument extends InputArgument {
+public class ComboArgument extends Argument implements Optionality {
 
     private final LinkedList<Choice> choices = new LinkedList<>();
+    private Choice choice;
+    private boolean optional;
 
     /**
      * Constructs the argument with the default requirements
@@ -78,17 +81,35 @@ public class ComboArgument extends InputArgument {
         choices.add(new Choice(key, value));
     }
 
+    /**
+     * Chooses a value from the choices
+     *
+     * @param value the value
+     */
+    public void choose(Object value) {
+        choice = choices.stream()
+                .filter(choice1 -> choice1.getValue().equals(value))
+                .findFirst()
+                .orElse(null);
+    }
+
     @Override
     public Object getValue() {
-        if (getType() == SlashCommandOptionType.STRING) {
-            return super.getValue().toString();
-        }
-        return super.getValue();
+        return choice;
+    }
+
+    @Override
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
     @Override
     public Class<?> getResultType() {
-        return getType() == SlashCommandOptionType.STRING ? String.class : Long.class;
+        return Choice.class;
     }
 
     @Override
