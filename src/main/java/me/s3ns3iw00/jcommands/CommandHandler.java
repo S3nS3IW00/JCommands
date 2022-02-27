@@ -26,6 +26,9 @@ import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
+import me.s3ns3iw00.jcommands.argument.util.ArgumentState;
+import me.s3ns3iw00.jcommands.argument.util.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
@@ -78,6 +81,7 @@ public class CommandHandler {
     public static void setApi(DiscordApi api) {
         CommandHandler.api = api;
         api.addSlashCommandCreateListener(event -> handleCommand(event.getSlashCommandInteraction()));
+        api.addAutocompleteCreateListener(event -> handleAutocomplete(event.getAutocompleteInteraction()));
     }
 
     /**
@@ -184,6 +188,42 @@ public class CommandHandler {
     }
 
     /**
+     * Handles autocomplete requests for arguments
+     *
+     * @param interaction the interaction
+     */
+    private static void handleAutocomplete(AutocompleteInteraction interaction) {
+        Optional<Command> commandOptional = commands.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName()))
+                .findFirst();
+
+        commandOptional.ifPresent(command -> {
+            SlashCommandInteractionOption option = interaction.getFocusedOption();
+
+            User sender = interaction.getUser();
+            Optional<TextChannel> channel = interaction.getChannel();
+            Optional<Argument> argumentOptional = getArgumentByOption(command, option);
+            argumentOptional.ifPresent(argument -> {
+                if (argument instanceof Autocompletable) {
+                    Autocompletable autocompletable = (Autocompletable) argument;
+                    ArgumentState argumentState = new ArgumentState(command, argument, channel.orElse(null), sender, getOptionValue(option, argument.getType()));
+
+                    /* Collect results from autocompletes and construct the list */
+                    List<Choice> choices = autocompletable.getAutocompletes().stream()
+                            .map(autocomplete -> autocomplete.getResult(argumentState))
+                            .filter(Objects::nonNull)
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
+
+                    if (choices.size() > 0) {
+                        interaction.respondWithChoices(choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
+                    }
+                }
+            });
+        });
+    }
+
+    /**
      * Processes arguments and every argument of the arguments recursively:
      * - Adjusts values to the arguments
      * - Checks that the value is valid for the argument
@@ -285,6 +325,40 @@ public class CommandHandler {
                 value = null;
         }
         return value;
+    }
+
+    /**
+     * Returns the {@link Argument} of {@link Command} by {@link SlashCommandInteractionOption}
+     *
+     * @param command the command
+     * @param option  the option
+     * @return an {@link Optional} with the {@link Argument} in it if found,
+     * otherwise an empty {@link Optional}
+     */
+    private static Optional<Argument> getArgumentByOption(Command command, SlashCommandInteractionOption option) {
+        return collectArguments(command.getArguments()).stream()
+                .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
+                .findFirst();
+    }
+
+    /**
+     * Collects all arguments of a list of arguments in one list
+     * For collecting a command's all arguments {@link Command#getArguments()} need to be passed as parameter
+     *
+     * @param arguments a list of argument
+     * @return the collection
+     */
+    private static List<Argument> collectArguments(List<Argument> arguments) {
+        List<Argument> allArguments = new ArrayList<>();
+        for (Argument argument : arguments) {
+            if (argument instanceof SubArgument) {
+                allArguments.addAll(collectArguments(((SubArgument) argument).getArguments()));
+            } else {
+                allArguments.add(argument);
+            }
+        }
+
+        return allArguments;
     }
 
     /**
