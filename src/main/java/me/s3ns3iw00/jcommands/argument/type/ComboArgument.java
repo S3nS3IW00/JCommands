@@ -49,7 +49,7 @@ public class ComboArgument extends Argument implements Optionality {
         super(name, description, type);
 
         if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.LONG) {
-            throw new IllegalArgumentException("type can be only String or Integer");
+            throw new IllegalArgumentException("type can be only String or Long");
         }
     }
 
