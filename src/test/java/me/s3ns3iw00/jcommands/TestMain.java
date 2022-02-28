@@ -2,10 +2,11 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.type.*;
+import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitation;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitation;
-import me.s3ns3iw00.jcommands.type.ServerCommand;
+import me.s3ns3iw00.jcommands.type.SlashCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.Channel;
@@ -39,7 +40,7 @@ public class TestMain {
         // -- DON'T FORGET TO REPLACE CATEGORY, CHANNEL AND ROLE IDs WITH YOURS --
 
         // Create a command with a name and a description
-        ServerCommand introduceCommand = new ServerCommand("iam", "This command is for to introduce yourself.");
+        SlashCommand introduceCommand = new SlashCommand("iam", "This command is for to introduce yourself.");
         // We want to make this command available in only one category
         introduceCommand.addCategoryLimitation(CategoryLimitation.with(myServer, true, api.getChannelCategoryById(787365901552451595L).get()));
         // But we have two channels in that category where the command should not to work
@@ -113,8 +114,8 @@ public class TestMain {
             String firstName = fullName.group("first");
             String lastName = fullName.group("last");
 
-            // The gender contains long values based on the key
-            long gender = args[1].get();
+            // The gender contains the choice
+            Choice gender = args[1].get();
 
             // The age from a NumberArgument so it's a number by default
             // It has been validated so range checking is unnecessary
@@ -129,7 +130,7 @@ public class TestMain {
 
             // Something that uses all the arguments
             MessageBuilder responseMessage = new MessageBuilder();
-            responseMessage.append("Hi " + firstName + " " + lastName + "! You are very " + (gender == 0 ? "handsome" : "beautiful") + " :heart: As I can see you are " + (age >= 10 && age < 20 ? "" : "not ") + "a teenager.");
+            responseMessage.append("Hi " + firstName + " " + lastName + "! You are very " + ((long) gender.getValue() == 0 ? "handsome" : "beautiful") + " :heart: As I can see you are " + (age >= 10 && age < 20 ? "" : "not ") + "a teenager.");
             if (bestFriend.isBot()) {
                 responseMessage.append(" What? Did you know that your best friend is a BOT?");
             }
