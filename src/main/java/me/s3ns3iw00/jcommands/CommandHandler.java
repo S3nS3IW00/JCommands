@@ -338,6 +338,9 @@ public class CommandHandler {
             case LONG:
                 value = option.getLongValue().orElse(null);
                 break;
+            case DECIMAL:
+                value = option.getDecimalValue().orElse(null);
+                break;
             case BOOLEAN:
                 value = option.getBooleanValue().orElse(null);
                 break;
