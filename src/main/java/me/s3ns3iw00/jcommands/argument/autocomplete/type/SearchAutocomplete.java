@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.autocomplete.type;
 
 import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
-import me.s3ns3iw00.jcommands.argument.util.ArgumentState;
+import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -113,17 +113,17 @@ public class SearchAutocomplete extends Autocomplete {
     }
 
     @Override
-    public List<Choice> getResult(ArgumentState state) {
-        if (state.getValue().toString().length() < minCharToSearch) return null;
+    public List<Choice> getResult(AutocompleteState state) {
+        if (state.getCurrentValue().toString().length() < minCharToSearch) return null;
 
         Stream<Choice> choices = dataSource.stream()
                 .filter(data -> {
                     /* If the datasource's type is String and the data in the datasource and the argument's value is also String
                        Filters the datasource by the type of search and the input
                      */
-                    if (dataType == SlashCommandOptionType.STRING && data instanceof String && state.getValue() instanceof String) {
+                    if (dataType == SlashCommandOptionType.STRING && data instanceof String && state.getCurrentValue() instanceof String) {
                         String strData = (String) data;
-                        String strValue = (String) state.getValue();
+                        String strValue = (String) state.getCurrentValue();
 
                         if (ignoreCase) {
                             strData = strData.toLowerCase();
@@ -140,9 +140,9 @@ public class SearchAutocomplete extends Autocomplete {
                     /* If the datasource's type is Long and the data in the datasource is Number and the argument's value is also Long
                        Filters the datasource by the type of search and the input
                      */
-                    } else if (dataType == SlashCommandOptionType.LONG && data instanceof Number && state.getValue() instanceof Long) {
+                    } else if (dataType == SlashCommandOptionType.LONG && data instanceof Number && state.getCurrentValue() instanceof Long) {
                         Number lData = (Number) data;
-                        long lValue = (long) state.getValue();
+                        long lValue = (long) state.getCurrentValue();
 
                         if (searchType == SearchType.GREATER_THAN) {
                             return lData.longValue() > lValue;

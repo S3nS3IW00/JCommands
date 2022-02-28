@@ -18,7 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.autocomplete;
 
-import me.s3ns3iw00.jcommands.argument.util.ArgumentState;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 
 import java.util.Arrays;
@@ -36,7 +35,7 @@ public class Autocomplete {
         this.choices = Arrays.asList(choices);
     }
 
-    public List<Choice> getResult(ArgumentState state) {
+    public List<Choice> getResult(AutocompleteState state) {
         return choices;
     }
 

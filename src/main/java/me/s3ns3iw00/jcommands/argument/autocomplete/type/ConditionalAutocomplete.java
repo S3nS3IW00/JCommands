@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.autocomplete.type;
 
 import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
-import me.s3ns3iw00.jcommands.argument.util.ArgumentState;
+import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 
 import java.util.List;
@@ -36,16 +36,16 @@ public class ConditionalAutocomplete extends Autocomplete {
     }
 
     @Override
-    public List<Choice> getResult(ArgumentState state) {
+    public List<Choice> getResult(AutocompleteState state) {
         return conditionResult.getChoices(state);
     }
 
     /**
-     * Functional interface that returns the list of {@link Choice} based on the {@link ArgumentState}
+     * Functional interface that returns the list of {@link Choice} based on the {@link AutocompleteState}
      */
     public interface ConditionResult {
 
-        List<Choice> getChoices(ArgumentState state);
+        List<Choice> getChoices(AutocompleteState state);
 
     }
 

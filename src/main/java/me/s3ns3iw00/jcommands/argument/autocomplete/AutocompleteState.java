@@ -16,42 +16,41 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.util;
+package me.s3ns3iw00.jcommands.argument.autocomplete;
 
 import me.s3ns3iw00.jcommands.Command;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.user.User;
 
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Represents a state of argument
- * It contains the {@link Command}, the {@link Argument} and its value, the {@link TextChannel} if presents and the {@link User}
+ * Represents a state of autocomplete
+ * It contains the {@link Command}, the current {@link Argument} and its value, the other specified arguments and its values, the {@link TextChannel} if presents and the {@link User}
  */
-public class ArgumentState {
+public class AutocompleteState {
 
     private final Command command;
-    private final Argument argument;
     private final TextChannel channel;
     private final User sender;
-    private final Object value;
 
-    public ArgumentState(Command command, Argument argument, TextChannel channel, User sender, Object value) {
+    private final Argument currentArgument;
+    private final Object currentValue;
+    private final Map<Argument, Object> argumentValues;
+
+    public AutocompleteState(Command command, TextChannel channel, User sender, Argument currentArgument, Object currentValue, Map<Argument, Object> argumentValues) {
         this.command = command;
-        this.argument = argument;
         this.channel = channel;
         this.sender = sender;
-        this.value = value;
+        this.currentArgument = currentArgument;
+        this.currentValue = currentValue;
+        this.argumentValues = argumentValues;
     }
 
     public Command getCommand() {
         return command;
-    }
-
-    public Argument getArgument() {
-        return argument;
     }
 
     public Optional<TextChannel> getChannel() {
@@ -62,20 +61,15 @@ public class ArgumentState {
         return sender;
     }
 
-    public Object getValue() {
-        return value;
+    public Argument getCurrentArgument() {
+        return currentArgument;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ArgumentState that = (ArgumentState) o;
-        return Objects.equals(command, that.command) && Objects.equals(argument, that.argument) && Objects.equals(value, that.value);
+    public Object getCurrentValue() {
+        return currentValue;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(command, argument, value);
+    public Map<Argument, Object> getArgumentValues() {
+        return argumentValues;
     }
 }

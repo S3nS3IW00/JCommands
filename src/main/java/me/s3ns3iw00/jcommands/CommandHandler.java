@@ -23,11 +23,11 @@ import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
-import me.s3ns3iw00.jcommands.argument.util.ArgumentState;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
@@ -202,15 +202,35 @@ public class CommandHandler {
 
             User sender = interaction.getUser();
             Optional<TextChannel> channel = interaction.getChannel();
-            Optional<Argument> argumentOptional = getArgumentByOption(command, option);
+            List<Argument> allArguments = collectArguments(command.getArguments());
+            Optional<Argument> argumentOptional = allArguments.stream()
+                    .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
+                    .findFirst();
             argumentOptional.ifPresent(argument -> {
                 if (argument instanceof Autocompletable) {
                     Autocompletable autocompletable = (Autocompletable) argument;
-                    ArgumentState argumentState = new ArgumentState(command, argument, channel.orElse(null), sender, getOptionValue(option, argument.getType()));
+                    AutocompleteState autocompleteState = new AutocompleteState(
+                            command,
+                            channel.orElse(null),
+                            sender,
+                            argument,
+                            getOptionValue(option, argument.getType()),
+                            interaction.getArguments().stream()
+                                    .collect(Collectors.toMap(
+                                            key -> allArguments.stream()
+                                                    .filter(arg -> arg.getName().equalsIgnoreCase(key.getName()))
+                                                    .findFirst().orElse(null),
+                                            value -> value
+                                    ))
+                                    .entrySet().stream()
+                                    .collect(Collectors.toMap(
+                                            Map.Entry::getKey,
+                                            value -> getOptionValue(value.getValue(), value.getKey().getType())
+                                    )));
 
                     /* Collect results from autocompletes and construct the list */
                     List<Choice> choices = autocompletable.getAutocompletes().stream()
-                            .map(autocomplete -> autocomplete.getResult(argumentState))
+                            .map(autocomplete -> autocomplete.getResult(autocompleteState))
                             .filter(Objects::nonNull)
                             .flatMap(List::stream)
                             .collect(Collectors.toList());
