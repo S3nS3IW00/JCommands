@@ -33,13 +33,15 @@ public class Choice {
      *
      * @param key   the choice's key (the user will see this)
      * @param value the choice's value
-     *              can be {@link String} or {@link Long}
+     *              can be {@link String} or {@link Number}
+     * NOTE: Discord accepts only {@link Long} type, therefore {@link Number#longValue()} is used
+     *       That means, decimals are not supported!
      */
     public Choice(String key, Object value) {
         this.key = key;
         this.value = value;
 
-        if (value.getClass() != String.class && value.getClass() != Long.class) {
+        if (!(value instanceof String || value instanceof Number)) {
             throw new IllegalArgumentException("Value must be String or long");
         }
     }
@@ -58,10 +60,10 @@ public class Choice {
      * @return the {@link SlashCommandOptionChoice}
      */
     public SlashCommandOptionChoice getChoice() {
-        if (value.getClass() == String.class) {
+        if (value instanceof String) {
             return SlashCommandOptionChoice.create(key, (String) value);
-        } else if (value.getClass() == Long.class) {
-            return SlashCommandOptionChoice.create(key, (long) value);
+        } else if (value instanceof Number) {
+            return SlashCommandOptionChoice.create(key, ((Number) value).longValue());
         }
         return null;
     }
