@@ -19,8 +19,8 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
-import me.s3ns3iw00.jcommands.argument.util.Optionality;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 

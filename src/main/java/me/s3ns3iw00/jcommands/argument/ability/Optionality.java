@@ -16,17 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.argument.util;
-
-import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
-
-import java.util.List;
+package me.s3ns3iw00.jcommands.argument.ability;
 
 /**
- * Identifies whether an argument is autocompletable
+ * Identifies whether an argument can be optional or not
  */
-public interface Autocompletable {
+public interface Optionality {
 
-    List<Autocomplete> getAutocompletes();
+    boolean isOptional();
 
 }

@@ -18,9 +18,9 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
-import me.s3ns3iw00.jcommands.argument.util.Autocompletable;
-import me.s3ns3iw00.jcommands.argument.util.Optionality;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
