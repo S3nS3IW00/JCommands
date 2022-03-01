@@ -29,4 +29,8 @@ public interface Autocompletable {
 
     List<Autocomplete> getAutocompletes();
 
+    default void addAutocomplete(Autocomplete autocomplete) {
+        getAutocompletes().add(autocomplete);
+    }
+
 }

@@ -118,10 +118,6 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
         return autocompletes;
     }
 
-    public void addAutocomplete(Autocomplete autocomplete) {
-        autocompletes.add(autocomplete);
-    }
-
     /**
      * Sets the input
      *
