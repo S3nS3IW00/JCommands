@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 S3nS3IW00
+ * Copyright (C) 2022 S3nS3IW00
  *
  * This file is part of JCommands.
  *
@@ -16,30 +16,21 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands;
+package me.s3ns3iw00.jcommands.argument.ability;
+
+import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
+
+import java.util.List;
 
 /**
- * Enum with error type constants
- *
- * @author S3nS3IW00
- * @deprecated see {@link me.s3ns3iw00.jcommands.listener.CommandErrorListener} for more information
+ * Identifies whether an argument is autocompletable
  */
-@Deprecated
-public enum CommandErrorType {
+public interface Autocompletable {
 
-    /**
-     * Occurs when one or more of the arguments are missing or not matching the pattern.
-     */
-    BAD_ARGUMENTS,
+    List<Autocomplete> getAutocompletes();
 
-    /**
-     * Occurs when the sender wants to use the command in a category where it is not allowed.
-     */
-    BAD_CATEGORY,
-
-    /**
-     * Occurs when the sender wants to use the command in a channel where it is not allowed.
-     */
-    BAD_CHANNEL
+    default void addAutocomplete(Autocomplete autocomplete) {
+        getAutocompletes().add(autocomplete);
+    }
 
 }

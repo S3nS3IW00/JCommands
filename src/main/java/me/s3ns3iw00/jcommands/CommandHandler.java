@@ -22,13 +22,14 @@ import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
+import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
+import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
+import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
-import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
-import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
-import me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
 import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
@@ -38,7 +39,6 @@ import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
 import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
-import me.s3ns3iw00.jcommands.listener.CommandErrorListener;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ChannelCategory;
 import org.javacord.api.entity.channel.ChannelType;
@@ -81,6 +81,7 @@ public class CommandHandler {
     public static void setApi(DiscordApi api) {
         CommandHandler.api = api;
         api.addSlashCommandCreateListener(event -> handleCommand(event.getSlashCommandInteraction()));
+        api.addAutocompleteCreateListener(event -> handleAutocomplete(event.getAutocompleteInteraction()));
     }
 
     /**
@@ -187,6 +188,62 @@ public class CommandHandler {
     }
 
     /**
+     * Handles autocomplete requests for arguments
+     *
+     * @param interaction the interaction
+     */
+    private static void handleAutocomplete(AutocompleteInteraction interaction) {
+        Optional<Command> commandOptional = commands.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(interaction.getCommandName()))
+                .findFirst();
+
+        commandOptional.ifPresent(command -> {
+            SlashCommandInteractionOption option = interaction.getFocusedOption();
+
+            User sender = interaction.getUser();
+            Optional<TextChannel> channel = interaction.getChannel();
+            List<Argument> allArguments = collectArguments(command.getArguments());
+            Optional<Argument> argumentOptional = allArguments.stream()
+                    .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
+                    .findFirst();
+            argumentOptional.ifPresent(argument -> {
+                if (argument instanceof Autocompletable) {
+                    Autocompletable autocompletable = (Autocompletable) argument;
+                    AutocompleteState autocompleteState = new AutocompleteState(
+                            command,
+                            channel.orElse(null),
+                            sender,
+                            argument,
+                            getOptionValue(option, argument.getType()),
+                            interaction.getArguments().stream()
+                                    .collect(Collectors.toMap(
+                                            key -> allArguments.stream()
+                                                    .filter(arg -> arg.getName().equalsIgnoreCase(key.getName()))
+                                                    .findFirst().orElse(null),
+                                            value -> value
+                                    ))
+                                    .entrySet().stream()
+                                    .collect(Collectors.toMap(
+                                            Map.Entry::getKey,
+                                            value -> getOptionValue(value.getValue(), value.getKey().getType())
+                                    )));
+
+                    /* Collect results from autocompletes and construct the list */
+                    List<Choice> choices = autocompletable.getAutocompletes().stream()
+                            .map(autocomplete -> autocomplete.getResult(autocompleteState))
+                            .filter(Objects::nonNull)
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
+
+                    if (choices.size() > 0) {
+                        interaction.respondWithChoices(choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
+                    }
+                }
+            });
+        });
+    }
+
+    /**
      * Processes arguments and every argument of the arguments recursively:
      * - Adjusts values to the arguments
      * - Checks that the value is valid for the argument
@@ -221,6 +278,14 @@ public class CommandHandler {
                     } else {
                         return Optional.empty();
                     }
+                } else if (argument instanceof ComboArgument) {
+                    /* Choose the value that the user picked
+                       Checking is unnecessary since the user only can pick a valid value
+                     */
+                    ComboArgument ca = (ComboArgument) argument;
+
+                    ca.choose(value);
+                    results.put(argument, new ArgumentResult(ca));
                 } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
                        If it is not then it will be added to the list,
@@ -273,6 +338,9 @@ public class CommandHandler {
             case LONG:
                 value = option.getLongValue().orElse(null);
                 break;
+            case DECIMAL:
+                value = option.getDecimalValue().orElse(null);
+                break;
             case BOOLEAN:
                 value = option.getBooleanValue().orElse(null);
                 break;
@@ -280,6 +348,40 @@ public class CommandHandler {
                 value = null;
         }
         return value;
+    }
+
+    /**
+     * Returns the {@link Argument} of {@link Command} by {@link SlashCommandInteractionOption}
+     *
+     * @param command the command
+     * @param option  the option
+     * @return an {@link Optional} with the {@link Argument} in it if found,
+     * otherwise an empty {@link Optional}
+     */
+    private static Optional<Argument> getArgumentByOption(Command command, SlashCommandInteractionOption option) {
+        return collectArguments(command.getArguments()).stream()
+                .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
+                .findFirst();
+    }
+
+    /**
+     * Collects all arguments of a list of arguments in one list
+     * For collecting a command's all arguments {@link Command#getArguments()} need to be passed as parameter
+     *
+     * @param arguments a list of argument
+     * @return the collection
+     */
+    private static List<Argument> collectArguments(List<Argument> arguments) {
+        List<Argument> allArguments = new ArrayList<>();
+        for (Argument argument : arguments) {
+            if (argument instanceof SubArgument) {
+                allArguments.addAll(collectArguments(((SubArgument) argument).getArguments()));
+            } else {
+                allArguments.add(argument);
+            }
+        }
+
+        return allArguments;
     }
 
     /**
@@ -418,19 +520,6 @@ public class CommandHandler {
      */
     public static void registerCommand(CommandBuilder<?> builder) {
         registerCommand(builder.getCommand());
-    }
-
-    /**
-     * Registers an error listener where the errors will be managed
-     *
-     * @param error the listener interface
-     * @deprecated because of the new event system
-     * use {@link CategoryLimitable#setOnBadCategory(BadCategoryEventListener)},
-     * {@link ChannelLimitable#setOnBadChannel(BadChannelEventListener)} and
-     * {@link Argument#setOnMismatch(ArgumentMismatchEventListener)} instead
-     */
-    @Deprecated
-    public static void setOnError(CommandErrorListener error) {
     }
 
     /**

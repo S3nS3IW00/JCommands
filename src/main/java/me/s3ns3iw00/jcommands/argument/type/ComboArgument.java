@@ -18,21 +18,25 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.util.Choice;
 import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
  * The values are key value pairs
  * The key is {@code String} and the value can be {@code String} or {@code Long}
  */
-public class ComboArgument extends InputArgument {
+public class ComboArgument extends Argument implements Optionality {
 
-    private final LinkedList<SlashCommandOptionChoice> choices = new LinkedList<>();
+    private final LinkedList<Choice> choices = new LinkedList<>();
+    private Choice choice;
+    private boolean optional;
 
     /**
      * Constructs the argument with the default requirements
@@ -45,7 +49,7 @@ public class ComboArgument extends InputArgument {
         super(name, description, type);
 
         if (type != SlashCommandOptionType.STRING && type != SlashCommandOptionType.LONG) {
-            throw new IllegalArgumentException("type can be only String or Integer");
+            throw new IllegalArgumentException("type can be only String or Long");
         }
     }
 
@@ -57,10 +61,10 @@ public class ComboArgument extends InputArgument {
      */
     public void addChoice(String key, String value) {
         if (getType() == SlashCommandOptionType.LONG) {
-            throw new IllegalStateException("Value must match with the argument's type: Integer");
+            throw new IllegalStateException("Value must match with the argument's type: Long");
         }
 
-        choices.add(SlashCommandOptionChoice.create(key, value));
+        choices.add(new Choice(key, value));
     }
 
     /**
@@ -69,30 +73,48 @@ public class ComboArgument extends InputArgument {
      * @param key   the name of the argument
      * @param value the value of the argument as {@code Long}
      */
-    public void addChoice(String key, int value) {
+    public void addChoice(String key, long value) {
         if (getType() == SlashCommandOptionType.STRING) {
             throw new IllegalStateException("Value must match with the argument's type: String");
         }
 
-        choices.add(SlashCommandOptionChoice.create(key, value));
+        choices.add(new Choice(key, value));
+    }
+
+    /**
+     * Chooses a value from the choices
+     *
+     * @param value the value
+     */
+    public void choose(Object value) {
+        choice = choices.stream()
+                .filter(choice1 -> choice1.getValue().equals(value))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public Object getValue() {
-        if (getType() == SlashCommandOptionType.STRING) {
-            return super.getValue().toString();
-        }
-        return super.getValue();
+        return choice;
+    }
+
+    @Override
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
     @Override
     public Class<?> getResultType() {
-        return getType() == SlashCommandOptionType.STRING ? String.class : Integer.class;
+        return Choice.class;
     }
 
     @Override
     public SlashCommandOption getCommandOption() {
         return SlashCommandOption.createWithChoices(getType(),
-                getName(), getDescription(), !isOptional(), choices);
+                getName(), getDescription(), !isOptional(), choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
     }
 }

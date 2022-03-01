@@ -1,8 +1,8 @@
-# JCommands [![](https://img.shields.io/badge/Version-4.1.1-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.4.0-red)](https://github.com/Javacord/Javacord)
+# JCommands [![](https://img.shields.io/badge/Version-4.2.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.4.0-red)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash commands within 1 minute with built-in validating, converting,
-concatenating and extended permission checking for channels and categories. There are so many useful pre-written
-argument types that can be used while creating a command.
+concatenating, argument autocompleting and extended permission checking for channels and categories. There are so many
+useful pre-written argument types that can be used while creating a command.
 
 ### Example command
 
@@ -41,5 +41,10 @@ bots with it.
    ```java  
    CommandHandler.setApi(DiscordApi);  
    ```  
-3. Create an error listener and as many command as you want.
-4. Enjoy!
+3. Give a star if you like it and enjoy!
+
+## Contact
+
+If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on
+the [issues](https://github.com/S3nS3IW00/JCommands/issues) page. You can contact me through
+discord: [🆂🅴🅽🆂🅴🆈#0054](https://discord.com/users/249674530077802496)

@@ -18,21 +18,30 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
  */
-public abstract class InputArgument extends Argument {
+public abstract class InputArgument extends Argument implements Optionality, Autocompletable {
 
     private Object input;
     private final Class<?> resultType;
     private boolean optional = false;
+
+    private final List<Autocomplete> autocompletes = new ArrayList<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -83,9 +92,16 @@ public abstract class InputArgument extends Argument {
 
     @Override
     public SlashCommandOption getCommandOption() {
-        return SlashCommandOption.create(getType(), getName(), getDescription(), !optional);
+        return new SlashCommandOptionBuilder()
+                .setName(getName())
+                .setDescription(getDescription())
+                .setType(getType())
+                .setRequired(!isOptional())
+                .setAutocompletable(autocompletes.size() > 0)
+                .build();
     }
 
+    @Override
     public boolean isOptional() {
         return optional;
     }
@@ -96,6 +112,10 @@ public abstract class InputArgument extends Argument {
      */
     public void setOptional() {
         optional = true;
+    }
+
+    public List<Autocomplete> getAutocompletes() {
+        return autocompletes;
     }
 
     /**
