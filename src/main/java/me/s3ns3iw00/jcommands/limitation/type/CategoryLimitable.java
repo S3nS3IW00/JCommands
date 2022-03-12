@@ -28,7 +28,9 @@ import java.util.Set;
  */
 public interface CategoryLimitable {
 
-    void addCategoryLimitation(CategoryLimitation limitation);
+    default void addCategoryLimitation(CategoryLimitation limitation) {
+        getCategoryLimitations().add(limitation);
+    }
 
     Set<CategoryLimitation> getCategoryLimitations();
 

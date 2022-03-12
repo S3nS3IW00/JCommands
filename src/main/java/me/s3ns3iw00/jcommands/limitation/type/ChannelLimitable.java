@@ -28,7 +28,9 @@ import java.util.Set;
  */
 public interface ChannelLimitable {
 
-    void addChannelLimitation(ChannelLimitation limitation);
+    default void addChannelLimitation(ChannelLimitation limitation) {
+        getChannelLimitations().add(limitation);
+    }
 
     Set<ChannelLimitation> getChannelLimitations();
 

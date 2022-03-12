@@ -25,7 +25,9 @@ import java.util.Set;
  */
 public interface UserLimitable {
 
-    void addUserLimitation(UserLimitation limitation);
+    default void addUserLimitation(UserLimitation limitation) {
+        getUserLimitations().add(limitation);
+    }
 
     Set<UserLimitation> getUserLimitations();
 

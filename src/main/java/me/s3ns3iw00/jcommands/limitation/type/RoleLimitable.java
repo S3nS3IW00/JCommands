@@ -25,7 +25,9 @@ import java.util.Set;
  */
 public interface RoleLimitable {
 
-    void addRoleLimitation(RoleLimitation limitation);
+    default void addRoleLimitation(RoleLimitation limitation) {
+        getRoleLimitations().add(limitation);
+    }
 
     Set<RoleLimitation> getRoleLimitations();
 

@@ -46,18 +46,8 @@ public class SlashCommand extends Command implements UserLimitable, RoleLimitabl
     }
 
     @Override
-    public void addCategoryLimitation(CategoryLimitation limitation) {
-        categoryLimitations.add(limitation);
-    }
-
-    @Override
     public Set<CategoryLimitation> getCategoryLimitations() {
         return categoryLimitations;
-    }
-
-    @Override
-    public void addChannelLimitation(ChannelLimitation limitation) {
-        channelLimitations.add(limitation);
     }
 
     @Override
@@ -66,18 +56,8 @@ public class SlashCommand extends Command implements UserLimitable, RoleLimitabl
     }
 
     @Override
-    public void addRoleLimitation(RoleLimitation limitation) {
-        roleLimitations.add(limitation);
-    }
-
-    @Override
     public Set<RoleLimitation> getRoleLimitations() {
         return roleLimitations;
-    }
-
-    @Override
-    public void addUserLimitation(UserLimitation limitation) {
-        userLimitations.add(limitation);
     }
 
     @Override
