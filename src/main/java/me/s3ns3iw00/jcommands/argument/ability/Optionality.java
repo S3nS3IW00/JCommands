@@ -25,4 +25,10 @@ public interface Optionality {
 
     boolean isOptional();
 
+    /**
+     * Sets the argument optional
+     * Only the last argument of the options can be set as optional
+     */
+    void setOptional();
+
 }

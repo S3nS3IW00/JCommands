@@ -106,10 +106,6 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
         return optional;
     }
 
-    /**
-     * Sets the argument optional
-     * Only the last argument of the options can be set as optional
-     */
     public void setOptional() {
         optional = true;
     }
