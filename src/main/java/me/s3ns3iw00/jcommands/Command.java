@@ -23,6 +23,7 @@ import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
+import org.javacord.api.entity.permission.PermissionType;
 
 import java.util.*;
 
@@ -39,6 +40,10 @@ public class Command {
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
     private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
+
+    private final Set<PermissionType> defaultPermissions = new HashSet<>();
+
+    private boolean onlyForAdministrators = false;
 
     private CommandActionEventListener actionListener;
     private ArgumentMismatchEventListener argumentMismatchListener;
@@ -108,6 +113,23 @@ public class Command {
     }
 
     /**
+     * Adds permissions that will be applied on the command
+     * Users will need these permissions in the specific channel to use the command
+     *
+     * @param permissionTypes a list of {@link PermissionType}
+     */
+    public void addPermissions(PermissionType... permissionTypes) {
+        defaultPermissions.addAll(Arrays.asList(permissionTypes));
+    }
+
+    /**
+     * Sets the command available only for administrators by default
+     */
+    public void setOnlyForAdministrators() {
+        this.onlyForAdministrators = true;
+    }
+
+    /**
      * Sets the action listener
      *
      * @param listener the listener
@@ -142,6 +164,14 @@ public class Command {
      */
     public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
         return concatenators;
+    }
+
+    public Set<PermissionType> getDefaultPermissions() {
+        return defaultPermissions;
+    }
+
+    public boolean isOnlyForAdministrators() {
+        return onlyForAdministrators;
     }
 
     /**
