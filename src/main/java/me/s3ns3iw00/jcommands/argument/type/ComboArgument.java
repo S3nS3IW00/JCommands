@@ -103,6 +103,11 @@ public class ComboArgument extends Argument implements Optionality {
         return optional;
     }
 
+    @Override
+    public void setOptional() {
+        this.optional = true;
+    }
+
     public void setOptional(boolean optional) {
         this.optional = optional;
     }
