@@ -30,7 +30,11 @@ import java.util.Set;
 /**
  * A {@code Command} that only can be used on servers where the command has been registered.<br>
  * Can be limited for users, roles, channels and categories.
+ *
+ * @deprecated This class is deprecated and will be removed in the future.
+ *             Use {@link Command} class's implementations instead.
  */
+@Deprecated
 public class SlashCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
 
     private final Set<UserLimitation> userLimitations = new HashSet<>();
