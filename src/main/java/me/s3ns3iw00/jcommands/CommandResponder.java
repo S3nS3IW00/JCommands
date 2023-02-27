@@ -55,6 +55,17 @@ public class CommandResponder {
     }
 
     /**
+     * Creates an ephemeral updater that listens for the response
+     * In this case a waiting message can be sent to the user
+     * NOTE: Late responses need to be sent within 15 minutes, otherwise Discord drops it
+     *
+     * @return the response updater
+     */
+    public CompletableFuture<InteractionOriginalResponseUpdater> respondLater(boolean ephemeral) {
+        return interaction.respondLater(true);
+    }
+
+    /**
      * Creates a responder to respond immediately to the command
      *
      * @return the immediate responder builder
