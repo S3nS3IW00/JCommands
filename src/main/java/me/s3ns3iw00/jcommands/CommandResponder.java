@@ -61,7 +61,7 @@ public class CommandResponder {
      *
      * @return the response updater
      */
-    public CompletableFuture<InteractionOriginalResponseUpdater> respondLater(boolean ephemeral) {
+    public CompletableFuture<InteractionOriginalResponseUpdater> respondLaterEphemeral() {
         return interaction.respondLater(true);
     }
 
