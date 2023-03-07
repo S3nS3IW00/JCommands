@@ -22,6 +22,7 @@ import me.s3ns3iw00.jcommands.Command;
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
+import org.javacord.api.entity.permission.PermissionType;
 
 import java.util.Arrays;
 
@@ -61,6 +62,17 @@ public abstract class CommandBuilder<B extends CommandBuilder<B>> {
      */
     public B onAction(CommandActionEventListener listener) {
         getCommand().setOnAction(listener);
+        return (B) this;
+    }
+
+    /**
+     * Calls {@link Command#addPermissions(PermissionType...)}
+     *
+     * @param permissionTypes the permissions
+     * @return this class
+     */
+    public B permissions(PermissionType... permissionTypes) {
+        getCommand().addPermissions(permissionTypes);
         return (B) this;
     }
 
