@@ -313,6 +313,9 @@ public class CommandHandler {
             case BOOLEAN:
                 value = option.getBooleanValue().orElse(null);
                 break;
+            case ATTACHMENT:
+                value = option.getAttachmentValue().orElse(null);
+                break;
             default:
                 value = null;
         }

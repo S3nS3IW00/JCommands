@@ -21,6 +21,7 @@ package me.s3ns3iw00.jcommands.argument;
 import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
 import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
+import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -72,6 +73,9 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
                 break;
             case USER:
                 resultType = User.class;
+                break;
+            case ATTACHMENT:
+                resultType = Attachment.class;
                 break;
         }
         this.resultType = resultType;
