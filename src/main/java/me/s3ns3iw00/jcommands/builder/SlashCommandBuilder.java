@@ -33,7 +33,9 @@ import java.util.Arrays;
  * Useful class that makes {@code ServerCommand} creations more comfortable
  *
  * @author S3nS3IW00
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public class SlashCommandBuilder extends CommandBuilder<SlashCommandBuilder> {
 
     private final SlashCommand command;

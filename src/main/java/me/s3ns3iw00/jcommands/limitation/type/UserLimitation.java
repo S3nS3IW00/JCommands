@@ -25,7 +25,10 @@ import org.javacord.api.entity.user.User;
 /**
  * Represents a specific type of limitation
  * Commands with this limitation do not work in private
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public class UserLimitation extends Limitation<User> {
 
     private final User entity;

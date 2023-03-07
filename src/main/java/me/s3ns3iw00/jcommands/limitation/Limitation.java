@@ -24,7 +24,9 @@ import org.javacord.api.entity.server.Server;
  * Represents a command limitation
  *
  * @param <T> aspect that the command will be limited by
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public abstract class Limitation<T> {
 
     /**

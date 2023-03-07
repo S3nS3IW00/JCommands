@@ -24,7 +24,10 @@ import org.javacord.api.entity.server.Server;
 
 /**
  * Represents a specific type of limitation
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public class CategoryLimitation extends Limitation<ChannelCategory> {
 
     private final ChannelCategory entity;
