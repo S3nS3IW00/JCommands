@@ -37,10 +37,10 @@ public class AutocompleteState {
     private final User sender;
 
     private final Argument currentArgument;
-    private final Object currentValue;
-    private final Map<Argument, Object> argumentValues;
+    private final Optional<?> currentValue;
+    private final Map<Argument, Optional<?>> argumentValues;
 
-    public AutocompleteState(Command command, TextChannel channel, User sender, Argument currentArgument, Object currentValue, Map<Argument, Object> argumentValues) {
+    public AutocompleteState(Command command, TextChannel channel, User sender, Argument currentArgument, Optional<?> currentValue, Map<Argument, Optional<?>> argumentValues) {
         this.command = command;
         this.channel = channel;
         this.sender = sender;
@@ -65,11 +65,11 @@ public class AutocompleteState {
         return currentArgument;
     }
 
-    public Object getCurrentValue() {
+    public Optional<?> getCurrentValue() {
         return currentValue;
     }
 
-    public Map<Argument, Object> getArgumentValues() {
+    public Map<Argument, Optional<?>> getArgumentValues() {
         return argumentValues;
     }
 }

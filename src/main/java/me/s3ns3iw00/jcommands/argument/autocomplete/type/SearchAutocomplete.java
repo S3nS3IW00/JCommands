@@ -114,16 +114,16 @@ public class SearchAutocomplete extends Autocomplete {
 
     @Override
     public List<Choice> getResult(AutocompleteState state) {
-        if (state.getCurrentValue().toString().length() < minCharToSearch) return null;
+        if (!state.getCurrentValue().isPresent() && state.getCurrentValue().toString().length() < minCharToSearch) return null;
 
         Stream<Choice> choices = dataSource.stream()
                 .filter(data -> {
                     /* If the datasource's type is String and the data in the datasource and the argument's value is also String
                        Filters the datasource by the type of search and the input
                      */
-                    if (dataType == SlashCommandOptionType.STRING && data instanceof String && state.getCurrentValue() instanceof String) {
+                    if (dataType == SlashCommandOptionType.STRING && data instanceof String && state.getCurrentValue().get() instanceof String) {
                         String strData = (String) data;
-                        String strValue = (String) state.getCurrentValue();
+                        String strValue = (String) state.getCurrentValue().get();
 
                         if (ignoreCase) {
                             strData = strData.toLowerCase();
@@ -140,9 +140,9 @@ public class SearchAutocomplete extends Autocomplete {
                     /* If the datasource's type is Long and the data in the datasource is Number and the argument's value is also Long
                        Filters the datasource by the type of search and the input
                      */
-                    } else if (dataType == SlashCommandOptionType.LONG && data instanceof Number && state.getCurrentValue() instanceof Long) {
+                    } else if (dataType == SlashCommandOptionType.LONG && data instanceof Number && state.getCurrentValue().get() instanceof Long) {
                         Number lData = (Number) data;
-                        long lValue = (long) state.getCurrentValue();
+                        long lValue = (Long) state.getCurrentValue().get();
 
                         if (searchType == SearchType.GREATER_THAN) {
                             return lData.longValue() > lValue;
