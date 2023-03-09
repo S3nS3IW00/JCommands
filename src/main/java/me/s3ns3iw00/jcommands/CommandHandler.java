@@ -30,7 +30,6 @@ import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
-import me.s3ns3iw00.jcommands.builder.CommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
@@ -234,42 +233,39 @@ public class CommandHandler {
             // Option is null when the argument is marked as optional, and was not specified
             SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
-            if (option != null) {
-                Object value = getOptionValue(option, argument.getType());
-
-                if (argument instanceof SubArgument) {
+            Optional<?> value = getOptionValue(option, argument.getType());
+            if (argument instanceof SubArgument) {
                     /* Add the result of the argument to the list, which is basically the name of the argument;
                        If the result is present that means there are other arguments that need to be added to the list,
                             otherwise just return an empty optional to tell the caller that there aren't any other options;
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                    results.put(argument, new ArgumentResult(argument));
-                    Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
-                    if (result.isPresent()) {
-                        results.putAll(result.get());
-                    } else {
-                        return Optional.empty();
-                    }
-                } else if (argument instanceof ComboArgument) {
+                results.put(argument, new ArgumentResult(argument));
+                Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
+                if (result.isPresent()) {
+                    results.putAll(result.get());
+                } else {
+                    return Optional.empty();
+                }
+            } else if (argument instanceof ComboArgument) {
                     /* Choose the value that the user picked
                        Checking is unnecessary since the user only can pick a valid value
                      */
-                    ComboArgument ca = (ComboArgument) argument;
+                ComboArgument ca = (ComboArgument) argument;
+                value.ifPresent(ca::choose);
 
-                    ca.choose(value);
-                    results.put(argument, new ArgumentResult(ca));
-                } else if (argument instanceof InputArgument) {
+                results.put(argument, new ArgumentResult(ca));
+            } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
                        If it is not then it will be added to the list,
                             otherwise return an empty optional to tell the caller that one of the argument is not valid
                      */
-                    InputArgument ia = (InputArgument) argument;
-                    ia.input(value);
-
-                    if (ia.getValue() != null) {
-                        results.put(argument, new ArgumentResult(ia));
-                    } else {
+                InputArgument ia = (InputArgument) argument;
+                if (value.isPresent()) {
+                    ia.input(value.get());
+                } else {
+                    if (!ia.isOptional()) {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
@@ -278,6 +274,8 @@ public class CommandHandler {
                         return Optional.empty();
                     }
                 }
+
+                results.put(argument, new ArgumentResult(ia));
             }
         }
         return Optional.of(results);
@@ -290,40 +288,33 @@ public class CommandHandler {
      * @param type   the requested type
      * @return the value of the option based on its type
      */
-    private static Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
-        Object value;
+    private static Optional<?> getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
+        if (option == null) {
+            return Optional.empty();
+        }
+
         switch (type) {
             case ROLE:
-                value = option.getRoleValue().orElse(null);
-                break;
+                return option.getRoleValue();
             case USER:
-                value = option.getUserValue().orElse(null);
-                break;
+                return option.getUserValue();
             case CHANNEL:
-                value = option.getChannelValue().orElse(null);
-                break;
+                return option.getChannelValue();
             case MENTIONABLE:
-                value = option.getMentionableValue().orElse(null);
-                break;
+                return option.getMentionableValue();
             case STRING:
-                value = option.getStringValue().orElse(null);
-                break;
+                return option.getStringValue();
             case LONG:
-                value = option.getLongValue().orElse(null);
-                break;
+                return option.getLongValue();
             case DECIMAL:
-                value = option.getDecimalValue().orElse(null);
-                break;
+                return option.getDecimalValue();
             case BOOLEAN:
-                value = option.getBooleanValue().orElse(null);
-                break;
+                return option.getBooleanValue();
             case ATTACHMENT:
-                value = option.getAttachmentValue().orElse(null);
-                break;
+                return option.getAttachmentValue();
             default:
-                value = null;
+                 return Optional.empty();
         }
-        return value;
     }
 
     /**

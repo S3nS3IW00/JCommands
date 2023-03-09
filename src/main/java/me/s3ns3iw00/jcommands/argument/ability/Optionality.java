@@ -18,6 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument.ability;
 
+import java.util.Optional;
+
 /**
  * Identifies whether an argument can be optional or not
  */
@@ -30,5 +32,12 @@ public interface Optionality {
      * Only the last argument of the options can be set as optional
      */
     void setOptional();
+
+    /**
+     * Gets the value of the argument as optional
+     *
+     * @return the optional value
+     */
+    Optional<?> getOptionalValue();
 
 }

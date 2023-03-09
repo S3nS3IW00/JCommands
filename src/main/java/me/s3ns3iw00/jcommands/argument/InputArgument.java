@@ -31,6 +31,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
@@ -130,6 +131,11 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
     @Override
     public Object getValue() {
         return input;
+    }
+
+    @Override
+    public Optional<?> getOptionalValue() {
+        return Optional.ofNullable(input);
     }
 
     @Override

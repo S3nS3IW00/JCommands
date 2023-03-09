@@ -25,6 +25,7 @@ import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -106,6 +107,11 @@ public class ComboArgument extends Argument implements Optionality {
     @Override
     public void setOptional() {
         this.optional = true;
+    }
+
+    @Override
+    public Optional<?> getOptionalValue() {
+        return Optional.ofNullable(choice);
     }
 
     public void setOptional(boolean optional) {
