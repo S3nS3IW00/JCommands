@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
@@ -80,9 +80,9 @@ public class Command {
      */
     public void addArgument(Argument argument) {
         if (arguments.size() > 0 &&
-                (arguments.getLast() instanceof InputArgument) &&
-                ((InputArgument) arguments.getLast()).isOptional() &&
-                !((InputArgument) argument).isOptional()) {
+                (arguments.getLast() instanceof Optionality) &&
+                ((Optionality) arguments.getLast()).isOptional() &&
+                !((Optionality) argument).isOptional()) {
             throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
         }
 
