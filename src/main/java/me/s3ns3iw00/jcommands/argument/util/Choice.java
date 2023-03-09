@@ -54,6 +54,22 @@ public class Choice {
         return value;
     }
 
+    public String getValueAsString() {
+        if (!(value instanceof String)) {
+            throw new IllegalStateException("The value is not a String, but a Long! Use getValueAsLong()");
+        }
+
+        return (String) value;
+    }
+
+    public Long getValueAsLong() {
+        if (!(value instanceof Long)) {
+            throw new IllegalStateException("The value is not a Long, but a String! Use getValueAsString()");
+        }
+
+        return (Long) value;
+    }
+
     /**
      * Constructs the {@link SlashCommandOptionChoice} instance
      *
