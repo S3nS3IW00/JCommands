@@ -22,10 +22,15 @@ import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for roles
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public interface RoleLimitable {
 
-    void addRoleLimitation(RoleLimitation limitation);
+    default void addRoleLimitation(RoleLimitation limitation) {
+        getRoleLimitations().add(limitation);
+    }
 
     Set<RoleLimitation> getRoleLimitations();
 

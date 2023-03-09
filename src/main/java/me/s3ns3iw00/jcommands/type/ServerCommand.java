@@ -16,29 +16,29 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation.type;
+package me.s3ns3iw00.jcommands.type;
 
-import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
-
-import java.util.Optional;
-import java.util.Set;
+import me.s3ns3iw00.jcommands.Command;
 
 /**
- * Commands that implements this interface can be limited for categories
- *
- * @deprecated because of the new permission system
+ * A {@link Command} that only can be registered on servers
  */
-@Deprecated
-public interface CategoryLimitable {
+public class ServerCommand extends Command {
 
-    default void addCategoryLimitation(CategoryLimitation limitation) {
-        getCategoryLimitations().add(limitation);
+    /**
+     * Default constructor
+     *
+     * @param name        the name of the command
+     *                    Its length must between 1 and 32
+     *                    Can contain only:
+     *                    - word characters
+     *                    - numbers
+     *                    - '-' characters
+     * @param description the description of the command
+     *                    Its length must between 1 and 100
+     */
+    public ServerCommand(String name, String description) {
+        super(name, description);
     }
-
-    Set<CategoryLimitation> getCategoryLimitations();
-
-    void setOnBadCategory(BadCategoryEventListener listener);
-
-    Optional<BadCategoryEventListener> getBadCategoryListener();
 
 }

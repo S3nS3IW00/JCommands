@@ -22,7 +22,10 @@ import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
 
 /**
  * A listener that gets triggered when a {@link me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable} command used in wrong channel
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public interface BadChannelEventListener {
 
     void onBadChannel(BadChannelEvent event);

@@ -6,9 +6,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * An {@link ArgumentResultConverter} that converts {@link String} value formatted by {@code DATE_FORMAT} into {@link java.util.Date}
+ * An {@link ArgumentResultConverter} that converts {@link String} value formatted by {@link DateConverter#DATE_FORMAT} into {@link java.util.Date}
  */
-public class DateConverter extends ArgumentResultConverter {
+public class DateConverter implements ArgumentResultConverter {
 
     // The date format
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");

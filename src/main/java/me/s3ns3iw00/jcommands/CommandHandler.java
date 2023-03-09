@@ -23,26 +23,22 @@ import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
-import me.s3ns3iw00.jcommands.builder.CommandBuilder;
+import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
+import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
-import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
-import me.s3ns3iw00.jcommands.event.type.BadChannelEvent;
 import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
-import me.s3ns3iw00.jcommands.limitation.Limitation;
-import me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable;
-import me.s3ns3iw00.jcommands.limitation.type.ChannelLimitable;
-import me.s3ns3iw00.jcommands.limitation.type.RoleLimitable;
-import me.s3ns3iw00.jcommands.limitation.type.UserLimitable;
+import me.s3ns3iw00.jcommands.type.GlobalCommand;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.ChannelCategory;
-import org.javacord.api.entity.channel.ChannelType;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
@@ -98,30 +94,6 @@ public class CommandHandler {
 
         // Check that the command needs to be handled by JCommands
         commandOptional.ifPresent(command -> {
-            //Category and channel validation
-            if (channel.isPresent() && channel.get().getType() == ChannelType.SERVER_TEXT_CHANNEL) {
-                Optional<ChannelCategory> category = channel.get().asServerTextChannel().get().getCategory();
-                if (category.isPresent()) {
-                    if (command instanceof CategoryLimitable) {
-                        CategoryLimitable categoryLimitable = (CategoryLimitable) command;
-                        if ((categoryLimitable.getCategoryLimitations().stream().anyMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().noneMatch(l -> l.getEntity().getId() == category.get().getId())) ||
-                                (categoryLimitable.getCategoryLimitations().stream().noneMatch(Limitation::isPermit) && categoryLimitable.getCategoryLimitations().stream().anyMatch(l -> l.getEntity().getId() == category.get().getId()))) {
-                            categoryLimitable.getBadCategoryListener()
-                                    .ifPresent(listener -> listener.onBadCategory(new BadCategoryEvent(command, sender, new CommandResponder(interaction), category.get())));
-                            return;
-                        }
-                    }
-                }
-                if (command instanceof ChannelLimitable) {
-                    ChannelLimitable channelLimitable = (ChannelLimitable) command;
-                    if ((channelLimitable.getChannelLimitations().stream().anyMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().noneMatch(l -> l.getEntity().getId() == channel.get().getId())) ||
-                            (channelLimitable.getChannelLimitations().stream().noneMatch(Limitation::isPermit) && channelLimitable.getChannelLimitations().stream().anyMatch(l -> l.getEntity().getId() == channel.get().getId()))) {
-                        channelLimitable.getBadChannelListener().ifPresent(listener -> listener.onBadChannel(new BadChannelEvent(command, sender, new CommandResponder(interaction), channel.get())));
-                        return;
-                    }
-                }
-            }
-
             //Argument validation
             Optional<Map<Argument, ArgumentResult>> resultOptional = processArguments(interaction, command.getArguments(), interaction.getOptions());
 
@@ -137,15 +109,15 @@ public class CommandHandler {
                        Except the optional arguments that haven't been specified
                      */
                     List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator).stream()
-                            .filter(arg -> !(arg instanceof InputArgument) ||
-                                    !((InputArgument) arg).isOptional() ||
-                                    (((InputArgument) arg).isOptional() &&
+                            .filter(arg -> !(arg instanceof Optionality) ||
+                                    !((Optionality) arg).isOptional() ||
+                                    (((Optionality) arg).isOptional() &&
                                             resultOptional.get().containsKey(arg)))
                             .collect(Collectors.toCollection(LinkedList::new));
 
                     // Checks whether an argument's result is exist (so it has a value) or it is optional (so it does not need to have a value)
                     Predicate<Argument> argumentExistenceChecker = arg -> resultOptional.get().containsKey(arg) ||
-                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional();
+                            (arg instanceof Optionality) && ((Optionality) arg).isOptional();
                     // Concatenating if the result contains all the arguments in the concatenator or if the argument is optional
                     if (concatenatedArguments.stream().allMatch(argumentExistenceChecker)) {
                         /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
@@ -250,7 +222,7 @@ public class CommandHandler {
      * - Assembles a list with the result of every argument
      *
      * @param arguments the list of arguments need to be processed
-     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
+     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@param arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
      * otherwise it contains a {@link LinkedHashMap} with {@link Argument}s and their {@link ArgumentResult} in it that converts values to the final result
      */
@@ -261,42 +233,39 @@ public class CommandHandler {
             // Option is null when the argument is marked as optional, and was not specified
             SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
-            if (option != null) {
-                Object value = getOptionValue(option, argument.getType());
-
-                if (argument instanceof SubArgument) {
+            Optional<?> value = getOptionValue(option, argument.getType());
+            if (argument instanceof SubArgument) {
                     /* Add the result of the argument to the list, which is basically the name of the argument;
                        If the result is present that means there are other arguments that need to be added to the list,
                             otherwise just return an empty optional to tell the caller that there aren't any other options;
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                    results.put(argument, new ArgumentResult(argument));
-                    Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
-                    if (result.isPresent()) {
-                        results.putAll(result.get());
-                    } else {
-                        return Optional.empty();
-                    }
-                } else if (argument instanceof ComboArgument) {
+                results.put(argument, new ArgumentResult(argument));
+                Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
+                if (result.isPresent()) {
+                    results.putAll(result.get());
+                } else {
+                    return Optional.empty();
+                }
+            } else if (argument instanceof ComboArgument) {
                     /* Choose the value that the user picked
                        Checking is unnecessary since the user only can pick a valid value
                      */
-                    ComboArgument ca = (ComboArgument) argument;
+                ComboArgument ca = (ComboArgument) argument;
+                value.ifPresent(ca::choose);
 
-                    ca.choose(value);
-                    results.put(argument, new ArgumentResult(ca));
-                } else if (argument instanceof InputArgument) {
+                results.put(argument, new ArgumentResult(ca));
+            } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
                        If it is not then it will be added to the list,
                             otherwise return an empty optional to tell the caller that one of the argument is not valid
                      */
-                    InputArgument ia = (InputArgument) argument;
-                    ia.input(value);
-
-                    if (ia.getValue() != null) {
-                        results.put(argument, new ArgumentResult(ia));
-                    } else {
+                InputArgument ia = (InputArgument) argument;
+                if (value.isPresent()) {
+                    ia.input(value.get());
+                } else {
+                    if (!ia.isOptional()) {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
@@ -305,6 +274,8 @@ public class CommandHandler {
                         return Optional.empty();
                     }
                 }
+
+                results.put(argument, new ArgumentResult(ia));
             }
         }
         return Optional.of(results);
@@ -317,37 +288,33 @@ public class CommandHandler {
      * @param type   the requested type
      * @return the value of the option based on its type
      */
-    private static Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
-        Object value;
+    private static Optional<?> getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
+        if (option == null) {
+            return Optional.empty();
+        }
+
         switch (type) {
             case ROLE:
-                value = option.getRoleValue().orElse(null);
-                break;
+                return option.getRoleValue();
             case USER:
-                value = option.getUserValue().orElse(null);
-                break;
+                return option.getUserValue();
             case CHANNEL:
-                value = option.getChannelValue().orElse(null);
-                break;
+                return option.getChannelValue();
             case MENTIONABLE:
-                value = option.getMentionableValue().orElse(null);
-                break;
+                return option.getMentionableValue();
             case STRING:
-                value = option.getStringValue().orElse(null);
-                break;
+                return option.getStringValue();
             case LONG:
-                value = option.getLongValue().orElse(null);
-                break;
+                return option.getLongValue();
             case DECIMAL:
-                value = option.getDecimalValue().orElse(null);
-                break;
+                return option.getDecimalValue();
             case BOOLEAN:
-                value = option.getBooleanValue().orElse(null);
-                break;
+                return option.getBooleanValue();
+            case ATTACHMENT:
+                return option.getAttachmentValue();
             default:
-                value = null;
+                 return Optional.empty();
         }
-        return value;
     }
 
     /**
@@ -391,15 +358,8 @@ public class CommandHandler {
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(Command command, Server... servers) {
+    public static void registerCommand(ServerCommand command, Server... servers) {
         commands.add(command);
-
-        /*
-          Check if default permissions need to be turned off
-          They will get turned off when user or role limitation has been set on a command
-        */
-        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
-                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
 
         for (Server server : servers) {
             if (!serverCommands.containsKey(server)) {
@@ -411,115 +371,107 @@ public class CommandHandler {
                If it is, then just update it, otherwise register it
             */
             Optional<SlashCommand> slashCommandOptional = api.getServerSlashCommands(server).join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
-            long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
-                    .setName(command.getName())
-                    .setDescription(command.getDescription())
-                    .setDefaultPermission(defPermissions)
-                    .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
-                    .updateForServer(server)
-                    .join()
-                    .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
-                    .setDefaultPermission(defPermissions)
-                    .createForServer(server)
-                    .join()
-                    .getId());
-
-            applyPermissions(command, id, server);
+            if (slashCommandOptional.isPresent()) {
+                constructSlashCommandUpdater(command, slashCommandOptional.get().getId()).updateForServer(server).join();
+            } else {
+                constructSlashCommandBuilder(command).createForServer(server);
+            }
         }
     }
 
     /**
      * Registers command globally
-     * That means the command will be available in all the servers where the bot on, and also in private
+     * That means the command will be available in all the servers where the bot on, and also can be available in dms
      * Sets up permissions with discord's default permission system
      *
      * @param command the command to register
      */
-    public static void registerCommand(Command command) {
+    public static void registerCommand(GlobalCommand command) {
         commands.add(command);
-
-        /*
-          Check if default permissions need to be turned off
-          They will get turned off when user or role limitation has been set on a command
-        */
-        boolean defPermissions = !((command instanceof UserLimitable && ((UserLimitable) command).getUserLimitations().stream().anyMatch(Limitation::isPermit)) ||
-                (command instanceof RoleLimitable && ((RoleLimitable) command).getRoleLimitations().stream().anyMatch(Limitation::isPermit)));
 
         /* Check if the command with the name is already registered
            If it is, then just update it, otherwise register it
          */
         Optional<SlashCommand> slashCommandOptional = api.getGlobalSlashCommands().join().stream().filter(s -> s.getName().equalsIgnoreCase(command.getName())).findAny();
-        long id = slashCommandOptional.map(slashCommand -> new SlashCommandUpdater(slashCommand.getId())
-                .setName(command.getName())
-                .setDescription(command.getDescription())
-                .setDefaultPermission(defPermissions)
-                .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
-                .updateGlobal(api)
-                .join()
-                .getId()).orElseGet(() -> SlashCommand.with(command.getName(), command.getDescription(), command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()))
-                .setDefaultPermission(defPermissions)
-                .createGlobal(api)
-                .join()
-                .getId());
-
-        for (Server server : api.getServers()) {
-            applyPermissions(command, id, server);
+        if (slashCommandOptional.isPresent()) {
+            constructSlashCommandUpdater(command, slashCommandOptional.get().getId()).updateGlobal(api);
+        } else {
+            constructSlashCommandBuilder(command).createGlobal(api);
         }
     }
 
     /**
-     * Applies default Discord permissions on command
+     * Constructs a {@link SlashCommandUpdater} by the command and the id of the existing {@link SlashCommand}
      *
      * @param command the command
-     * @param id      the slash command's id
-     * @param server  the server
+     * @param commandId the id of the existing {@link SlashCommand}
+     * @return the {@link SlashCommandUpdater}
      */
-    private static void applyPermissions(Command command, long id, Server server) {
-        List<ApplicationCommandPermissions> permissions = new ArrayList<>();
-        if (command instanceof UserLimitable) {
-            UserLimitable userLimitable = (UserLimitable) command;
-            permissions.addAll(userLimitable.getUserLimitations().stream()
-                    .filter(user -> user.getServer().getId() == server.getId())
-                    .map(user -> ApplicationCommandPermissions.create(user.getEntity().getId(),
-                            ApplicationCommandPermissionType.USER,
-                            user.isPermit()))
-                    .collect(Collectors.toList()));
-        }
-        if (command instanceof RoleLimitable) {
-            RoleLimitable roleLimitable = (RoleLimitable) command;
-            permissions.addAll(roleLimitable.getRoleLimitations().stream()
-                    .filter(user -> user.getServer().getId() == server.getId())
-                    .map(role -> ApplicationCommandPermissions.create(role.getEntity().getId(),
-                            ApplicationCommandPermissionType.ROLE,
-                            role.isPermit()))
-                    .collect(Collectors.toList()));
+    private static SlashCommandUpdater constructSlashCommandUpdater(Command command, long commandId) {
+        SlashCommandUpdater slashCommandUpdater = new SlashCommandUpdater(commandId)
+                .setName(command.getName())
+                .setDescription(command.getDescription())
+                .setSlashCommandOptions(command.getArguments().stream().map(Argument::getCommandOption).collect(Collectors.toList()));
+
+        if (!command.getDefaultPermissions().isEmpty()) {
+            slashCommandUpdater.setDefaultEnabledForPermissions(command.getDefaultPermissions().toArray(new PermissionType[]{}));
+        } else if (command.isOnlyForAdministrators()) {
+            slashCommandUpdater.setDefaultDisabled();
+        } else {
+            slashCommandUpdater.setDefaultEnabledForEveryone();
         }
 
-        if (permissions.size() > 0) {
-            new ApplicationCommandPermissionsUpdater(server)
-                    .setPermissions(permissions)
-                    .update(id)
-                    .join();
+        if (command instanceof GlobalCommand) {
+            slashCommandUpdater.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
         }
+
+        return slashCommandUpdater;
     }
 
     /**
-     * Calls the {@link CommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
+     * Constructs a {@link SlashCommandBuilder} by the command
+     *
+     * @param command the command
+     * @return the {@link SlashCommandBuilder}
+     */
+    private static SlashCommandBuilder constructSlashCommandBuilder(Command command) {
+        SlashCommandBuilder slashCommandBuilder = SlashCommand
+                .with(command.getName(), command.getDescription(), command.getArguments().stream()
+                        .map(Argument::getCommandOption)
+                        .collect(Collectors.toList()));
+
+        if (!command.getDefaultPermissions().isEmpty()) {
+            slashCommandBuilder.setDefaultEnabledForPermissions(command.getDefaultPermissions().toArray(new PermissionType[]{}));
+        } else if (command.isOnlyForAdministrators()) {
+            slashCommandBuilder.setDefaultDisabled();
+        } else {
+            slashCommandBuilder.setDefaultEnabledForEveryone();
+        }
+
+        if (command instanceof GlobalCommand) {
+            slashCommandBuilder.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
+        }
+
+        return slashCommandBuilder;
+    }
+
+    /**
+     * Calls the {@link CommandHandler#registerCommand(ServerCommand, Server...)} method with the command contained by the {@link ServerCommandBuilder} class
      *
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(CommandBuilder<?> builder, Server... servers) {
-        registerCommand(builder.getCommand(), servers);
+    public static void registerCommand(ServerCommandBuilder builder, Server... servers) {
+        registerCommand((ServerCommand) builder.getCommand(), servers);
     }
 
     /**
-     * Calls the {@link CommandHandler#registerCommand(Command)} method with the command contained by the {@code CommandBuilder} class
+     * Calls the {@link CommandHandler#registerCommand(GlobalCommand)} method with the command contained by the {@link GlobalCommandBuilder} class
      *
      * @param builder the builder
      */
-    public static void registerCommand(CommandBuilder<?> builder) {
-        registerCommand(builder.getCommand());
+    public static void registerCommand(GlobalCommandBuilder builder) {
+        registerCommand((GlobalCommand) builder.getCommand());
     }
 
     /**
@@ -578,7 +530,7 @@ public class CommandHandler {
      * Gets the registered converter by the type
      *
      * @param clazz the class of the type
-     * @return an {@code Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
+     * @return an {@link Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
      */
     public static Optional<ArgumentResultConverter> getArgumentConverter(Class<?> clazz) {
         if (converters.containsKey(clazz)) {

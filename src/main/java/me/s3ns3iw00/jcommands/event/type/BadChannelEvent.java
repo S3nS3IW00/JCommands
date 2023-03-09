@@ -28,7 +28,10 @@ import org.javacord.api.entity.user.User;
  * An event that is provided by {@link me.s3ns3iw00.jcommands.event.listener.BadChannelEventListener}
  * <p>
  * Contains the {@link TextChannel} where the command was used
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public class BadChannelEvent extends CommandEvent {
 
     private final TextChannel channel;

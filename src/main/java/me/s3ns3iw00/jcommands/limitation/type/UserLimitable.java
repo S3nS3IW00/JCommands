@@ -22,10 +22,15 @@ import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for users
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public interface UserLimitable {
 
-    void addUserLimitation(UserLimitation limitation);
+    default void addUserLimitation(UserLimitation limitation) {
+        getUserLimitations().add(limitation);
+    }
 
     Set<UserLimitation> getUserLimitations();
 

@@ -25,7 +25,10 @@ import org.javacord.api.entity.server.Server;
 /**
  * Represents a specific type of limitation
  * Commands with this limitation do not work in private
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public class RoleLimitation extends Limitation<Role> {
 
     private final Role entity;

@@ -21,6 +21,7 @@ package me.s3ns3iw00.jcommands.argument;
 import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
 import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
+import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
@@ -30,6 +31,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
@@ -73,6 +75,9 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
             case USER:
                 resultType = User.class;
                 break;
+            case ATTACHMENT:
+                resultType = Attachment.class;
+                break;
         }
         this.resultType = resultType;
     }
@@ -106,10 +111,6 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
         return optional;
     }
 
-    /**
-     * Sets the argument optional
-     * Only the last argument of the options can be set as optional
-     */
     public void setOptional() {
         optional = true;
     }
@@ -130,6 +131,11 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
     @Override
     public Object getValue() {
         return input;
+    }
+
+    @Override
+    public Optional<?> getOptionalValue() {
+        return Optional.ofNullable(input);
     }
 
     @Override

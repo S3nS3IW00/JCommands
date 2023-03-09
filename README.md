@@ -1,4 +1,4 @@
-# JCommands [![](https://img.shields.io/badge/Version-4.2.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.4.0-red)](https://github.com/Javacord/Javacord)
+# JCommands [![](https://img.shields.io/badge/Version-5.0.0-blue)](https://github.com/S3nS3IW00/JCommands) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.7.0-red)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash commands within 1 minute with built-in validating, converting,
 concatenating, argument autocompleting and extended permission checking for channels and categories. There are so many
@@ -8,13 +8,13 @@ useful pre-written argument types that can be used while creating a command.
 
 This command is created just with about 50 lines of code including the response and error handling. It has a validated
 argument with regex, an argument that has two different values that the user can choose from, a number argument that has
-a range validation, a normal user mention argument, a normal channel mention argument and an optional URL argument that
-is a text input with regex validation. In the response the first argument is separated with regex groups into two
+a range validation, a normal user mention argument, a normal channel mention argument and an optional attachment argument 
+with size and extension validation. In the response the first argument is separated with regex groups into two
 different value, and the response based on every argument's value.
 
 ![Example](https://imgur.com/swqZYXH.png)
 
-> You can find a full code [here](https://github.com/S3nS3IW00/JCommands/blob/master/src/test/java/me/s3ns3iw00/jcommands/TestMain.java) that runs a bot with the example command above.
+> You can find the full code [here](https://github.com/S3nS3IW00/JCommands/blob/master/src/test/java/me/s3ns3iw00/jcommands/TestMain.java) that runs a bot with the example command above.
 
 ## Wiki
 
@@ -46,5 +46,5 @@ bots with it.
 ## Contact
 
 If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on
-the [issues](https://github.com/S3nS3IW00/JCommands/issues) page. You can contact me through
+the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through
 discord: [🆂🅴🅽🆂🅴🆈#0054](https://discord.com/users/249674530077802496)

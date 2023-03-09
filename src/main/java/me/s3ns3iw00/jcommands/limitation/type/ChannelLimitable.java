@@ -25,10 +25,15 @@ import java.util.Set;
 
 /**
  * Commands that implements this interface can be limited for channels
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public interface ChannelLimitable {
 
-    void addChannelLimitation(ChannelLimitation limitation);
+    default void addChannelLimitation(ChannelLimitation limitation) {
+        getChannelLimitations().add(limitation);
+    }
 
     Set<ChannelLimitation> getChannelLimitations();
 

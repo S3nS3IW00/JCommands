@@ -24,11 +24,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Converts to {@code URL} from the given value that is expectedly is a valid {@code URL}.
+ * Converts to {@link URL} from the given value that is expectedly is a valid {@link URL}.
  *
  * @author S3nS3IW00
  */
-public class URLConverter extends ArgumentResultConverter {
+public class URLConverter implements ArgumentResultConverter {
 
     @Override
     public Object convertTo(Object value) {

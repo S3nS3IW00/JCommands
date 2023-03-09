@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands.argument;
 
 import me.s3ns3iw00.jcommands.CommandHandler;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 
 import java.util.Optional;
@@ -50,16 +51,23 @@ public class ArgumentResult {
      * @param argument the argument
      */
     public ArgumentResult(Argument argument) {
-        this(argument.getResultType(), argument.getValue());
+        this.clazz = argument.getResultType();
+
+        if (argument instanceof Optionality && ((Optionality) argument).isOptional()) {
+            this.value = ((Optionality) argument).getOptionalValue();
+        } else {
+            this.value = argument.getValue();
+        }
     }
 
     /**
      * Converts the value
      *
+     * @param value the value of the argument
      * @return the result of the conversion
      * @throws NullPointerException if converter haven't specified for this type of conversion
      */
-    private Object process() {
+    private Object convert(Object value) {
         if (clazz.isAssignableFrom(value.getClass())) {
             return value;
         } else {
@@ -101,7 +109,11 @@ public class ArgumentResult {
      */
     @SuppressWarnings("unchecked")
     public <T> T get() {
-        return (T) clazz.cast(process());
+        if (value instanceof Optional) {
+            return ((Optional<?>) value).map(o -> (T) Optional.of(clazz.cast(convert(o)))).orElseGet(() -> (T) Optional.empty());
+        }
+
+        return (T) clazz.cast(convert(value));
     }
 
 }

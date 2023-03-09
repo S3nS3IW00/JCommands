@@ -22,7 +22,10 @@ import me.s3ns3iw00.jcommands.event.type.BadCategoryEvent;
 
 /**
  * A listener that gets triggered when a {@link me.s3ns3iw00.jcommands.limitation.type.CategoryLimitable} command used in wrong category
+ *
+ * @deprecated because of the new permission system
  */
+@Deprecated
 public interface BadCategoryEventListener {
 
     void onBadCategory(BadCategoryEvent event);

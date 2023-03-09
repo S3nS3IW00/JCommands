@@ -19,10 +19,11 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
+import org.javacord.api.entity.permission.PermissionType;
 
 import java.util.*;
 
@@ -39,6 +40,10 @@ public class Command {
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
     private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
+
+    private final Set<PermissionType> defaultPermissions = new HashSet<>();
+
+    private boolean onlyForAdministrators = false;
 
     private CommandActionEventListener actionListener;
     private ArgumentMismatchEventListener argumentMismatchListener;
@@ -75,9 +80,9 @@ public class Command {
      */
     public void addArgument(Argument argument) {
         if (arguments.size() > 0 &&
-                (arguments.getLast() instanceof InputArgument) &&
-                ((InputArgument) arguments.getLast()).isOptional() &&
-                !((InputArgument) argument).isOptional()) {
+                (arguments.getLast() instanceof Optionality) &&
+                ((Optionality) arguments.getLast()).isOptional() &&
+                !((Optionality) argument).isOptional()) {
             throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
         }
 
@@ -105,6 +110,23 @@ public class Command {
             concatenators.put(concatenator, new LinkedList<>());
         }
         concatenators.get(concatenator).addAll(Arrays.asList(arguments));
+    }
+
+    /**
+     * Adds permissions that will be applied on the command
+     * Users will need these permissions in the specific channel to use the command
+     *
+     * @param permissionTypes a list of {@link PermissionType}
+     */
+    public void addPermissions(PermissionType... permissionTypes) {
+        defaultPermissions.addAll(Arrays.asList(permissionTypes));
+    }
+
+    /**
+     * Sets the command available only for administrators by default
+     */
+    public void setOnlyForAdministrators() {
+        this.onlyForAdministrators = true;
     }
 
     /**
@@ -142,6 +164,14 @@ public class Command {
      */
     public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
         return concatenators;
+    }
+
+    public Set<PermissionType> getDefaultPermissions() {
+        return defaultPermissions;
+    }
+
+    public boolean isOnlyForAdministrators() {
+        return onlyForAdministrators;
     }
 
     /**

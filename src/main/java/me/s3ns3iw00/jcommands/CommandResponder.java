@@ -18,11 +18,13 @@
  */
 package me.s3ns3iw00.jcommands;
 
+import org.javacord.api.entity.message.component.HighLevelComponent;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.callback.InteractionFollowupMessageBuilder;
 import org.javacord.api.interaction.callback.InteractionImmediateResponseBuilder;
 import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -53,6 +55,17 @@ public class CommandResponder {
     }
 
     /**
+     * Creates an ephemeral updater that listens for the response
+     * In this case a waiting message can be sent to the user
+     * NOTE: Late responses need to be sent within 15 minutes, otherwise Discord drops it
+     *
+     * @return the response updater
+     */
+    public CompletableFuture<InteractionOriginalResponseUpdater> respondLaterEphemeral() {
+        return interaction.respondLater(true);
+    }
+
+    /**
      * Creates a responder to respond immediately to the command
      *
      * @return the immediate responder builder
@@ -68,6 +81,24 @@ public class CommandResponder {
      */
     public InteractionFollowupMessageBuilder followUp() {
         return interaction.createFollowupMessageBuilder();
+    }
+
+    /**
+     * Creates a responder to respond with a modal to the command
+     *
+     * @return the {@link CompletableFuture<Void>} that completes when the modal is opened
+     */
+    public CompletableFuture<Void> respondWithModal(String customId, String title, HighLevelComponent... highLevelComponents) {
+        return interaction.respondWithModal(customId, title, highLevelComponents);
+    }
+
+    /**
+     * Creates a responder to respond with a modal to the command
+     *
+     * @return the {@link CompletableFuture<Void>} that completes when the modal is opened
+     */
+    public CompletableFuture<Void> respondWithModal(String customId, String title, List<HighLevelComponent> highLevelComponents) {
+        return interaction.respondWithModal(customId, title, highLevelComponents);
     }
 
 }

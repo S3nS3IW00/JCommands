@@ -30,7 +30,11 @@ import java.util.Set;
 /**
  * A {@code Command} that only can be used on servers where the command has been registered.<br>
  * Can be limited for users, roles, channels and categories.
+ *
+ * @deprecated This class is deprecated and will be removed in the future.
+ *             Use {@link Command} class's implementations instead.
  */
+@Deprecated
 public class SlashCommand extends Command implements UserLimitable, RoleLimitable, ChannelLimitable, CategoryLimitable {
 
     private final Set<UserLimitation> userLimitations = new HashSet<>();
@@ -46,18 +50,8 @@ public class SlashCommand extends Command implements UserLimitable, RoleLimitabl
     }
 
     @Override
-    public void addCategoryLimitation(CategoryLimitation limitation) {
-        categoryLimitations.add(limitation);
-    }
-
-    @Override
     public Set<CategoryLimitation> getCategoryLimitations() {
         return categoryLimitations;
-    }
-
-    @Override
-    public void addChannelLimitation(ChannelLimitation limitation) {
-        channelLimitations.add(limitation);
     }
 
     @Override
@@ -66,18 +60,8 @@ public class SlashCommand extends Command implements UserLimitable, RoleLimitabl
     }
 
     @Override
-    public void addRoleLimitation(RoleLimitation limitation) {
-        roleLimitations.add(limitation);
-    }
-
-    @Override
     public Set<RoleLimitation> getRoleLimitations() {
         return roleLimitations;
-    }
-
-    @Override
-    public void addUserLimitation(UserLimitation limitation) {
-        userLimitations.add(limitation);
     }
 
     @Override
