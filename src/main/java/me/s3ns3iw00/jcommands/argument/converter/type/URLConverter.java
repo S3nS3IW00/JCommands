@@ -28,7 +28,7 @@ import java.net.URL;
  *
  * @author S3nS3IW00
  */
-public class URLConverter extends ArgumentResultConverter {
+public class URLConverter implements ArgumentResultConverter {
 
     @Override
     public Object convertTo(Object value) {
