@@ -31,8 +31,12 @@ import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.CommandBuilder;
+import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
+import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
+import me.s3ns3iw00.jcommands.type.GlobalCommand;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.PermissionType;
@@ -363,7 +367,7 @@ public class CommandHandler {
      * @param command the command
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(Command command, Server... servers) {
+    public static void registerCommand(ServerCommand command, Server... servers) {
         commands.add(command);
 
         for (Server server : servers) {
@@ -386,12 +390,12 @@ public class CommandHandler {
 
     /**
      * Registers command globally
-     * That means the command will be available in all the servers where the bot on, and also in private
+     * That means the command will be available in all the servers where the bot on, and also can be available in dms
      * Sets up permissions with discord's default permission system
      *
      * @param command the command to register
      */
-    public static void registerCommand(Command command) {
+    public static void registerCommand(GlobalCommand command) {
         commands.add(command);
 
         /* Check if the command with the name is already registered
@@ -426,6 +430,10 @@ public class CommandHandler {
             slashCommandUpdater.setDefaultEnabledForEveryone();
         }
 
+        if (command instanceof GlobalCommand) {
+            slashCommandUpdater.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
+        }
+
         return slashCommandUpdater;
     }
 
@@ -447,6 +455,10 @@ public class CommandHandler {
             slashCommandBuilder.setDefaultDisabled();
         } else {
             slashCommandBuilder.setDefaultEnabledForEveryone();
+        }
+
+        if (command instanceof GlobalCommand) {
+            slashCommandBuilder.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
         }
 
         return slashCommandBuilder;
@@ -491,22 +503,22 @@ public class CommandHandler {
     }
 
     /**
-     * Calls the {@link CommandHandler#registerCommand(Command, Server...)} method with the command contained by the {@code CommandBuilder} class
+     * Calls the {@link CommandHandler#registerCommand(ServerCommand, Server...)} method with the command contained by the {@link ServerCommandBuilder} class
      *
      * @param builder the builder
      * @param servers the list of the servers where the command will be registered
      */
-    public static void registerCommand(CommandBuilder<?> builder, Server... servers) {
-        registerCommand(builder.getCommand(), servers);
+    public static void registerCommand(ServerCommandBuilder builder, Server... servers) {
+        registerCommand((ServerCommand) builder.getCommand(), servers);
     }
 
     /**
-     * Calls the {@link CommandHandler#registerCommand(Command)} method with the command contained by the {@code CommandBuilder} class
+     * Calls the {@link CommandHandler#registerCommand(GlobalCommand)} method with the command contained by the {@link GlobalCommandBuilder} class
      *
      * @param builder the builder
      */
-    public static void registerCommand(CommandBuilder<?> builder) {
-        registerCommand(builder.getCommand());
+    public static void registerCommand(GlobalCommandBuilder builder) {
+        registerCommand((GlobalCommand) builder.getCommand());
     }
 
     /**
