@@ -456,44 +456,6 @@ public class CommandHandler {
     }
 
     /**
-     * Applies default Discord permissions on command
-     *
-     * @param command the command
-     * @param id      the slash command's id
-     * @param server  the server
-     * @deprecated because this functionality got removed
-     */
-    @Deprecated
-    private static void applyPermissions(Command command, long id, Server server) {
-        /*List<ApplicationCommandPermissions> permissions = new ArrayList<>();
-        if (command instanceof UserLimitable) {
-            UserLimitable userLimitable = (UserLimitable) command;
-            permissions.addAll(userLimitable.getUserLimitations().stream()
-                    .filter(user -> user.getServer().getId() == server.getId())
-                    .map(user -> ApplicationCommandPermissions.create(user.getEntity().getId(),
-                            ApplicationCommandPermissionType.USER,
-                            user.isPermit()))
-                    .collect(Collectors.toList()));
-        }
-        if (command instanceof RoleLimitable) {
-            RoleLimitable roleLimitable = (RoleLimitable) command;
-            permissions.addAll(roleLimitable.getRoleLimitations().stream()
-                    .filter(user -> user.getServer().getId() == server.getId())
-                    .map(role -> ApplicationCommandPermissions.create(role.getEntity().getId(),
-                            ApplicationCommandPermissionType.ROLE,
-                            role.isPermit()))
-                    .collect(Collectors.toList()));
-        }
-
-        if (permissions.size() > 0) {
-            new ApplicationCommandPermissionsUpdater(server)
-                    .setPermissions(permissions)
-                    .update(id)
-                    .join();
-        }*/
-    }
-
-    /**
      * Calls the {@link CommandHandler#registerCommand(ServerCommand, Server...)} method with the command contained by the {@link ServerCommandBuilder} class
      *
      * @param builder the builder
