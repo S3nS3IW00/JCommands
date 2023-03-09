@@ -114,7 +114,7 @@ public class SearchAutocomplete extends Autocomplete {
 
     @Override
     public List<Choice> getResult(AutocompleteState state) {
-        if (!state.getCurrentValue().isPresent() && state.getCurrentValue().toString().length() < minCharToSearch) return null;
+        if (!state.getCurrentValue().isPresent() || state.getCurrentValue().get().toString().length() < minCharToSearch) return null;
 
         Stream<Choice> choices = dataSource.stream()
                 .filter(data -> {
