@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
  * The values are key value pairs
- * The key is {@code String} and the value can be {@code String} or {@code Long}
+ * The key is {@link String} and the value can be {@link String} or {@link Long}
  */
 public class ComboArgument extends Argument implements Optionality {
 
@@ -43,7 +43,7 @@ public class ComboArgument extends Argument implements Optionality {
      *
      * @param name        the argument's name
      * @param description the argument's description
-     * @param type        the type of the input value, can be {@code STRING} or {@code LONG}
+     * @param type        the type of the input value, can be {@link SlashCommandOptionType#STRING} or {@link SlashCommandOptionType#LONG}
      */
     public ComboArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
@@ -57,7 +57,7 @@ public class ComboArgument extends Argument implements Optionality {
      * Adds a choice
      *
      * @param key   is the name of the argument
-     * @param value is the value of the argument as {@code String}
+     * @param value is the value of the argument as {@link String}
      */
     public void addChoice(String key, String value) {
         if (getType() == SlashCommandOptionType.LONG) {
@@ -71,7 +71,7 @@ public class ComboArgument extends Argument implements Optionality {
      * Adds a choice
      *
      * @param key   the name of the argument
-     * @param value the value of the argument as {@code Long}
+     * @param value the value of the argument as {@link Long}
      */
     public void addChoice(String key, long value) {
         if (getType() == SlashCommandOptionType.STRING) {

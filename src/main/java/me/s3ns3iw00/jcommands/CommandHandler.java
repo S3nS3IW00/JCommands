@@ -223,7 +223,7 @@ public class CommandHandler {
      * - Assembles a list with the result of every argument
      *
      * @param arguments the list of arguments need to be processed
-     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@code arguments} parameter
+     * @param options   the list of {@link SlashCommandInteractionOption} corresponding to {@param arguments} parameter
      * @return an {@link Optional} that is empty when one option found that is not valid for the argument during the validating process,
      * otherwise it contains a {@link LinkedHashMap} with {@link Argument}s and their {@link ArgumentResult} in it that converts values to the final result
      */
@@ -577,7 +577,7 @@ public class CommandHandler {
      * Gets the registered converter by the type
      *
      * @param clazz the class of the type
-     * @return an {@code Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
+     * @return an {@link Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
      */
     public static Optional<ArgumentResultConverter> getArgumentConverter(Class<?> clazz) {
         if (converters.containsKey(clazz)) {

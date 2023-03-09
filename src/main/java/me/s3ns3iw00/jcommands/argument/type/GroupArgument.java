@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Represents an argument with {@code SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
- * This is for grouping {@code SUB_COMMAND} options because {@code SUB_COMMANDS} cannot be nested
+ * Represents an argument with {@link SlashCommandOptionType#SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
+ * This is for grouping {@link SlashCommandOptionType#SUB_COMMAND} options because {@link SlashCommandOptionType#SUB_COMMAND} cannot be nested
  */
 public class GroupArgument extends SubArgument<ConstantArgument> {
 

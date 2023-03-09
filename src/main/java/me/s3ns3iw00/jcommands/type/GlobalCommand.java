@@ -3,7 +3,7 @@ package me.s3ns3iw00.jcommands.type;
 import me.s3ns3iw00.jcommands.Command;
 
 /**
- * A {@link Command} that will be registered on all the servers where the bot on
+ * A {@link Command} that will be registered on all the servers where the bot on and also can be available in dms
  */
 public class GlobalCommand extends Command {
 
@@ -42,7 +42,7 @@ public class GlobalCommand extends Command {
     /**
      * Checks if the command is enabled in DMs
      *
-     * @return {@code true} if the command is enabled in DMs, {@code false} otherwise
+     * @return true if the command is enabled in DMs, false otherwise
      */
     public boolean isEnabledInDMs() {
         return enabledInDMs;

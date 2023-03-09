@@ -27,7 +27,7 @@ import org.javacord.api.entity.permission.PermissionType;
 import java.util.Arrays;
 
 /**
- * Useful class that makes {@code Command} creations more comfortable
+ * Useful class that makes {@link Command} creations more comfortable
  *
  * @param <B> the type of the builder
  * @author S3nS3IW00
