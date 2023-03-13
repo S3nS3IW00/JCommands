@@ -23,6 +23,7 @@ import java.util.Optional;
 /**
  * Identifies whether an argument can be optional or not
  */
+@Deprecated
 public interface Optionality {
 
     boolean isOptional();
