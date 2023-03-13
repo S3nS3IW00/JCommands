@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * <p>
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
  */
-public class ValueArgument extends InputArgument {
+public class ValueArgument extends AutocompletableInputArgument {
 
     private Optional<Pattern> validator = Optional.empty();
     private Matcher matcher;
