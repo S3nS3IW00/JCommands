@@ -248,14 +248,6 @@ public class CommandHandler {
                 } else {
                     return Optional.empty();
                 }
-            } else if (argument instanceof ComboArgument) {
-                    /* Choose the value that the user picked
-                       Checking is unnecessary since the user only can pick a valid value
-                     */
-                ComboArgument ca = (ComboArgument) argument;
-                value.ifPresent(ca::choose);
-
-                results.put(argument, new ArgumentResult(ca));
             } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
                        If it is not then it will be added to the list,
