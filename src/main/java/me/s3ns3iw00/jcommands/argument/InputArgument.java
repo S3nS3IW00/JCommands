@@ -18,9 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
-import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
-import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
 import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -29,21 +26,17 @@ import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
  */
-public abstract class InputArgument extends Argument implements Optionality, Autocompletable {
+public abstract class InputArgument extends Argument {
 
     private Object input;
     private final Class<?> resultType;
     private boolean optional = false;
-
-    private final List<Autocomplete> autocompletes = new ArrayList<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -102,21 +95,15 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
                 .setDescription(getDescription())
                 .setType(getType())
                 .setRequired(!isOptional())
-                .setAutocompletable(autocompletes.size() > 0)
                 .build();
     }
 
-    @Override
     public boolean isOptional() {
         return optional;
     }
 
     public void setOptional() {
         optional = true;
-    }
-
-    public List<Autocomplete> getAutocompletes() {
-        return autocompletes;
     }
 
     /**
@@ -133,7 +120,6 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
         return input;
     }
 
-    @Override
     public Optional<?> getOptionalValue() {
         return Optional.ofNullable(input);
     }
