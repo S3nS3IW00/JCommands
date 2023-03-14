@@ -19,7 +19,6 @@
 package me.s3ns3iw00.jcommands.argument;
 
 import me.s3ns3iw00.jcommands.CommandHandler;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 
 import java.util.Optional;
@@ -53,8 +52,8 @@ public class ArgumentResult {
     public ArgumentResult(Argument argument) {
         this.clazz = argument.getResultType();
 
-        if (argument instanceof Optionality && ((Optionality) argument).isOptional()) {
-            this.value = ((Optionality) argument).getOptionalValue();
+        if (argument instanceof InputArgument && ((InputArgument) argument).isOptional()) {
+            this.value = ((InputArgument) argument).getOptionalValue();
         } else {
             this.value = argument.getValue();
         }

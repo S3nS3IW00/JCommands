@@ -18,17 +18,11 @@
  */
 package me.s3ns3iw00.jcommands;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.ArgumentResult;
-import me.s3ns3iw00.jcommands.argument.InputArgument;
-import me.s3ns3iw00.jcommands.argument.SubArgument;
-import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.*;
 import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
-import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
@@ -109,15 +103,15 @@ public class CommandHandler {
                        Except the optional arguments that haven't been specified
                      */
                     List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator).stream()
-                            .filter(arg -> !(arg instanceof Optionality) ||
-                                    !((Optionality) arg).isOptional() ||
-                                    (((Optionality) arg).isOptional() &&
+                            .filter(arg -> !(arg instanceof InputArgument) ||
+                                    !((InputArgument) arg).isOptional() ||
+                                    (((InputArgument) arg).isOptional() &&
                                             resultOptional.get().containsKey(arg)))
                             .collect(Collectors.toCollection(LinkedList::new));
 
                     // Checks whether an argument's result is exist (so it has a value) or it is optional (so it does not need to have a value)
                     Predicate<Argument> argumentExistenceChecker = arg -> resultOptional.get().containsKey(arg) ||
-                            (arg instanceof Optionality) && ((Optionality) arg).isOptional();
+                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional();
                     // Concatenating if the result contains all the arguments in the concatenator or if the argument is optional
                     if (concatenatedArguments.stream().allMatch(argumentExistenceChecker)) {
                         /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
@@ -179,8 +173,8 @@ public class CommandHandler {
                     .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
                     .findFirst();
             argumentOptional.ifPresent(argument -> {
-                if (argument instanceof Autocompletable) {
-                    Autocompletable autocompletable = (Autocompletable) argument;
+                if (argument instanceof AutocompletableInputArgument) {
+                    AutocompletableInputArgument autocompletable = (AutocompletableInputArgument) argument;
                     AutocompleteState autocompleteState = new AutocompleteState(
                             command,
                             channel.orElse(null),
