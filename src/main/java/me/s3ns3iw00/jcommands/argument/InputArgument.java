@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidator;
 import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -37,6 +38,8 @@ public abstract class InputArgument extends Argument {
     private Object input;
     private final Class<?> resultType;
     private boolean optional = false;
+
+    private Optional<ArgumentValidator> argumentValidator;
 
     /**
      * Constructs the argument with the default requirements
@@ -127,6 +130,14 @@ public abstract class InputArgument extends Argument {
     @Override
     public Class<?> getResultType() {
         return resultType;
+    }
+
+    public void setArgumentValidator(ArgumentValidator argumentValidator) {
+        this.argumentValidator = Optional.of(argumentValidator);
+    }
+
+    public Optional<ArgumentValidator> getArgumentValidator() {
+        return argumentValidator;
     }
 
 }
