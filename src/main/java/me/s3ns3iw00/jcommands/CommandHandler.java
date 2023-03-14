@@ -26,6 +26,7 @@ import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
@@ -244,21 +245,24 @@ public class CommandHandler {
                 }
             } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
-                       If it is not then it will be added to the list,
-                            otherwise return an empty optional to tell the caller that one of the argument is not valid
+                       If it is not then it will be validated and added to the list,
+                            if the validation was not successful then the listener gets triggered that belongs to the validation
+                            and an empty optional gets returned to stop the iteration
                      */
                 InputArgument ia = (InputArgument) argument;
                 if (value.isPresent()) {
-                    ia.input(value.get());
-                } else {
-                    if (!ia.isOptional()) {
+                    Optional<ArgumentMismatchEventListener> mismatchEventListener;
+                    if (ia.getArgumentValidator().isPresent() && (mismatchEventListener = ia.getArgumentValidator().get().apply(value.get())).isPresent()) {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
-                                .ifPresent(cmd -> argument.getMismatchListener()
-                                        .ifPresent(listener -> listener.onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument))));
+                                .ifPresent(cmd -> mismatchEventListener.get().onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument)));
                         return Optional.empty();
+                    } else {
+                        ia.input(value.get());
                     }
+                } else if (!ia.isOptional()) {
+                    return Optional.empty();
                 }
 
                 results.put(argument, new ArgumentResult(ia));
