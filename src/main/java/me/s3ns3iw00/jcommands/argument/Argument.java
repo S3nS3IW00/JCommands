@@ -34,8 +34,6 @@ public abstract class Argument {
     private final String name, description;
     private final SlashCommandOptionType type;
 
-    private ArgumentMismatchEventListener mismatchListener;
-
     /**
      * Default constructor
      *
@@ -104,8 +102,9 @@ public abstract class Argument {
      *
      * @param listener the listener
      */
+    @Deprecated
     public void setOnMismatch(ArgumentMismatchEventListener listener) {
-        this.mismatchListener = listener;
+        //this.mismatchListener = listener;
     }
 
     /**
@@ -114,8 +113,10 @@ public abstract class Argument {
      * @return {@link Optional#empty()} when argument mismatch listener is not specified,
      * otherwise {@link Optional#of(Object)} with the listener
      */
+    @Deprecated
     public Optional<ArgumentMismatchEventListener> getMismatchListener() {
-        return Optional.ofNullable(mismatchListener);
+        //return Optional.ofNullable(mismatchListener);
+        return Optional.empty();
     }
 
 }
