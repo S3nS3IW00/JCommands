@@ -28,10 +28,10 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class StringArgument extends InputArgument<String, String> {
+public class StringArgument<O> extends InputArgument<String, O> {
 
-    public StringArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.STRING, String.class);
+    public StringArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.STRING, resultType);
     }
 
     /**

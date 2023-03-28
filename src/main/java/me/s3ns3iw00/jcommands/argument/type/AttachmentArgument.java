@@ -14,10 +14,10 @@ import java.util.Set;
  *
  * @author S3nS3IW00
  */
-public class AttachmentArgument extends InputArgument<Attachment, Attachment> {
+public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
 
-    public AttachmentArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.ATTACHMENT, Attachment.class);
+    public AttachmentArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.ATTACHMENT, resultType);
     }
 
     /**

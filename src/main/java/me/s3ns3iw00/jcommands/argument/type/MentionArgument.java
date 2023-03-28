@@ -27,10 +27,10 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class MentionArgument extends InputArgument<User, User> {
+public class MentionArgument<O> extends InputArgument<User, O> {
 
-    public MentionArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.USER, User.class);
+    public MentionArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.USER, resultType);
     }
 
 }

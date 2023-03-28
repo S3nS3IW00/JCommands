@@ -27,9 +27,9 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class ChannelArgument extends InputArgument<ServerChannel, ServerChannel> {
+public class ChannelArgument<O> extends InputArgument<ServerChannel, O> {
 
-    public ChannelArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);
+    public ChannelArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.CHANNEL, resultType);
     }
 }
