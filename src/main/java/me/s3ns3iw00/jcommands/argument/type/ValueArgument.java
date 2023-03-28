@@ -29,7 +29,10 @@ import java.util.regex.Pattern;
  * Represents an argument that accepts a specified type of value
  * <p>
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
+ *
+ * @deprecated use {@link me.s3ns3iw00.jcommands.argument.InputArgument} and set a {@link me.s3ns3iw00.jcommands.argument.validator.ArgumentValidator} with {@link me.s3ns3iw00.jcommands.argument.validator.type.RegexPredicate}
  */
+@Deprecated
 public class ValueArgument extends AutocompletableInputArgument {
 
     private Optional<Pattern> validator = Optional.empty();
