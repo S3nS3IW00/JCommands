@@ -175,7 +175,7 @@ public class CommandHandler {
                     .findFirst();
             argumentOptional.ifPresent(argument -> {
                 if (argument instanceof AutocompletableInputArgument) {
-                    AutocompletableInputArgument autocompletable = (AutocompletableInputArgument) argument;
+                    AutocompletableInputArgument<?, ?> autocompletable = (AutocompletableInputArgument) argument;
                     AutocompleteState autocompleteState = new AutocompleteState(
                             command,
                             channel.orElse(null),
