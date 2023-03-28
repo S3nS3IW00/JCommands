@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * The autocompletable version of {@link InputArgument}
  */
-public abstract class AutocompletableInputArgument extends InputArgument {
+public abstract class AutocompletableInputArgument<I, O> extends InputArgument<I, O> {
 
     private final List<Autocomplete> autocompletes = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public abstract class AutocompletableInputArgument extends InputArgument {
      * @param type        the type of the value
      * @param resultType  the type of the converted value
      */
-    public AutocompletableInputArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
+    public AutocompletableInputArgument(String name, String description, SlashCommandOptionType type, Class<O> resultType) {
         super(name, description, type, resultType);
     }
 
