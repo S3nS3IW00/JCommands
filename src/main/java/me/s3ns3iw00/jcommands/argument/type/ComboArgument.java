@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * The values are key value pairs
  * The key is {@link String} and the value can be {@link String} or {@link Long}
  */
-public class ComboArgument extends InputArgument {
+public class ComboArgument extends InputArgument<Object, Choice> {
 
     private final LinkedList<Choice> choices = new LinkedList<>();
     private Choice choice;
@@ -93,12 +93,12 @@ public class ComboArgument extends InputArgument {
     }
 
     @Override
-    public Object getValue() {
+    public Choice getValue() {
         return choice;
     }
 
     @Override
-    public Class<?> getResultType() {
+    public Class<Choice> getResultType() {
         return Choice.class;
     }
 
