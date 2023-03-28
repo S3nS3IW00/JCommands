@@ -23,6 +23,7 @@ import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
+import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
@@ -236,7 +237,7 @@ public class CommandHandler {
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                results.put(argument, new ArgumentResult(argument));
+                results.put(argument, new ArgumentResult(argument.getResultType(), argument.getName()));
                 Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
                 if (result.isPresent()) {
                     results.putAll(result.get());
@@ -258,14 +259,19 @@ public class CommandHandler {
                                 .findFirst()
                                 .ifPresent(cmd -> mismatchEventListener.get().onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument)));
                         return Optional.empty();
-                    } else {
-                        ia.input(value.get());
                     }
                 } else if (!ia.isOptional()) {
                     return Optional.empty();
                 }
 
-                results.put(argument, new ArgumentResult(ia));
+                if (ia instanceof ComboArgument) {
+                    ComboArgument ca = (ComboArgument) ia;
+
+                    Optional<Choice> choice = value.map(ca::getChoice);
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice));
+                } else {
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value));
+                }
             }
         }
         return Optional.of(results);

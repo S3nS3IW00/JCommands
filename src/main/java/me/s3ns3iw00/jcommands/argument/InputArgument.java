@@ -112,24 +112,6 @@ public abstract class InputArgument<I, O> extends Argument<I, O> {
         optional = true;
     }
 
-    /**
-     * Sets the input
-     *
-     * @param input the input
-     */
-    public void input(I input) {
-        this.input = input;
-    }
-
-    @Override
-    public I getValue() {
-        return input;
-    }
-
-    public Optional<I> getOptionalValue() {
-        return Optional.ofNullable(input);
-    }
-
     @Override
     public Class<O> getResultType() {
         return resultType;

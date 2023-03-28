@@ -45,21 +45,6 @@ public class ArgumentResult {
     }
 
     /**
-     * Constructs the class with an {@link Argument}
-     *
-     * @param argument the argument
-     */
-    public ArgumentResult(Argument argument) {
-        this.clazz = argument.getResultType();
-
-        if (argument instanceof InputArgument && ((InputArgument) argument).isOptional()) {
-            this.value = ((InputArgument) argument).getOptionalValue();
-        } else {
-            this.value = argument.getValue();
-        }
-    }
-
-    /**
      * Converts the value
      *
      * @param value the value of the argument

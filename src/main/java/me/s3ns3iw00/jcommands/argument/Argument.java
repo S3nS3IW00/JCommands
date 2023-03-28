@@ -85,11 +85,6 @@ public abstract class Argument<I, O> {
     }
 
     /**
-     * @return the argument's raw value
-     */
-    public abstract I getValue();
-
-    /**
      * @return the class of the result's type
      */
     public abstract Class<O> getResultType();

@@ -37,11 +37,6 @@ public class GroupArgument extends SubArgument<ConstantArgument, String> {
     }
 
     @Override
-    public String getValue() {
-        return getName();
-    }
-
-    @Override
     public Class<String> getResultType() {
         return String.class;
     }

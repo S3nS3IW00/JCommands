@@ -80,35 +80,4 @@ public class ValueArgument extends AutocompletableInputArgument {
     public boolean isValid(Object value) {
         return validator.map(pattern -> (matcher = pattern.matcher(String.valueOf(value))).lookingAt()).orElse(true);
     }
-
-    /**
-     * Checks that the input is valid and adjusts it
-     *
-     * @param input the input
-     */
-    @Override
-    public void input(Object input) {
-        if (isValid(input)) {
-            super.input(input);
-        } else {
-            super.input(null);
-        }
-    }
-
-    /**
-     * Returns the value that depends on a few aspects
-     *
-     * @return null if the validation was failed
-     * the matcher if the result type is {@link Matcher}
-     * otherwise the value itself
-     */
-    @Override
-    public Object getValue() {
-        if (super.getValue() == null) {
-            return null;
-        } else if (validator.isPresent() && getResultType() == Matcher.class) {
-            return matcher;
-        }
-        return super.getValue();
-    }
 }

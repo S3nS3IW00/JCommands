@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 public class ComboArgument extends InputArgument<Object, Choice> {
 
     private final LinkedList<Choice> choices = new LinkedList<>();
-    private Choice choice;
 
     /**
      * Constructs the argument with the default requirements
@@ -80,21 +79,15 @@ public class ComboArgument extends InputArgument<Object, Choice> {
     }
 
     /**
-     * Chooses a value from the choices
+     * Returns the choice based on value
      *
      * @param value the value
      */
-    @Override
-    public void input(Object value) {
-        choice = choices.stream()
+    public Choice getChoice(Object value) {
+        return choices.stream()
                 .filter(choice1 -> choice1.getValue().equals(value))
                 .findFirst()
                 .orElse(null);
-    }
-
-    @Override
-    public Choice getValue() {
-        return choice;
     }
 
     @Override
