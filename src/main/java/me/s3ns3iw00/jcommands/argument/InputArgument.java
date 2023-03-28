@@ -27,8 +27,6 @@ import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.Optional;
-
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
