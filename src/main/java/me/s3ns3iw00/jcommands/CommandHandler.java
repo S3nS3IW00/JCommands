@@ -252,7 +252,7 @@ public class CommandHandler {
                 InputArgument ia = (InputArgument) argument;
                 if (value.isPresent()) {
                     Optional<ArgumentMismatchEventListener> mismatchEventListener;
-                    if (ia.getArgumentValidator().isPresent() && (mismatchEventListener = ia.getArgumentValidator().get().apply(value.get())).isPresent()) {
+                    if ((mismatchEventListener = ia.getArgumentValidator().apply(value.get())).isPresent()) {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
