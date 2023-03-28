@@ -62,6 +62,10 @@ public class ArgumentValidation<T> {
     }
 
     public ArgumentMismatchEventListener getEvent() {
+        if (event == null) {
+            throw new IllegalStateException("Event listener must be specified for every validation!");
+        }
+
         return event;
     }
 }
