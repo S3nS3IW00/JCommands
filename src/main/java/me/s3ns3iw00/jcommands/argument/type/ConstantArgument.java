@@ -32,17 +32,17 @@ import java.util.stream.Collectors;
  *
  * @author S3nS3IW00
  */
-public class ConstantArgument extends SubArgument<InputArgument> {
+public class ConstantArgument extends SubArgument<InputArgument, String> {
 
     public ConstantArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.SUB_COMMAND);
     }
 
-    public Object getValue() {
+    public String getValue() {
         return getName();
     }
 
-    public Class<?> getResultType() {
+    public Class<String> getResultType() {
         return String.class;
     }
 

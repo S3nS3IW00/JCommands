@@ -27,9 +27,11 @@ import java.util.Optional;
 /**
  * Represents an argument
  *
+ * @param <I> the type of input
+ * @param <O> the type of output
  * @author S3nS3IW00
  */
-public abstract class Argument {
+public abstract class Argument<I, O> {
 
     private final String name, description;
     private final SlashCommandOptionType type;
@@ -85,12 +87,12 @@ public abstract class Argument {
     /**
      * @return the argument's raw value
      */
-    public abstract Object getValue();
+    public abstract I getValue();
 
     /**
      * @return the class of the result's type
      */
-    public abstract Class<?> getResultType();
+    public abstract Class<O> getResultType();
 
     /**
      * @return the command option that need for to register the argument

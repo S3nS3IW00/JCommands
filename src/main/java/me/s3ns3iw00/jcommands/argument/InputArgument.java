@@ -32,14 +32,17 @@ import java.util.Optional;
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
+ *
+ * @param <I> the type of input
+ * @param <O> the type of output
  */
-public abstract class InputArgument extends Argument {
+public abstract class InputArgument<I, O> extends Argument<I, O> {
 
-    private Object input;
-    private final Class<?> resultType;
+    private I input;
+    private final Class<O> resultType;
     private boolean optional = false;
 
-    private Optional<ArgumentValidator> argumentValidator;
+    private final ArgumentValidator<I> argumentValidator = new ArgumentValidator<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -51,28 +54,28 @@ public abstract class InputArgument extends Argument {
     public InputArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
 
-        Class<?> resultType = Object.class;
+        Class<O> resultType = (Class<O>) Object.class;
         switch (type) {
             case STRING:
-                resultType = String.class;
+                resultType = (Class<O>) String.class;
                 break;
             case LONG:
-                resultType = Long.class;
+                resultType = (Class<O>) Long.class;
                 break;
             case BOOLEAN:
-                resultType = Boolean.class;
+                resultType = (Class<O>) Boolean.class;
                 break;
             case CHANNEL:
-                resultType = TextChannel.class;
+                resultType = (Class<O>) TextChannel.class;
                 break;
             case ROLE:
-                resultType = Role.class;
+                resultType = (Class<O>) Role.class;
                 break;
             case USER:
-                resultType = User.class;
+                resultType = (Class<O>) User.class;
                 break;
             case ATTACHMENT:
-                resultType = Attachment.class;
+                resultType = (Class<O>) Attachment.class;
                 break;
         }
         this.resultType = resultType;
@@ -86,7 +89,7 @@ public abstract class InputArgument extends Argument {
      * @param type        the type of the value
      * @param resultType  the type of the converted value
      */
-    public InputArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
+    public InputArgument(String name, String description, SlashCommandOptionType type, Class<O> resultType) {
         super(name, description, type);
         this.resultType = resultType;
     }
@@ -114,29 +117,25 @@ public abstract class InputArgument extends Argument {
      *
      * @param input the input
      */
-    public void input(Object input) {
+    public void input(I input) {
         this.input = input;
     }
 
     @Override
-    public Object getValue() {
+    public I getValue() {
         return input;
     }
 
-    public Optional<?> getOptionalValue() {
+    public Optional<I> getOptionalValue() {
         return Optional.ofNullable(input);
     }
 
     @Override
-    public Class<?> getResultType() {
+    public Class<O> getResultType() {
         return resultType;
     }
 
-    public void setArgumentValidator(ArgumentValidator argumentValidator) {
-        this.argumentValidator = Optional.of(argumentValidator);
-    }
-
-    public Optional<ArgumentValidator> getArgumentValidator() {
+    public ArgumentValidator<I> getArgumentValidator() {
         return argumentValidator;
     }
 
