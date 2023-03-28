@@ -25,7 +25,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
 /**
  * An argument that only accepts role as input and returns a {@link Role}
  */
-public class RoleArgument extends InputArgument {
+public class RoleArgument extends InputArgument<Role, Role> {
 
     public RoleArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.ROLE, Role.class);
