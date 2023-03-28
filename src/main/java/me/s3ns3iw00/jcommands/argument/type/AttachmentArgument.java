@@ -1,72 +1,60 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.entity.Attachment;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * An argument that only accepts attachments
+ * An argument that only accepts {@link Attachment} input
  *
  * @author S3nS3IW00
  */
-public class AttachmentArgument extends ValueArgument {
-
-    private final Set<String> extensions = new HashSet<>();
-    private Integer maxSize = Integer.MAX_VALUE;
+public class AttachmentArgument extends InputArgument<Attachment, Attachment> {
 
     public AttachmentArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.ATTACHMENT, Attachment.class);
     }
 
     /**
-     * Sets the valid extensions for the attachment
+     * Creates an extension validation
      *
      * @param validExtensions the valid extensions
+     * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
-    public void setValidExtensions(String... validExtensions) {
-        extensions.addAll(Arrays.asList(validExtensions));
+    public ArgumentValidation<Attachment> whenInvalidExtension(Set<String> validExtensions) {
+        return getArgumentValidator().when(attachment -> {
+            Optional<String> extension = findExtension(attachment.getFileName());
+
+            return extension.isEmpty() || !validExtensions.contains(extension.get());
+        });
     }
 
     /**
-     * Sets the maximum allowed size for the attachment in bytes
+     * Creates a size validation that limits maximum allowed size for the attachment in bytes
      *
      * @param maxSize the max size in bytes
+     * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
-    public void setMaxSize(Integer maxSize) {
-        this.maxSize = maxSize;
+    public ArgumentValidation<Attachment> whenAboveMaxSize(Integer maxSize) {
+        return getArgumentValidator().when(attachment -> attachment.getSize() >= maxSize);
     }
 
     /**
-     * Sets the maximum allowed size for the attachment in megabytes
+     * Creates a size validation that limits maximum allowed size for the attachment in megabytes
      * <br>
      * The size will be converted to bytes (multiplying by 1000 two times) and explicit converted to integer,
      * therefore the maximum value could be 2147.483647
      *
      * @param maxSizeInMB the max size in megabytes
+     * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
-    public void setMaxSizeInMB(Double maxSizeInMB) {
-        this.maxSize = (int) (maxSizeInMB * 1000 * 1000);
-    }
-
-    /**
-     * Validates the extension and size of the attachment
-     *
-     * @param value the value
-     * @return is the attachment valid or not
-     */
-    @Override
-    public boolean isValid(Object value) {
-        if (super.isValid(value)) {
-            Attachment attachment = (Attachment) value;
-            Optional<String> fileExtension = findExtension(attachment.getFileName());
-            return (extensions.isEmpty() || (fileExtension.isPresent() && extensions.contains(fileExtension.get()))) &&
-                    attachment.getSize() <= maxSize;
-        }
-        return false;
+    public ArgumentValidation<Attachment> whenAboveMaxSizeInMB(Double maxSizeInMB) {
+        return whenAboveMaxSize((int) (maxSizeInMB * 1000 * 1000));
     }
 
     /**
@@ -81,5 +69,38 @@ public class AttachmentArgument extends ValueArgument {
             return Optional.empty();
         }
         return Optional.of(fileName.substring(lastIndex + 1));
+    }
+
+    /**
+     * Sets the valid extensions for the attachment
+     *
+     * @param validExtensions the valid extensions
+     * @deprecated use {@link AttachmentArgument#whenInvalidExtension(Set)}
+     */
+    @Deprecated
+    public void setValidExtensions(String... validExtensions) {
+    }
+
+    /**
+     * Sets the maximum allowed size for the attachment in bytes
+     *
+     * @param maxSize the max size in bytes
+     * @deprecated use {@link AttachmentArgument#whenAboveMaxSize(Integer)}
+     */
+    @Deprecated
+    public void setMaxSize(Integer maxSize) {
+    }
+
+    /**
+     * Sets the maximum allowed size for the attachment in megabytes
+     * <br>
+     * The size will be converted to bytes (multiplying by 1000 two times) and explicit converted to integer,
+     * therefore the maximum value could be 2147.483647
+     *
+     * @param maxSizeInMB the max size in megabytes
+     * @deprecated use {@link AttachmentArgument#whenAboveMaxSizeInMB(Double)}
+     */
+    @Deprecated
+    public void setMaxSizeInMB(Double maxSizeInMB) {
     }
 }
