@@ -49,6 +49,19 @@ public class ArgumentValidator<T> implements Function<T, Optional<ArgumentMismat
     }
 
     /**
+     * Creates a validation with {@link ArgumentPredicate}
+     *
+     * @param predicate is the {@link Predicate}
+     * @return the {@link ArgumentValidation}
+     */
+    public ArgumentValidation<T> when(ArgumentPredicate<T> predicate) {
+        ArgumentValidation<T> validation = new ArgumentValidation<>(this, predicate.getPredicate());
+        validations.add(validation);
+
+        return validation;
+    }
+
+    /**
      * Checks whether the given value is valid
      *
      * @param value the function argument
