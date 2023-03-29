@@ -54,8 +54,8 @@ public abstract class Argument<I, O> {
         this.description = description;
         this.type = type;
 
-        if (!name.matches("^[\\w-]{1,32}$")) {
-            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
+        if (!name.matches("^[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai}]{1,32}$")) {
+            throw new IllegalArgumentException("Command's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
         }
 
         if (description.length() < 1 || description.length() > 100) {
