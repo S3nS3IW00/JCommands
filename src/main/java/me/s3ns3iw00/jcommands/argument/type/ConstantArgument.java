@@ -38,10 +38,7 @@ public class ConstantArgument extends SubArgument<InputArgument, String> {
         super(name, description, SlashCommandOptionType.SUB_COMMAND);
     }
 
-    public String getValue() {
-        return getName();
-    }
-
+    @Override
     public Class<String> getResultType() {
         return String.class;
     }

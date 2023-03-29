@@ -36,7 +36,6 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  */
 public abstract class InputArgument<I, O> extends Argument<O> {
 
-    private I input;
     private final Class<O> resultType;
     private boolean optional = false;
 
