@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
 import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOptionType;
@@ -28,7 +28,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  *
  * @author S3nS3IW00
  */
-public class NumberArgument<O> extends InputArgument<Long, O> {
+public class NumberArgument<O> extends AutocompletableInputArgument<Long, O> {
 
     public NumberArgument(String name, String description, Class<O> resultType) {
         super(name, description, SlashCommandOptionType.LONG, resultType);
