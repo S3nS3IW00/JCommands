@@ -28,7 +28,7 @@ import java.util.LinkedList;
  *
  * @param <T> the type of arguments that can contain this argument
  */
-public abstract class SubArgument<T extends Argument, R> extends Argument<R, R> {
+public abstract class SubArgument<T extends Argument, R> extends Argument<R> {
 
     private final LinkedList<T> arguments = new LinkedList<>();
 

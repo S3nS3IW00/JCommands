@@ -34,7 +34,7 @@ import org.javacord.api.interaction.SlashCommandOptionType;
  * @param <I> the type of input
  * @param <O> the type of output
  */
-public abstract class InputArgument<I, O> extends Argument<I, O> {
+public abstract class InputArgument<I, O> extends Argument<O> {
 
     private I input;
     private final Class<O> resultType;

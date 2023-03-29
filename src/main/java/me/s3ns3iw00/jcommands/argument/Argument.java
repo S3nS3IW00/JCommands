@@ -27,11 +27,10 @@ import java.util.Optional;
 /**
  * Represents an argument
  *
- * @param <I> the type of input
  * @param <O> the type of output
  * @author S3nS3IW00
  */
-public abstract class Argument<I, O> {
+public abstract class Argument<O> {
 
     private final String name, description;
     private final SlashCommandOptionType type;
