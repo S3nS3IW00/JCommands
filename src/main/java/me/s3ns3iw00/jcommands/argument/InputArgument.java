@@ -18,6 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidator;
 import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
@@ -26,6 +27,8 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
+
+import java.util.Optional;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
@@ -39,6 +42,7 @@ public abstract class InputArgument<I, O> extends Argument<O> {
     private final Class<O> resultType;
     private boolean optional = false;
 
+    private ArgumentResultConverter<I, O> resultConverter;
     private final ArgumentValidator<I> argumentValidator = new ArgumentValidator<>();
 
     /**
@@ -118,4 +122,11 @@ public abstract class InputArgument<I, O> extends Argument<O> {
         return argumentValidator;
     }
 
+    public void convertResult(ArgumentResultConverter resultConverter) {
+        this.resultConverter = resultConverter;
+    }
+
+    public Optional<ArgumentResultConverter> getResultConverter() {
+        return Optional.ofNullable(resultConverter);
+    }
 }
