@@ -69,6 +69,13 @@ public class TestMain {
         ChannelArgument<ServerChannel> favouriteChannelArgument = new ChannelArgument<>("favouritechannel", "Your favourite channel on this server", ServerChannel.class);
         // and to send us a funny picture's url, that is just an optional argument
         AttachmentArgument<Attachment> funnyPictureArgument = new AttachmentArgument<>("funnypicture", "A funny picture (png or jpg)", Attachment.class);
+        // Limit the size for the attachment, and send back a response when the uploaded attachment's size exceeds the limit
+        funnyPictureArgument.whenAboveMaxSizeInMB(1.0).thenRespond(event -> {
+            event.getResponder().respondNow()
+                    .setContent("The attachment's size can be 1M at maximum :face_with_raised_eyebrow:")
+                    .setFlags(MessageFlag.EPHEMERAL)
+                    .respond();
+        });
         // Limit the extensions for the attachment, and send back a response when the uploaded attachment's extension is invalid
         funnyPictureArgument.whenInvalidExtension(Set.of("png", "jpg")).thenRespond(event -> {
             event.getResponder().respondNow()
