@@ -39,7 +39,6 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 
-import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -57,13 +56,6 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-
-    /**
-     * HasMap that contains the converters initiated with default converters
-     */
-    private static final Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
-        put(URL.class, new URLConverter());
-    }};
 
     /**
      * Initiates the command listener
@@ -264,13 +256,14 @@ public class CommandHandler {
                     return Optional.empty();
                 }
 
+                Optional<ArgumentResultConverter> resultConverter = ia.getResultConverter();
                 if (ia instanceof ComboArgument) {
                     ComboArgument ca = (ComboArgument) ia;
 
                     Optional<Choice> choice = value.map(ca::getChoice);
-                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice));
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice, resultConverter.orElse(null)));
                 } else {
-                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value));
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value, resultConverter.orElse(null)));
                 }
             }
         }
@@ -517,23 +510,11 @@ public class CommandHandler {
      *
      * @param clazz     the class of the type
      * @param converter the converter
-     */
-    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {
-        converters.put(clazz, converter);
-    }
-
-    /**
-     * Gets the registered converter by the type
      *
-     * @param clazz the class of the type
-     * @return an {@link Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
+     * @deprecated use {@link InputArgument#setResultConverter(ArgumentResultConverter)}
      */
-    public static Optional<ArgumentResultConverter> getArgumentConverter(Class<?> clazz) {
-        if (converters.containsKey(clazz)) {
-            return Optional.of(converters.get(clazz));
-        }
-        return Optional.empty();
-    }
+    @Deprecated
+    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {}
 
     /**
      * @return the discord api

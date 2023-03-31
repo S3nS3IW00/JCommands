@@ -32,6 +32,7 @@ public class ArgumentResult {
 
     private final Class<?> clazz;
     private final Object value;
+    private ArgumentResultConverter converter;
 
     /**
      * Default constructor
@@ -45,6 +46,19 @@ public class ArgumentResult {
     }
 
     /**
+     * Default constructor
+     *
+     * @param clazz the class the value need to converted to
+     * @param value the value that need to be converted
+     * @param converter the converter
+     */
+    public ArgumentResult(Class<?> clazz, Object value, ArgumentResultConverter converter) {
+        this.clazz = clazz;
+        this.value = value;
+        this.converter = converter;
+    }
+
+    /**
      * Converts the value
      *
      * @param value the value of the argument
@@ -55,9 +69,8 @@ public class ArgumentResult {
         if (clazz.isAssignableFrom(value.getClass())) {
             return value;
         } else {
-            Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
-            if (converter.isPresent()) {
-                return converter.get().convertTo(value);
+            if (converter != null) {
+                return converter.convertTo(value);
             } else {
                 if (value.getClass() == String.class) {
                     String s = (String) value;
