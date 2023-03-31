@@ -516,7 +516,7 @@ public class CommandHandler {
      * @param clazz     the class of the type
      * @param converter the converter
      *
-     * @deprecated use {@link InputArgument#setResultConverter(ArgumentResultConverter)}
+     * @deprecated use {@link InputArgument#convertResult(ArgumentResultConverter)}
      */
     @Deprecated
     public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {}
