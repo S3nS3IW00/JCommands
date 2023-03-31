@@ -4,6 +4,7 @@ import me.s3ns3iw00.jcommands.argument.type.ConstantArgument;
 import me.s3ns3iw00.jcommands.argument.type.StringArgument;
 import me.s3ns3iw00.jcommands.argument.type.ValueArgument;
 import me.s3ns3iw00.jcommands.argument.validator.type.RegexPredicate;
+import me.s3ns3iw00.jcommands.person.converter.DateConverter;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.Date;
@@ -48,6 +49,7 @@ public class AddArgument extends ConstantArgument {
                     .setContent("Date must match to pattern YYYY-MM-DD")
                     .respond();
         });
+        dateOfBirthArgument.convertResult(new DateConverter());
 
         // Add all the arguments to the argument
         addArgument(firstNameArgument, lastNameArgument, dateOfBirthArgument);
