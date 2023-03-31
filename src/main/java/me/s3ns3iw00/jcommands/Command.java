@@ -44,6 +44,7 @@ public class Command {
     private final Set<PermissionType> defaultPermissions = new HashSet<>();
 
     private boolean onlyForAdministrators = false;
+    private boolean nsfw = false;
 
     private CommandActionEventListener actionListener;
     private ArgumentMismatchEventListener argumentMismatchListener;
@@ -130,6 +131,14 @@ public class Command {
     }
 
     /**
+     * Sets the command age-restricted
+     * NOTE: this cannot be updated for now, so it only takes effect at the creation of the command
+     */
+    public void setNsfw() {
+        this.nsfw = true;
+    }
+
+    /**
      * Sets the action listener
      *
      * @param listener the listener
@@ -172,6 +181,10 @@ public class Command {
 
     public boolean isOnlyForAdministrators() {
         return onlyForAdministrators;
+    }
+
+    public boolean isNsfw() {
+        return nsfw;
     }
 
     /**

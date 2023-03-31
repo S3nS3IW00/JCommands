@@ -410,6 +410,9 @@ public class CommandHandler {
             slashCommandUpdater.setDefaultEnabledForEveryone();
         }
 
+        // TODO: remove comment when NSFW become updatable
+        //slashCommandBuilder.setNsfw(command.isNsfw());
+
         if (command instanceof GlobalCommand) {
             slashCommandUpdater.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
         }
@@ -436,6 +439,8 @@ public class CommandHandler {
         } else {
             slashCommandBuilder.setDefaultEnabledForEveryone();
         }
+
+        slashCommandBuilder.setNsfw(command.isNsfw());
 
         if (command instanceof GlobalCommand) {
             slashCommandBuilder.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
