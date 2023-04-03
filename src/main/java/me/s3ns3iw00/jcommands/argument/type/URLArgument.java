@@ -19,6 +19,7 @@
 package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
 import me.s3ns3iw00.jcommands.argument.validator.type.RegexPredicate;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
@@ -49,6 +50,9 @@ public class URLArgument extends InputArgument<String, URL> {
                     .setContent("The specified URL is not valid!")
                     .respond();
         });
+
+        // Convert result to URL
+        convertResult(new URLConverter());
     }
 
     /**
