@@ -122,11 +122,11 @@ public abstract class InputArgument<I, O> extends Argument<O> {
         return argumentValidator;
     }
 
-    public void convertResult(ArgumentResultConverter resultConverter) {
+    public void convertResult(ArgumentResultConverter<I, O> resultConverter) {
         this.resultConverter = resultConverter;
     }
 
-    public Optional<ArgumentResultConverter> getResultConverter() {
+    public Optional<ArgumentResultConverter<I, O>> getResultConverter() {
         return Optional.ofNullable(resultConverter);
     }
 }
