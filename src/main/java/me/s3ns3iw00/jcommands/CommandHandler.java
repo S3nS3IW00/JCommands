@@ -22,7 +22,6 @@ import me.s3ns3iw00.jcommands.argument.*;
 import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
