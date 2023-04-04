@@ -1,9 +1,76 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
 }
 
-group 'me.s3ns3iw00'
-version '6.0.0'
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = rootProject.group
+            artifactId = rootProject.artifact
+            version = rootProject.version
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name.set("JCommands")
+                description.set(rootProject.description)
+                url.set("https://github.com/S3nS3IW00/JCommands")
+
+                licenses {
+                    license {
+                        name.set("GNU General Public License v3.0")
+                        url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("S3nS3IW00")
+                        name.set("Gellért Dániel")
+                        email.set("danielgellert5@gmail.com")
+                        url.set("https://github.com/S3nS3IW00")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/S3nS3IW00/JCommands.git")
+                    developerConnection.set("scm:git:git@github.com:S3nS3IW00/JCommands.git")
+                    url.set("https://github.com/S3nS3IW00/JCommands")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
+            name = "OSSRH"
+            url = isReleaseVersion ?
+                    uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") :
+                    uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = "$ossrhUsername"
+                password = "$ossrhPassword"
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications
+}
 
 repositories {
     mavenCentral()
