@@ -63,6 +63,8 @@ public abstract class InputArgument<I, O> extends Argument<O> {
             case LONG:
                 resultType = (Class<O>) Long.class;
                 break;
+            case DECIMAL:
+                resultType = (Class<O>) Double.class;
             case BOOLEAN:
                 resultType = (Class<O>) Boolean.class;
                 break;
