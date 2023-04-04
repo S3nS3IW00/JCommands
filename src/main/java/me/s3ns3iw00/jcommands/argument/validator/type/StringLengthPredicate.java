@@ -9,12 +9,12 @@ import java.util.function.Predicate;
  * <br>
  * It validates the length of the input with an inclusive range
  */
-public class StringPredicate implements ArgumentPredicate<String> {
+public class StringLengthPredicate implements ArgumentPredicate<String> {
 
     private final int min;
     private final int max;
 
-    public StringPredicate(int min, int max) {
+    public StringLengthPredicate(int min, int max) {
         this.min = min;
         this.max = max;
 
@@ -32,20 +32,20 @@ public class StringPredicate implements ArgumentPredicate<String> {
      * Constructs the validation with only a minimum length
      *
      * @param min the minimum length
-     * @return the {@link StringPredicate}
+     * @return the {@link StringLengthPredicate}
      */
-    public static StringPredicate shorterThan(int min) {
-        return new StringPredicate(min, Integer.MAX_VALUE);
+    public static StringLengthPredicate shorterThan(int min) {
+        return new StringLengthPredicate(min, Integer.MAX_VALUE);
     }
 
     /**
      * Constructs the validation with only a maximum length
      *
      * @param max the maximum length
-     * @return the {@link StringPredicate}
+     * @return the {@link StringLengthPredicate}
      */
-    public static StringPredicate longerThan(int max) {
-        return new StringPredicate(0, max);
+    public static StringLengthPredicate longerThan(int max) {
+        return new StringLengthPredicate(0, max);
     }
 
     /**
@@ -53,9 +53,9 @@ public class StringPredicate implements ArgumentPredicate<String> {
      *
      * @param min the minimum length
      * @param max the maximum length
-     * @return the {@link StringPredicate}
+     * @return the {@link StringLengthPredicate}
      */
-    public static StringPredicate notInRage(int min, int max) {
-        return new StringPredicate(min, max);
+    public static StringLengthPredicate notInRage(int min, int max) {
+        return new StringLengthPredicate(min, max);
     }
 }

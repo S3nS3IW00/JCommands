@@ -20,7 +20,7 @@ package me.s3ns3iw00.jcommands.argument.type;
 
 import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
 import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
-import me.s3ns3iw00.jcommands.argument.validator.type.StringPredicate;
+import me.s3ns3iw00.jcommands.argument.validator.type.StringLengthPredicate;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
@@ -43,7 +43,7 @@ public class StringArgument<O> extends AutocompletableInputArgument<String, O> {
      * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
     public ArgumentValidation<String> whenNotInRange(int min, int max) {
-        return getArgumentValidator().when(StringPredicate.notInRage(min, max));
+        return getArgumentValidator().when(StringLengthPredicate.notInRage(min, max));
     }
 
     /**
