@@ -9,12 +9,12 @@ import java.util.function.Predicate;
  * <br>
  * It validates the input with an inclusive range
  */
-public class NumberLengthPredicate implements ArgumentPredicate<Long> {
+public class NumberPredicate implements ArgumentPredicate<Long> {
 
     private final long min;
     private final long max;
 
-    public NumberLengthPredicate(long min, long max) {
+    public NumberPredicate(long min, long max) {
         this.min = min;
         this.max = max;
     }
@@ -28,20 +28,20 @@ public class NumberLengthPredicate implements ArgumentPredicate<Long> {
      * Constructs the validation with only a minimum
      *
      * @param min the minimum
-     * @return the {@link NumberLengthPredicate}
+     * @return the {@link NumberPredicate}
      */
-    public static NumberLengthPredicate lessThan(long min) {
-        return new NumberLengthPredicate(min, Long.MAX_VALUE);
+    public static NumberPredicate lessThan(long min) {
+        return new NumberPredicate(min, Long.MAX_VALUE);
     }
 
     /**
      * Constructs the validation with only a maximum
      *
      * @param max the maximum
-     * @return the {@link NumberLengthPredicate}
+     * @return the {@link NumberPredicate}
      */
-    public static NumberLengthPredicate greaterThan(long max) {
-        return new NumberLengthPredicate(Long.MIN_VALUE, max);
+    public static NumberPredicate greaterThan(long max) {
+        return new NumberPredicate(Long.MIN_VALUE, max);
     }
 
     /**
@@ -49,10 +49,10 @@ public class NumberLengthPredicate implements ArgumentPredicate<Long> {
      *
      * @param min the minimum
      * @param max the maximum
-     * @return the {@link NumberLengthPredicate}
+     * @return the {@link NumberPredicate}
      */
-    public static NumberLengthPredicate notInRage(long min, long max) {
-        return new NumberLengthPredicate(min, max);
+    public static NumberPredicate notInRage(long min, long max) {
+        return new NumberPredicate(min, max);
     }
 
 }
