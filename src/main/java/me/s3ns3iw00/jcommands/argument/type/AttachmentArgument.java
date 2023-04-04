@@ -40,7 +40,7 @@ public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
      * @param maxSize the max size in bytes
      * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
-    public ArgumentValidation<Attachment> whenAboveMaxSize(Integer maxSize) {
+    public ArgumentValidation<Attachment> whenAboveMaxSize(int maxSize) {
         return getArgumentValidator().when(attachment -> attachment.getSize() >= maxSize);
     }
 
@@ -53,7 +53,7 @@ public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
      * @param maxSizeInMB the max size in megabytes
      * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
      */
-    public ArgumentValidation<Attachment> whenAboveMaxSizeInMB(Double maxSizeInMB) {
+    public ArgumentValidation<Attachment> whenAboveMaxSizeInMB(double maxSizeInMB) {
         return whenAboveMaxSize((int) (maxSizeInMB * 1000 * 1000));
     }
 
@@ -85,7 +85,7 @@ public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
      * Sets the maximum allowed size for the attachment in bytes
      *
      * @param maxSize the max size in bytes
-     * @deprecated use {@link AttachmentArgument#whenAboveMaxSize(Integer)}
+     * @deprecated use {@link AttachmentArgument#whenAboveMaxSize(int)}
      */
     @Deprecated
     public void setMaxSize(Integer maxSize) {
@@ -98,7 +98,7 @@ public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
      * therefore the maximum value could be 2147.483647
      *
      * @param maxSizeInMB the max size in megabytes
-     * @deprecated use {@link AttachmentArgument#whenAboveMaxSizeInMB(Double)}
+     * @deprecated use {@link AttachmentArgument#whenAboveMaxSizeInMB(double)}
      */
     @Deprecated
     public void setMaxSizeInMB(Double maxSizeInMB) {
