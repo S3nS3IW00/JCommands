@@ -28,7 +28,10 @@ import org.javacord.api.entity.user.User;
  * An event that is provided by {@link me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener}
  * <p>
  * Contains the {@link Argument} that was not valid
+ *
+ * @deprecated because of the new validation system
  */
+@Deprecated
 public class ArgumentMismatchEvent extends CommandEvent {
 
     private final Argument argument;
