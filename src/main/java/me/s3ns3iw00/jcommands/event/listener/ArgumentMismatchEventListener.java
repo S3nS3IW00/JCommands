@@ -22,10 +22,7 @@ import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 
 /**
  * A listener that gets triggered when an argument is not valid
- *
- * @deprecated because of the new validation system
  */
-@Deprecated
 public interface ArgumentMismatchEventListener {
 
     void onArgumentMismatch(ArgumentMismatchEvent event);
