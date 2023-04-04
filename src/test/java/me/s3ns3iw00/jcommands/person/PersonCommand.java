@@ -8,12 +8,12 @@ import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
 import me.s3ns3iw00.jcommands.person.argument.AddArgument;
 import me.s3ns3iw00.jcommands.person.model.Person;
-import me.s3ns3iw00.jcommands.type.SlashCommand;
+import me.s3ns3iw00.jcommands.type.ServerCommand;
 
 /**
- * A {@link SlashCommand} that is for to manage people, and a {@link CommandActionEventListener} to be able to listen for its usage
+ * A {@link me.s3ns3iw00.jcommands.type.ServerCommand} to manage people, and a {@link CommandActionEventListener} to be able to listen for its usage
  */
-public class PersonCommand extends SlashCommand implements CommandActionEventListener {
+public class PersonCommand extends ServerCommand implements CommandActionEventListener {
 
     /**
      * Default constructor

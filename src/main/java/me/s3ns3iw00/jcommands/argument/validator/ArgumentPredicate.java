@@ -16,29 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package me.s3ns3iw00.jcommands.limitation.type;
+package me.s3ns3iw00.jcommands.argument.validator;
 
-import me.s3ns3iw00.jcommands.event.listener.BadCategoryEventListener;
-
-import java.util.Optional;
-import java.util.Set;
+import java.util.function.Predicate;
 
 /**
- * Commands that implements this interface can be limited for categories
- *
- * @deprecated because of the new permission system
+ * A functional interface that stores a predicate for {@link ArgumentValidation}
+ * @param <T>
  */
-@Deprecated
-public interface CategoryLimitable {
+public interface ArgumentPredicate<T> {
 
-    default void addCategoryLimitation(CategoryLimitation limitation) {
-        getCategoryLimitations().add(limitation);
-    }
-
-    Set<CategoryLimitation> getCategoryLimitations();
-
-    void setOnBadCategory(BadCategoryEventListener listener);
-
-    Optional<BadCategoryEventListener> getBadCategoryListener();
+    Predicate<T> getPredicate();
 
 }

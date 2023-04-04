@@ -21,14 +21,16 @@ package me.s3ns3iw00.jcommands.argument.converter;
 /**
  * Converter interface
  *
+ * @param <F> the type of the raw value
+ * @param <T> the type of the result
  * @author S3nS3IW00
  */
-public interface ArgumentResultConverter {
+public interface ArgumentResultConverter<F, T> {
 
     /**
      * @param value the raw value
      * @return the converted object
      */
-    Object convertTo(Object value);
+    T convertTo(F value);
 
 }

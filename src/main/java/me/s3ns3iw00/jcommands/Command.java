@@ -19,7 +19,7 @@
 package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
@@ -44,6 +44,7 @@ public class Command {
     private final Set<PermissionType> defaultPermissions = new HashSet<>();
 
     private boolean onlyForAdministrators = false;
+    private boolean nsfw = false;
 
     private CommandActionEventListener actionListener;
     private ArgumentMismatchEventListener argumentMismatchListener;
@@ -64,8 +65,8 @@ public class Command {
         this.name = name;
         this.description = description;
 
-        if (!name.matches("^[\\w-]{1,32}$")) {
-            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
+        if (!name.matches("^[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai}]{1,32}$")) {
+            throw new IllegalArgumentException("Command's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
         }
 
         if (description.length() < 1 || description.length() > 100) {
@@ -80,9 +81,9 @@ public class Command {
      */
     public void addArgument(Argument argument) {
         if (arguments.size() > 0 &&
-                (arguments.getLast() instanceof Optionality) &&
-                ((Optionality) arguments.getLast()).isOptional() &&
-                !((Optionality) argument).isOptional()) {
+                (arguments.getLast() instanceof InputArgument) &&
+                ((InputArgument) arguments.getLast()).isOptional() &&
+                !((InputArgument) argument).isOptional()) {
             throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
         }
 
@@ -130,6 +131,14 @@ public class Command {
     }
 
     /**
+     * Sets the command age-restricted
+     * NOTE: this cannot be updated for now, so it only takes effect at the creation of the command
+     */
+    public void setNsfw() {
+        this.nsfw = true;
+    }
+
+    /**
      * Sets the action listener
      *
      * @param listener the listener
@@ -172,6 +181,10 @@ public class Command {
 
     public boolean isOnlyForAdministrators() {
         return onlyForAdministrators;
+    }
+
+    public boolean isNsfw() {
+        return nsfw;
     }
 
     /**

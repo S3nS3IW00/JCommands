@@ -18,7 +18,7 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.Optional;
@@ -29,8 +29,11 @@ import java.util.regex.Pattern;
  * Represents an argument that accepts a specified type of value
  * <p>
  * The value can be validated with regex by specifying a validator with {@link ValueArgument#validate(String)}}
+ *
+ * @deprecated use {@link me.s3ns3iw00.jcommands.argument.InputArgument} and set a {@link me.s3ns3iw00.jcommands.argument.validator.ArgumentValidator} with {@link me.s3ns3iw00.jcommands.argument.validator.type.RegexPredicate}
  */
-public class ValueArgument extends InputArgument {
+@Deprecated
+public class ValueArgument extends AutocompletableInputArgument {
 
     private Optional<Pattern> validator = Optional.empty();
     private Matcher matcher;
@@ -76,36 +79,5 @@ public class ValueArgument extends InputArgument {
      */
     public boolean isValid(Object value) {
         return validator.map(pattern -> (matcher = pattern.matcher(String.valueOf(value))).lookingAt()).orElse(true);
-    }
-
-    /**
-     * Checks that the input is valid and adjusts it
-     *
-     * @param input the input
-     */
-    @Override
-    public void input(Object input) {
-        if (isValid(input)) {
-            super.input(input);
-        } else {
-            super.input(null);
-        }
-    }
-
-    /**
-     * Returns the value that depends on a few aspects
-     *
-     * @return null if the validation was failed
-     * the matcher if the result type is {@link Matcher}
-     * otherwise the value itself
-     */
-    @Override
-    public Object getValue() {
-        if (super.getValue() == null) {
-            return null;
-        } else if (validator.isPresent() && getResultType() == Matcher.class) {
-            return matcher;
-        }
-        return super.getValue();
     }
 }

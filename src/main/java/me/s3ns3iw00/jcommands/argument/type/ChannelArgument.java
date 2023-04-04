@@ -23,13 +23,13 @@ import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that has a regex that only accepts inputs what are channel tags
+ * An argument that has a regex that only accepts {@link ServerChannel} input
  *
  * @author S3nS3IW00
  */
-public class ChannelArgument extends InputArgument {
+public class ChannelArgument<O> extends InputArgument<ServerChannel, O> {
 
-    public ChannelArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.CHANNEL, ServerChannel.class);
+    public ChannelArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.CHANNEL, resultType);
     }
 }

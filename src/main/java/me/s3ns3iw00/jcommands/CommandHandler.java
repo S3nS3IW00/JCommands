@@ -18,20 +18,15 @@
  */
 package me.s3ns3iw00.jcommands;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.ArgumentResult;
-import me.s3ns3iw00.jcommands.argument.InputArgument;
-import me.s3ns3iw00.jcommands.argument.SubArgument;
-import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.*;
 import me.s3ns3iw00.jcommands.argument.autocomplete.AutocompleteState;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
-import me.s3ns3iw00.jcommands.argument.converter.type.URLConverter;
 import me.s3ns3iw00.jcommands.argument.type.ComboArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import me.s3ns3iw00.jcommands.builder.type.GlobalCommandBuilder;
 import me.s3ns3iw00.jcommands.builder.type.ServerCommandBuilder;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.type.ArgumentMismatchEvent;
 import me.s3ns3iw00.jcommands.event.type.CommandActionEvent;
 import me.s3ns3iw00.jcommands.type.GlobalCommand;
@@ -43,7 +38,6 @@ import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 
-import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -61,13 +55,6 @@ public class CommandHandler {
     private static DiscordApi api;
     private static final List<Command> commands = new ArrayList<>();
     private static final Map<Server, List<Command>> serverCommands = new HashMap<>();
-
-    /**
-     * HasMap that contains the converters initiated with default converters
-     */
-    private static final Map<Class<?>, ArgumentResultConverter> converters = new HashMap<Class<?>, ArgumentResultConverter>() {{
-        put(URL.class, new URLConverter());
-    }};
 
     /**
      * Initiates the command listener
@@ -109,15 +96,15 @@ public class CommandHandler {
                        Except the optional arguments that haven't been specified
                      */
                     List<Argument> concatenatedArguments = command.getConcatenators().get(concatenator).stream()
-                            .filter(arg -> !(arg instanceof Optionality) ||
-                                    !((Optionality) arg).isOptional() ||
-                                    (((Optionality) arg).isOptional() &&
+                            .filter(arg -> !(arg instanceof InputArgument) ||
+                                    !((InputArgument) arg).isOptional() ||
+                                    (((InputArgument) arg).isOptional() &&
                                             resultOptional.get().containsKey(arg)))
                             .collect(Collectors.toCollection(LinkedList::new));
 
                     // Checks whether an argument's result is exist (so it has a value) or it is optional (so it does not need to have a value)
                     Predicate<Argument> argumentExistenceChecker = arg -> resultOptional.get().containsKey(arg) ||
-                            (arg instanceof Optionality) && ((Optionality) arg).isOptional();
+                            (arg instanceof InputArgument) && ((InputArgument) arg).isOptional();
                     // Concatenating if the result contains all the arguments in the concatenator or if the argument is optional
                     if (concatenatedArguments.stream().allMatch(argumentExistenceChecker)) {
                         /* Replaces the results with the already concatenated ones in the list that belongs to arguments that have been concatenated before
@@ -179,8 +166,8 @@ public class CommandHandler {
                     .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
                     .findFirst();
             argumentOptional.ifPresent(argument -> {
-                if (argument instanceof Autocompletable) {
-                    Autocompletable autocompletable = (Autocompletable) argument;
+                if (argument instanceof AutocompletableInputArgument) {
+                    AutocompletableInputArgument<?, ?> autocompletable = (AutocompletableInputArgument) argument;
                     AutocompleteState autocompleteState = new AutocompleteState(
                             command,
                             channel.orElse(null),
@@ -241,41 +228,42 @@ public class CommandHandler {
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                results.put(argument, new ArgumentResult(argument));
+                results.put(argument, new ArgumentResult(argument.getResultType(), argument.getName()));
                 Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
                 if (result.isPresent()) {
                     results.putAll(result.get());
                 } else {
                     return Optional.empty();
                 }
-            } else if (argument instanceof ComboArgument) {
-                    /* Choose the value that the user picked
-                       Checking is unnecessary since the user only can pick a valid value
-                     */
-                ComboArgument ca = (ComboArgument) argument;
-                value.ifPresent(ca::choose);
-
-                results.put(argument, new ArgumentResult(ca));
             } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
-                       If it is not then it will be added to the list,
-                            otherwise return an empty optional to tell the caller that one of the argument is not valid
+                       If it is not then it will be validated and added to the list,
+                            if the validation was not successful then the listener gets triggered that belongs to the validation
+                            and an empty optional gets returned to stop the iteration
                      */
                 InputArgument ia = (InputArgument) argument;
                 if (value.isPresent()) {
-                    ia.input(value.get());
-                } else {
-                    if (!ia.isOptional()) {
+                    Optional<ArgumentMismatchEventListener> mismatchEventListener;
+                    if ((mismatchEventListener = ia.getArgumentValidator().apply(value.get())).isPresent()) {
                         commands.stream()
                                 .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
                                 .findFirst()
-                                .ifPresent(cmd -> argument.getMismatchListener()
-                                        .ifPresent(listener -> listener.onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument))));
+                                .ifPresent(cmd -> mismatchEventListener.get().onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument)));
                         return Optional.empty();
                     }
+                } else if (!ia.isOptional()) {
+                    return Optional.empty();
                 }
 
-                results.put(argument, new ArgumentResult(ia));
+                Optional<ArgumentResultConverter> resultConverter = ia.getResultConverter();
+                if (ia instanceof ComboArgument) {
+                    ComboArgument ca = (ComboArgument) ia;
+
+                    Optional<Choice> choice = value.map(ca::getChoice);
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice, resultConverter.orElse(null)));
+                } else {
+                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value, resultConverter.orElse(null)));
+                }
             }
         }
         return Optional.of(results);
@@ -421,6 +409,9 @@ public class CommandHandler {
             slashCommandUpdater.setDefaultEnabledForEveryone();
         }
 
+        // TODO: remove comment when NSFW become updatable
+        //slashCommandBuilder.setNsfw(command.isNsfw());
+
         if (command instanceof GlobalCommand) {
             slashCommandUpdater.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
         }
@@ -447,6 +438,8 @@ public class CommandHandler {
         } else {
             slashCommandBuilder.setDefaultEnabledForEveryone();
         }
+
+        slashCommandBuilder.setNsfw(command.isNsfw());
 
         if (command instanceof GlobalCommand) {
             slashCommandBuilder.setEnabledInDms(((GlobalCommand) command).isEnabledInDMs());
@@ -521,23 +514,11 @@ public class CommandHandler {
      *
      * @param clazz     the class of the type
      * @param converter the converter
-     */
-    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {
-        converters.put(clazz, converter);
-    }
-
-    /**
-     * Gets the registered converter by the type
      *
-     * @param clazz the class of the type
-     * @return an {@link Optional} that is empty when there is no registered converter for the given type otherwise with value of the converter
+     * @deprecated use {@link InputArgument#convertResult(ArgumentResultConverter)}
      */
-    public static Optional<ArgumentResultConverter> getArgumentConverter(Class<?> clazz) {
-        if (converters.containsKey(clazz)) {
-            return Optional.of(converters.get(clazz));
-        }
-        return Optional.empty();
-    }
+    @Deprecated
+    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {}
 
     /**
      * @return the discord api

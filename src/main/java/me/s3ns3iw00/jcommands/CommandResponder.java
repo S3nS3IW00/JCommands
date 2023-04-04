@@ -86,7 +86,7 @@ public class CommandResponder {
     /**
      * Creates a responder to respond with a modal to the command
      *
-     * @return the {@link CompletableFuture<Void>} that completes when the modal is opened
+     * @return the {@link CompletableFuture} that completes when the modal is opened
      */
     public CompletableFuture<Void> respondWithModal(String customId, String title, HighLevelComponent... highLevelComponents) {
         return interaction.respondWithModal(customId, title, highLevelComponents);
@@ -95,7 +95,7 @@ public class CommandResponder {
     /**
      * Creates a responder to respond with a modal to the command
      *
-     * @return the {@link CompletableFuture<Void>} that completes when the modal is opened
+     * @return the {@link CompletableFuture} that completes when the modal is opened
      */
     public CompletableFuture<Void> respondWithModal(String customId, String title, List<HighLevelComponent> highLevelComponents) {
         return interaction.respondWithModal(customId, title, highLevelComponents);

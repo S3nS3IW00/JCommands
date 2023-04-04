@@ -27,14 +27,13 @@ import java.util.Optional;
 /**
  * Represents an argument
  *
+ * @param <O> the type of output
  * @author S3nS3IW00
  */
-public abstract class Argument {
+public abstract class Argument<O> {
 
     private final String name, description;
     private final SlashCommandOptionType type;
-
-    private ArgumentMismatchEventListener mismatchListener;
 
     /**
      * Default constructor
@@ -54,8 +53,8 @@ public abstract class Argument {
         this.description = description;
         this.type = type;
 
-        if (!name.matches("^[\\w-]{1,32}$")) {
-            throw new IllegalArgumentException("Name can contain only word characters, numbers or '-' characters, and its length must between 1 and 32");
+        if (!name.matches("^[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai}]{1,32}$")) {
+            throw new IllegalArgumentException("Command's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
         }
 
         if (description.length() < 1 || description.length() > 100) {
@@ -85,14 +84,9 @@ public abstract class Argument {
     }
 
     /**
-     * @return the argument's raw value
-     */
-    public abstract Object getValue();
-
-    /**
      * @return the class of the result's type
      */
-    public abstract Class<?> getResultType();
+    public abstract Class<O> getResultType();
 
     /**
      * @return the command option that need for to register the argument
@@ -104,8 +98,9 @@ public abstract class Argument {
      *
      * @param listener the listener
      */
+    @Deprecated
     public void setOnMismatch(ArgumentMismatchEventListener listener) {
-        this.mismatchListener = listener;
+        //this.mismatchListener = listener;
     }
 
     /**
@@ -114,8 +109,10 @@ public abstract class Argument {
      * @return {@link Optional#empty()} when argument mismatch listener is not specified,
      * otherwise {@link Optional#of(Object)} with the listener
      */
+    @Deprecated
     public Optional<ArgumentMismatchEventListener> getMismatchListener() {
-        return Optional.ofNullable(mismatchListener);
+        //return Optional.ofNullable(mismatchListener);
+        return Optional.empty();
     }
 
 }

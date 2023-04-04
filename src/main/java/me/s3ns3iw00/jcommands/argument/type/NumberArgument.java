@@ -18,20 +18,32 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
+import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
+import me.s3ns3iw00.jcommands.argument.validator.type.NumberPredicate;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that only accepts number inputs inside long's range
+ * An argument that only accepts {@link Long} input inside long's range
  *
  * @author S3nS3IW00
  */
-public class NumberArgument extends ValueArgument {
+public class NumberArgument<O> extends AutocompletableInputArgument<Long, O> {
 
-    // Define default range
-    private long min = Long.MIN_VALUE, max = Long.MAX_VALUE;
+    public NumberArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.LONG, resultType);
+    }
 
-    public NumberArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.LONG, Long.class);
+    /**
+     * Creates an inclusive range validation
+     *
+     * @param min the minimum
+     * @param max the maximum
+     * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
+     */
+    public ArgumentValidation<Long> whenNotInRange(long min, long max) {
+        return getArgumentValidator().when(NumberPredicate.notInRage(min, max));
     }
 
     /**
@@ -40,27 +52,9 @@ public class NumberArgument extends ValueArgument {
      *
      * @param min the minimum
      * @param max the maximum
+     * @deprecated use {@link NumberArgument#whenNotInRange(long, long)}
      */
+    @Deprecated
     public void setRange(long min, long max) {
-        this.min = min;
-        this.max = max;
-    }
-
-    /**
-     * Extends the {@link ValueArgument#isValid(Object)} method with range checking
-     *
-     * @param value the value
-     * @return is the value in the range or not
-     */
-    @Override
-    public boolean isValid(Object value) {
-        if (super.isValid(value)) {
-            try {
-                return (long) value >= min && (long) value <= max;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return false;
     }
 }

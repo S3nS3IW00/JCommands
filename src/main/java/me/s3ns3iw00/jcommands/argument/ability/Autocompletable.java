@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * Identifies whether an argument is autocompletable
  */
+@Deprecated
 public interface Autocompletable {
 
     List<Autocomplete> getAutocompletes();

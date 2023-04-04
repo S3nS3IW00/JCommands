@@ -28,12 +28,12 @@ import java.net.URL;
  *
  * @author S3nS3IW00
  */
-public class URLConverter implements ArgumentResultConverter {
+public class URLConverter implements ArgumentResultConverter<String, URL> {
 
     @Override
-    public Object convertTo(Object value) {
+    public URL convertTo(String value) {
         try {
-            return new URL(String.valueOf(value));
+            return new URL(value);
         } catch (MalformedURLException e) {
             return null;
         }

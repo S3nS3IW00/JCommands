@@ -19,7 +19,6 @@
 package me.s3ns3iw00.jcommands.argument;
 
 import me.s3ns3iw00.jcommands.CommandHandler;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
 import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
 
 import java.util.Optional;
@@ -33,6 +32,7 @@ public class ArgumentResult {
 
     private final Class<?> clazz;
     private final Object value;
+    private ArgumentResultConverter converter;
 
     /**
      * Default constructor
@@ -46,18 +46,16 @@ public class ArgumentResult {
     }
 
     /**
-     * Constructs the class with an {@link Argument}
+     * Default constructor
      *
-     * @param argument the argument
+     * @param clazz the class the value need to converted to
+     * @param value the value that need to be converted
+     * @param converter the converter
      */
-    public ArgumentResult(Argument argument) {
-        this.clazz = argument.getResultType();
-
-        if (argument instanceof Optionality && ((Optionality) argument).isOptional()) {
-            this.value = ((Optionality) argument).getOptionalValue();
-        } else {
-            this.value = argument.getValue();
-        }
+    public ArgumentResult(Class<?> clazz, Object value, ArgumentResultConverter converter) {
+        this.clazz = clazz;
+        this.value = value;
+        this.converter = converter;
     }
 
     /**
@@ -71,9 +69,8 @@ public class ArgumentResult {
         if (clazz.isAssignableFrom(value.getClass())) {
             return value;
         } else {
-            Optional<ArgumentResultConverter> converter = CommandHandler.getArgumentConverter(clazz);
-            if (converter.isPresent()) {
-                return converter.get().convertTo(value);
+            if (converter != null) {
+                return converter.convertTo(value);
             } else {
                 if (value.getClass() == String.class) {
                     String s = (String) value;

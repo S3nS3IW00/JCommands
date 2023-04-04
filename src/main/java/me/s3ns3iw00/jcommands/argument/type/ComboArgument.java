@@ -18,26 +18,22 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
-import me.s3ns3iw00.jcommands.argument.Argument;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.util.Choice;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Represents an argument that has multiple choices, and they are the only valid values for the user to pick
+ * Represents an {@link InputArgument} that has multiple choices, and they are the only valid values for the user to pick
  * The values are key value pairs
  * The key is {@link String} and the value can be {@link String} or {@link Long}
  */
-public class ComboArgument extends Argument implements Optionality {
+public class ComboArgument extends InputArgument<Object, Choice> {
 
     private final LinkedList<Choice> choices = new LinkedList<>();
-    private Choice choice;
-    private boolean optional;
 
     /**
      * Constructs the argument with the default requirements
@@ -83,43 +79,19 @@ public class ComboArgument extends Argument implements Optionality {
     }
 
     /**
-     * Chooses a value from the choices
+     * Returns the choice based on value
      *
      * @param value the value
      */
-    public void choose(Object value) {
-        choice = choices.stream()
+    public Choice getChoice(Object value) {
+        return choices.stream()
                 .filter(choice1 -> choice1.getValue().equals(value))
                 .findFirst()
                 .orElse(null);
     }
 
     @Override
-    public Object getValue() {
-        return choice;
-    }
-
-    @Override
-    public boolean isOptional() {
-        return optional;
-    }
-
-    @Override
-    public void setOptional() {
-        this.optional = true;
-    }
-
-    @Override
-    public Optional<?> getOptionalValue() {
-        return Optional.ofNullable(choice);
-    }
-
-    public void setOptional(boolean optional) {
-        this.optional = optional;
-    }
-
-    @Override
-    public Class<?> getResultType() {
+    public Class<Choice> getResultType() {
         return Choice.class;
     }
 

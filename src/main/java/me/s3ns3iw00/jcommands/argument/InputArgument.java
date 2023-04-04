@@ -18,9 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
-import me.s3ns3iw00.jcommands.argument.ability.Autocompletable;
-import me.s3ns3iw00.jcommands.argument.ability.Optionality;
-import me.s3ns3iw00.jcommands.argument.autocomplete.Autocomplete;
+import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
+import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidator;
 import org.javacord.api.entity.Attachment;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.permission.Role;
@@ -29,21 +28,22 @@ import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Represents argument that can have multiple value depends on the user input and the restrictions of the argument
  * These arguments can be optional
+ *
+ * @param <I> the type of input
+ * @param <O> the type of output
  */
-public abstract class InputArgument extends Argument implements Optionality, Autocompletable {
+public abstract class InputArgument<I, O> extends Argument<O> {
 
-    private Object input;
-    private final Class<?> resultType;
+    private final Class<O> resultType;
     private boolean optional = false;
 
-    private final List<Autocomplete> autocompletes = new ArrayList<>();
+    private ArgumentResultConverter<I, O> resultConverter;
+    private final ArgumentValidator<I> argumentValidator = new ArgumentValidator<>();
 
     /**
      * Constructs the argument with the default requirements
@@ -55,28 +55,30 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
     public InputArgument(String name, String description, SlashCommandOptionType type) {
         super(name, description, type);
 
-        Class<?> resultType = Object.class;
+        Class<O> resultType = (Class<O>) Object.class;
         switch (type) {
             case STRING:
-                resultType = String.class;
+                resultType = (Class<O>) String.class;
                 break;
             case LONG:
-                resultType = Long.class;
+                resultType = (Class<O>) Long.class;
                 break;
+            case DECIMAL:
+                resultType = (Class<O>) Double.class;
             case BOOLEAN:
-                resultType = Boolean.class;
+                resultType = (Class<O>) Boolean.class;
                 break;
             case CHANNEL:
-                resultType = TextChannel.class;
+                resultType = (Class<O>) TextChannel.class;
                 break;
             case ROLE:
-                resultType = Role.class;
+                resultType = (Class<O>) Role.class;
                 break;
             case USER:
-                resultType = User.class;
+                resultType = (Class<O>) User.class;
                 break;
             case ATTACHMENT:
-                resultType = Attachment.class;
+                resultType = (Class<O>) Attachment.class;
                 break;
         }
         this.resultType = resultType;
@@ -90,7 +92,7 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
      * @param type        the type of the value
      * @param resultType  the type of the converted value
      */
-    public InputArgument(String name, String description, SlashCommandOptionType type, Class<?> resultType) {
+    public InputArgument(String name, String description, SlashCommandOptionType type, Class<O> resultType) {
         super(name, description, type);
         this.resultType = resultType;
     }
@@ -102,11 +104,9 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
                 .setDescription(getDescription())
                 .setType(getType())
                 .setRequired(!isOptional())
-                .setAutocompletable(autocompletes.size() > 0)
                 .build();
     }
 
-    @Override
     public boolean isOptional() {
         return optional;
     }
@@ -115,32 +115,20 @@ public abstract class InputArgument extends Argument implements Optionality, Aut
         optional = true;
     }
 
-    public List<Autocomplete> getAutocompletes() {
-        return autocompletes;
-    }
-
-    /**
-     * Sets the input
-     *
-     * @param input the input
-     */
-    public void input(Object input) {
-        this.input = input;
-    }
-
     @Override
-    public Object getValue() {
-        return input;
-    }
-
-    @Override
-    public Optional<?> getOptionalValue() {
-        return Optional.ofNullable(input);
-    }
-
-    @Override
-    public Class<?> getResultType() {
+    public Class<O> getResultType() {
         return resultType;
     }
 
+    public ArgumentValidator<I> getArgumentValidator() {
+        return argumentValidator;
+    }
+
+    public void convertResult(ArgumentResultConverter<I, O> resultConverter) {
+        this.resultConverter = resultConverter;
+    }
+
+    public Optional<ArgumentResultConverter<I, O>> getResultConverter() {
+        return Optional.ofNullable(resultConverter);
+    }
 }

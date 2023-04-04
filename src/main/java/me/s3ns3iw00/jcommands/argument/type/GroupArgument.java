@@ -30,19 +30,14 @@ import java.util.stream.Collectors;
  * Represents an argument with {@link SlashCommandOptionType#SUB_COMMAND_GROUP} type that only can contain {@link ConstantArgument}
  * This is for grouping {@link SlashCommandOptionType#SUB_COMMAND} options because {@link SlashCommandOptionType#SUB_COMMAND} cannot be nested
  */
-public class GroupArgument extends SubArgument<ConstantArgument> {
+public class GroupArgument extends SubArgument<ConstantArgument, String> {
 
     public GroupArgument(String name, String description) {
         super(name, description, SlashCommandOptionType.SUB_COMMAND_GROUP);
     }
 
     @Override
-    public Object getValue() {
-        return getName();
-    }
-
-    @Override
-    public Class<?> getResultType() {
+    public Class<String> getResultType() {
         return String.class;
     }
 

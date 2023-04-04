@@ -18,20 +18,32 @@
  */
 package me.s3ns3iw00.jcommands.argument.type;
 
+import me.s3ns3iw00.jcommands.argument.AutocompletableInputArgument;
+import me.s3ns3iw00.jcommands.argument.validator.ArgumentValidation;
+import me.s3ns3iw00.jcommands.argument.validator.type.StringLengthPredicate;
+import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that only accepts any string value
+ * An argument that only accepts {@link String} input
  *
  * @author S3nS3IW00
  */
-public class StringArgument extends ValueArgument {
+public class StringArgument<O> extends AutocompletableInputArgument<String, O> {
 
-    // Define max length of a String by default
-    private int max = Integer.MAX_VALUE;
+    public StringArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.STRING, resultType);
+    }
 
-    public StringArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.STRING, String.class);
+    /**
+     * Creates an inclusive range validation
+     *
+     * @param min the minimum
+     * @param max the maximum
+     * @return the {@link ArgumentValidation} to be able to specify a custom response with {@link ArgumentValidation#thenRespond(ArgumentMismatchEventListener)}
+     */
+    public ArgumentValidation<String> whenNotInRange(int min, int max) {
+        return getArgumentValidator().when(StringLengthPredicate.notInRage(min, max));
     }
 
     /**
@@ -39,19 +51,9 @@ public class StringArgument extends ValueArgument {
      * NOTE: this is an inclusive range
      *
      * @param max the maximum
+     * @deprecated use {@link StringArgument#whenNotInRange(int, int)}
      */
+    @Deprecated
     public void setMaxLength(int max) {
-        this.max = max;
-    }
-
-    /**
-     * Extends the {@link ValueArgument#isValid(Object)} method with length checking
-     *
-     * @param value the value
-     * @return is the value's length less or equals than the maximum
-     */
-    @Override
-    public boolean isValid(Object value) {
-        return super.isValid(value) && value.toString().length() <= max;
     }
 }

@@ -23,14 +23,14 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 /**
- * An argument that has a regex that only accepts inputs what are mention tags
+ * An argument that has a regex that only accepts {@link User} input
  *
  * @author S3nS3IW00
  */
-public class MentionArgument extends InputArgument {
+public class MentionArgument<O> extends InputArgument<User, O> {
 
-    public MentionArgument(String name, String description) {
-        super(name, description, SlashCommandOptionType.USER, User.class);
+    public MentionArgument(String name, String description, Class<O> resultType) {
+        super(name, description, SlashCommandOptionType.USER, resultType);
     }
 
 }
