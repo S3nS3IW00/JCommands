@@ -32,9 +32,9 @@ command.addConcatenator(new StringConcatenator(" "), stringArgument, searchArgum
 There are so many useful pre-written argument types that can be used while creating a command.
 
 ### Example command
-This command is created just with about 50 lines of code including the response and error handling. It has a validated  
-argument with regex, an argument that has two different values that the user can choose from, a number argument that has  
-a range validation, a normal user mention argument, a normal channel mention argument and an optional attachment argument   
+This command is created just with about 50 lines of code including the response and error handling. It has a validated
+argument with regex, an argument that has two different values that the user can choose from, a number argument that has
+a range validation, a normal user mention argument, a normal channel mention argument and an optional attachment argument
 with size and extension validation.
 
 ![Example](https://imgur.com/swqZYXH.png)
@@ -43,12 +43,12 @@ with size and extension validation.
 
 ## Wiki
 
-You can find all the information about how to use `JCommands` on the [Wiki](https://github.com/S3nS3IW00/JCommands/wiki)  
+You can find all the information about how to use `JCommands` on the [Wiki](https://github.com/S3nS3IW00/JCommands/wiki)
 page.
 
 ## Dependencies
 
-This is a Javacord extension. Javacord is a Discord bot framework and it so much easier to create  
+This is a Javacord extension. Javacord is a Discord bot framework and it so much easier to create
 bots with it.
 
 - [Javacord](https://github.com/Javacord/Javacord)
@@ -74,6 +74,6 @@ dependencies {
 
 ## Contact
 
-If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on  
-the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through  
+If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on
+the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through
 discord: [🆂🅴🅽🆂🅴🆈#0054](https://discord.com/users/249674530077802496)
