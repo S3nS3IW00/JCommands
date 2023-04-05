@@ -125,8 +125,9 @@ public class CommandHandler {
                         /* Runs the concatenating process and adds its result to the results at the index of the first argument in the concatenation process
                            Replaces the concatenated arguments to the result of the concatenation
                          */
+                        Optional<ArgumentResultConverter> resultConverter = concatenator.getResultConverter();
                         ArgumentResult result = new ArgumentResult(concatenator.getResultType(),
-                                concatenator.concatenate(concatenateResults.toArray(new ArgumentResult[0])));
+                                concatenator.concatenate(concatenateResults.toArray(new ArgumentResult[0])), resultConverter.orElse(null));
                         results.add(results.indexOf(concatenateResults.get(0)), result);
                         concatenateResults.forEach(results::remove);
                         concatenated.put(result, concatenatedArguments);

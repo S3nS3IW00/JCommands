@@ -31,14 +31,14 @@ import java.util.Arrays;
  * Concatenates the arguments' result into a specific type with creating a new instance of it
  * See {@link TypeConcatenator#createInstance(Class, ArgumentResult...)} for more information
  */
-public class TypeConcatenator extends Concatenator {
+public class TypeConcatenator<C, R> extends Concatenator<C, R> {
 
-    public TypeConcatenator(Class<?> resultType) {
+    public TypeConcatenator(Class<R> resultType) {
         super(resultType);
     }
 
     @Override
-    public Object concatenate(ArgumentResult... results) {
+    public C concatenate(ArgumentResult... results) {
         try {
             return createInstance(getResultType(), results);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -59,7 +59,7 @@ public class TypeConcatenator extends Concatenator {
      * @return the instance of the class
      * @throws NullPointerException when the clazz doesn't contain constructor that matches with parameters count, type and order
      */
-    public static Object createInstance(Class<?> clazz, ArgumentResult... parameters)
+    private C createInstance(Class<?> clazz, ArgumentResult... parameters)
             throws InvocationTargetException, InstantiationException, IllegalAccessException {
         int i = 0;
         boolean match = false;
@@ -99,7 +99,7 @@ public class TypeConcatenator extends Concatenator {
         }
 
         if (i < clazz.getConstructors().length) {
-            return clazz.getConstructors()[i].newInstance(Arrays.stream(parameters).map(ArgumentResult::get).toArray());
+            return (C) clazz.getConstructors()[i].newInstance(Arrays.stream(parameters).map(ArgumentResult::get).toArray());
         } else {
             throw new NullPointerException("No constructor found that matches with parameters count, type and order");
         }
