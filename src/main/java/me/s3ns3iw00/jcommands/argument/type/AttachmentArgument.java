@@ -70,37 +70,4 @@ public class AttachmentArgument<O> extends InputArgument<Attachment, O> {
         }
         return Optional.of(fileName.substring(lastIndex + 1));
     }
-
-    /**
-     * Sets the valid extensions for the attachment
-     *
-     * @param validExtensions the valid extensions
-     * @deprecated use {@link AttachmentArgument#whenInvalidExtension(Set)}
-     */
-    @Deprecated
-    public void setValidExtensions(String... validExtensions) {
-    }
-
-    /**
-     * Sets the maximum allowed size for the attachment in bytes
-     *
-     * @param maxSize the max size in bytes
-     * @deprecated use {@link AttachmentArgument#whenAboveMaxSize(int)}
-     */
-    @Deprecated
-    public void setMaxSize(Integer maxSize) {
-    }
-
-    /**
-     * Sets the maximum allowed size for the attachment in megabytes
-     * <br>
-     * The size will be converted to bytes (multiplying by 1000 two times) and explicit converted to integer,
-     * therefore the maximum value could be 2147.483647
-     *
-     * @param maxSizeInMB the max size in megabytes
-     * @deprecated use {@link AttachmentArgument#whenAboveMaxSizeInMB(double)}
-     */
-    @Deprecated
-    public void setMaxSizeInMB(Double maxSizeInMB) {
-    }
 }
