@@ -1,4 +1,4 @@
-# JCommands ![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Version) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
+# JCommands [![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Latest%20version)](https://github.com/S3nS3IW00/JCommands/releases/latest) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash Commands on your Discord server within 1 minute with built-in
 - input validating,
@@ -26,7 +26,7 @@ searchArgument.addAutocomplete(searchAutocomplete);
 ```  
 - concatenating
 ```java  
-command.addConcatenator(new StringConcatenator(" "), stringArgument, searchArgument);  
+command.addConcatenator(new StringConcatenator<>(" "), stringArgument, searchArgument);  
 ```  
 
 There are so many useful pre-written argument types that can be used while creating a command.
