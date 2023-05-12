@@ -45,15 +45,4 @@ public class StringArgument<O> extends AutocompletableInputArgument<String, O> {
     public ArgumentValidation<String> whenNotInRange(int min, int max) {
         return getArgumentValidator().when(StringLengthPredicate.notInRage(min, max));
     }
-
-    /**
-     * Sets the maximum length for the string
-     * NOTE: this is an inclusive range
-     *
-     * @param max the maximum
-     * @deprecated use {@link StringArgument#whenNotInRange(int, int)}
-     */
-    @Deprecated
-    public void setMaxLength(int max) {
-    }
 }

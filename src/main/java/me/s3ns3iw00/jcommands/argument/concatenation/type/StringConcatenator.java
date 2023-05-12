@@ -18,7 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.concatenation.type;
 
-import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 
 import java.util.Arrays;
@@ -26,13 +25,15 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a type of {@link Concatenator} that concatenates the arguments' result to a {@link String} separated with a delimiter
+ *
+ * @param <R> the type of the argument result
  */
-public class StringConcatenator extends Concatenator {
+public class StringConcatenator<R> extends Concatenator<String, R> {
 
     private final String delimiter;
 
-    public StringConcatenator(String delimiter) {
-        super(String.class);
+    public StringConcatenator(String delimiter, Class<R> resultType) {
+        super(resultType);
         this.delimiter = delimiter;
     }
 
@@ -43,8 +44,8 @@ public class StringConcatenator extends Concatenator {
      * @return the concatenated String
      */
     @Override
-    public Object concatenate(ArgumentResult... results) {
-        return Arrays.stream(results).map(result -> result.get().toString()).collect(Collectors.joining(delimiter));
+    public String concatenate(Object... results) {
+        return Arrays.stream(results).map(Object::toString).collect(Collectors.joining(delimiter));
     }
 
 }

@@ -45,16 +45,4 @@ public class NumberArgument<O> extends AutocompletableInputArgument<Long, O> {
     public ArgumentValidation<Long> whenNotInRange(long min, long max) {
         return getArgumentValidator().when(NumberPredicate.notInRage(min, max));
     }
-
-    /**
-     * Sets a range for the number
-     * NOTE: this is an inclusive range
-     *
-     * @param min the minimum
-     * @param max the maximum
-     * @deprecated use {@link NumberArgument#whenNotInRange(long, long)}
-     */
-    @Deprecated
-    public void setRange(long min, long max) {
-    }
 }

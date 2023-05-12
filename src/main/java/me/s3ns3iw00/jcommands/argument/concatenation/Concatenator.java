@@ -19,21 +19,28 @@
 package me.s3ns3iw00.jcommands.argument.concatenation;
 
 import me.s3ns3iw00.jcommands.argument.ArgumentResult;
+import me.s3ns3iw00.jcommands.argument.converter.ArgumentResultConverter;
+
+import java.util.Optional;
 
 /**
  * Concatenates the arguments' result to a type of value that based on the concatenation process
- * The process is implemented by subclasses overriding {@link Concatenator#concatenate(ArgumentResult...)} method
+ * The process is implemented by subclasses overriding {@link Concatenator#concatenate(Object...)} method
+ *
+ * @param <C> the type of the concatenated result
+ * @param <R> the type of the argument result
  */
-public abstract class Concatenator {
+public abstract class Concatenator<C, R> {
 
-    private final Class<?> resultType;
+    private final Class<R> resultType;
+    private ArgumentResultConverter<C, R> resultConverter;
 
     /**
      * Constructs the class with the default requirements
      *
      * @param resultType the type of the result of the concatenation
      */
-    public Concatenator(Class<?> resultType) {
+    public Concatenator(Class<R> resultType) {
         this.resultType = resultType;
     }
 
@@ -42,9 +49,17 @@ public abstract class Concatenator {
      *
      * @return the result of the concatenation
      */
-    public abstract Object concatenate(ArgumentResult... results);
+    public abstract C concatenate(Object... results);
 
-    public Class<?> getResultType() {
+    public Class<R> getResultType() {
         return resultType;
+    }
+
+    public void convertResult(ArgumentResultConverter<C, R> resultConverter) {
+        this.resultConverter = resultConverter;
+    }
+
+    public Optional<ArgumentResultConverter<C, R>> getResultConverter() {
+        return Optional.ofNullable(resultConverter);
     }
 }

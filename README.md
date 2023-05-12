@@ -1,4 +1,4 @@
-# JCommands ![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Version) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
+# JCommands [![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Latest%20version)](https://github.com/S3nS3IW00/JCommands/releases/latest) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc/) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash Commands on your Discord server within 1 minute with built-in
 - input validating,
@@ -26,15 +26,15 @@ searchArgument.addAutocomplete(searchAutocomplete);
 ```  
 - concatenating
 ```java  
-command.addConcatenator(new StringConcatenator(" "), stringArgument, searchArgument);  
+command.addConcatenator(new StringConcatenator<>(" "), stringArgument, searchArgument);  
 ```  
 
 There are so many useful pre-written argument types that can be used while creating a command.
 
 ### Example command
-This command is created just with about 50 lines of code including the response and error handling. It has a validated  
-argument with regex, an argument that has two different values that the user can choose from, a number argument that has  
-a range validation, a normal user mention argument, a normal channel mention argument and an optional attachment argument   
+This command is created just with about 50 lines of code including the response and error handling. It has a validated
+argument with regex, an argument that has two different values that the user can choose from, a number argument that has
+a range validation, a normal user mention argument, a normal channel mention argument and an optional attachment argument
 with size and extension validation.
 
 ![Example](https://imgur.com/swqZYXH.png)
@@ -43,12 +43,12 @@ with size and extension validation.
 
 ## Wiki
 
-You can find all the information about how to use `JCommands` on the [Wiki](https://github.com/S3nS3IW00/JCommands/wiki)  
+You can find all the information about how to use `JCommands` on the [Wiki](https://github.com/S3nS3IW00/JCommands/wiki)
 page.
 
 ## Dependencies
 
-This is a Javacord extension. Javacord is a Discord bot framework and it so much easier to create  
+This is a Javacord extension. Javacord is a Discord bot framework and it so much easier to create
 bots with it.
 
 - [Javacord](https://github.com/Javacord/Javacord)
@@ -74,6 +74,6 @@ dependencies {
 
 ## Contact
 
-If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on  
-the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through  
+If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on
+the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through
 discord: [🆂🅴🅽🆂🅴🆈#0054](https://discord.com/users/249674530077802496)
