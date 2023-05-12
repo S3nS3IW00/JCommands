@@ -127,7 +127,16 @@ public class CommandHandler {
                          */
                         Optional<ArgumentResultConverter> resultConverter = concatenator.getResultConverter();
                         ArgumentResult result = new ArgumentResult(concatenator.getResultType(),
-                                concatenator.concatenate(concatenateResults.toArray(new ArgumentResult[0])), resultConverter.orElse(null));
+                                concatenator.concatenate(concatenateResults.stream().map(res -> {
+                                    /* Extracts the value from optionals
+                                     */
+                                    if (res.get() instanceof Optional) {
+                                        Optional<?> resOptional = res.get();
+
+                                        return resOptional.orElse(null);
+                                    }
+                                    return res.get();
+                                }).filter(Objects::nonNull).toArray()), resultConverter.orElse(null));
                         results.add(results.indexOf(concatenateResults.get(0)), result);
                         concatenateResults.forEach(results::remove);
                         concatenated.put(result, concatenatedArguments);

@@ -18,7 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.concatenation.type;
 
-import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 
 import java.util.Arrays;
@@ -45,8 +44,8 @@ public class StringConcatenator<R> extends Concatenator<String, R> {
      * @return the concatenated String
      */
     @Override
-    public String concatenate(ArgumentResult... results) {
-        return Arrays.stream(results).map(result -> result.get().toString()).collect(Collectors.joining(delimiter));
+    public String concatenate(Object... results) {
+        return Arrays.stream(results).map(Object::toString).collect(Collectors.joining(delimiter));
     }
 
 }

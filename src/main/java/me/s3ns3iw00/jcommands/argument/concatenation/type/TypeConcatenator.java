@@ -18,7 +18,6 @@
  */
 package me.s3ns3iw00.jcommands.argument.concatenation.type;
 
-import me.s3ns3iw00.jcommands.argument.ArgumentResult;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 
 import java.lang.reflect.Constructor;
@@ -29,7 +28,7 @@ import java.util.Arrays;
  * Represents a type of {@link Concatenator}
  * <p>
  * Concatenates the arguments' result into a specific type with creating a new instance of it
- * See {@link TypeConcatenator#createInstance(Class, ArgumentResult...)} for more information
+ * See {@link TypeConcatenator#createInstance(Class, Object...)} for more information
  */
 public class TypeConcatenator<C, R> extends Concatenator<C, R> {
 
@@ -37,8 +36,14 @@ public class TypeConcatenator<C, R> extends Concatenator<C, R> {
         super(resultType);
     }
 
+    /**
+     * Returns result of {@link TypeConcatenator#createInstance(Class, Object...)}
+     *
+     * @param results the results of the arguments
+     * @return the instance
+     */
     @Override
-    public C concatenate(ArgumentResult... results) {
+    public C concatenate(Object... results) {
         try {
             return createInstance(getResultType(), results);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
@@ -59,7 +64,7 @@ public class TypeConcatenator<C, R> extends Concatenator<C, R> {
      * @return the instance of the class
      * @throws NullPointerException when the clazz doesn't contain constructor that matches with parameters count, type and order
      */
-    private C createInstance(Class<?> clazz, ArgumentResult... parameters)
+    private C createInstance(Class<?> clazz, Object... parameters)
             throws InvocationTargetException, InstantiationException, IllegalAccessException {
         int i = 0;
         boolean match = false;
@@ -71,7 +76,7 @@ public class TypeConcatenator<C, R> extends Concatenator<C, R> {
                 boolean paramMatch = true;
                 while (j < cons.getParameterCount() && paramMatch) {
                     Class<?> consParam = cons.getParameterTypes()[j];
-                    Class<?> param = parameters[j].get().getClass();
+                    Class<?> param = parameters[j].getClass();
                     if ((consParam != param) &&
                             (!consParam.isPrimitive() ||
                                     ((consParam == byte.class && param != Byte.class) ||
@@ -99,7 +104,7 @@ public class TypeConcatenator<C, R> extends Concatenator<C, R> {
         }
 
         if (i < clazz.getConstructors().length) {
-            return (C) clazz.getConstructors()[i].newInstance(Arrays.stream(parameters).map(ArgumentResult::get).toArray());
+            return (C) clazz.getConstructors()[i].newInstance(Arrays.stream(parameters).toArray());
         } else {
             throw new NullPointerException("No constructor found that matches with parameters count, type and order");
         }

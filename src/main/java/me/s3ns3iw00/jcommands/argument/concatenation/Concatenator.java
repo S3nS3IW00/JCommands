@@ -25,7 +25,7 @@ import java.util.Optional;
 
 /**
  * Concatenates the arguments' result to a type of value that based on the concatenation process
- * The process is implemented by subclasses overriding {@link Concatenator#concatenate(ArgumentResult...)} method
+ * The process is implemented by subclasses overriding {@link Concatenator#concatenate(Object...)} method
  *
  * @param <C> the type of the concatenated result
  * @param <R> the type of the argument result
@@ -49,7 +49,7 @@ public abstract class Concatenator<C, R> {
      *
      * @return the result of the concatenation
      */
-    public abstract C concatenate(ArgumentResult... results);
+    public abstract C concatenate(Object... results);
 
     public Class<R> getResultType() {
         return resultType;
