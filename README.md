@@ -1,4 +1,4 @@
-# JCommands [![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Latest%20version)](https://github.com/S3nS3IW00/JCommands/releases/latest) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://s3ns3iw00.github.io/JCommands/javadoc) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
+# JCommands [![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Latest%20version)](https://github.com/S3nS3IW00/JCommands/releases/latest) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://javadoc.io/doc/io.github.s3ns3iw00/jcommands/latest) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash Commands on your Discord server within 1 minute with built-in
 - input validating,
@@ -54,7 +54,7 @@ bots with it.
 - [Javacord](https://github.com/Javacord/Javacord)
 
 ## Usage
-Replace {VERSION} with the one of the released versions (the latest recommended)
+Replace {VERSION} with one of the released versions from 6.0.0 (the latest recommended)
 
 ### Maven
 ```xml  
@@ -76,4 +76,4 @@ dependencies {
 
 If you found a bug, or you just want a new feature in the next version, don't hesitate to report it on
 the [issues](https://github.com/S3nS3IW00/JCommands/issues) page or feel free to open a pull request. You can contact me through
-discord: [🆂🅴🅽🆂🅴🆈#0054](https://discord.com/users/249674530077802496)
+discord: [senseydev](https://discord.com/users/249674530077802496)
