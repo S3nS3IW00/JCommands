@@ -230,49 +230,51 @@ public class CommandHandler {
             // Option is null when the argument is marked as optional, and was not specified
             SlashCommandInteractionOption option = options.stream().filter(opt -> opt.getName().equalsIgnoreCase(argument.getName())).findFirst().orElse(null);
 
-            Optional<?> value = getOptionValue(option, argument.getType());
-            if (argument instanceof SubArgument) {
+            if(option != null) {
+                Optional<?> value = getOptionValue(option, argument.getType());
+                if (argument instanceof SubArgument) {
                     /* Add the result of the argument to the list, which is basically the name of the argument;
                        If the result is present that means there are other arguments that need to be added to the list,
                             otherwise just return an empty optional to tell the caller that there aren't any other options;
                        The best practice is to solve this recursively since the other option's count is unknown,
                             and it cannot be determined directly
                     */
-                results.put(argument, new ArgumentResult(argument.getResultType(), argument.getName()));
-                Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
-                if (result.isPresent()) {
-                    results.putAll(result.get());
-                } else {
-                    return Optional.empty();
-                }
-            } else if (argument instanceof InputArgument) {
+                    results.put(argument, new ArgumentResult(argument.getResultType(), argument.getName()));
+                    Optional<Map<Argument, ArgumentResult>> result = processArguments(interaction, ((SubArgument) argument).getArguments(), option.getOptions());
+                    if (result.isPresent()) {
+                        results.putAll(result.get());
+                    } else {
+                        return Optional.empty();
+                    }
+                } else if (argument instanceof InputArgument) {
                     /* Adjusts the value to the argument and checks that the value is null
                        If it is not then it will be validated and added to the list,
                             if the validation was not successful then the listener gets triggered that belongs to the validation
                             and an empty optional gets returned to stop the iteration
                      */
-                InputArgument ia = (InputArgument) argument;
-                if (value.isPresent()) {
-                    Optional<ArgumentMismatchEventListener> mismatchEventListener;
-                    if ((mismatchEventListener = ia.getArgumentValidator().apply(value.get())).isPresent()) {
-                        commands.stream()
-                                .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
-                                .findFirst()
-                                .ifPresent(cmd -> mismatchEventListener.get().onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument)));
+                    InputArgument ia = (InputArgument) argument;
+                    if (value.isPresent()) {
+                        Optional<ArgumentMismatchEventListener> mismatchEventListener;
+                        if ((mismatchEventListener = ia.getArgumentValidator().apply(value.get())).isPresent()) {
+                            commands.stream()
+                                    .filter(cmd -> cmd.getName().equalsIgnoreCase(interaction.getCommandName()))
+                                    .findFirst()
+                                    .ifPresent(cmd -> mismatchEventListener.get().onArgumentMismatch(new ArgumentMismatchEvent(cmd, interaction.getUser(), new CommandResponder(interaction), argument)));
+                            return Optional.empty();
+                        }
+                    } else if (!ia.isOptional()) {
                         return Optional.empty();
                     }
-                } else if (!ia.isOptional()) {
-                    return Optional.empty();
-                }
 
-                Optional<ArgumentResultConverter> resultConverter = ia.getResultConverter();
-                if (ia instanceof ComboArgument) {
-                    ComboArgument ca = (ComboArgument) ia;
+                    Optional<ArgumentResultConverter> resultConverter = ia.getResultConverter();
+                    if (ia instanceof ComboArgument) {
+                        ComboArgument ca = (ComboArgument) ia;
 
-                    Optional<Choice> choice = value.map(ca::getChoice);
-                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice, resultConverter.orElse(null)));
-                } else {
-                    results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value, resultConverter.orElse(null)));
+                        Optional<Choice> choice = value.map(ca::getChoice);
+                        results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? choice.orElse(null) : choice, resultConverter.orElse(null)));
+                    } else {
+                        results.put(argument, new ArgumentResult(ia.getResultType(), !ia.isOptional() ? value.orElse(null) : value, resultConverter.orElse(null)));
+                    }
                 }
             }
         }
