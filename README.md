@@ -26,7 +26,7 @@ searchArgument.addAutocomplete(searchAutocomplete);
 ```  
 - concatenating
 ```java  
-command.addConcatenator(new StringConcatenator<>(" "), stringArgument, searchArgument);  
+command.addConcatenator(new StringConcatenator<>(" ", String.class), stringArgument, searchArgument);  
 ```  
 
 There are so many useful pre-written argument types that can be used while creating a command.
