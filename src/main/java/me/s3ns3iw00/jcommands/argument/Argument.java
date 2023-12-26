@@ -93,26 +93,4 @@ public abstract class Argument<O> {
      */
     public abstract SlashCommandOption getCommandOption();
 
-    /**
-     * Sets the argument mismatch listener
-     *
-     * @param listener the listener
-     */
-    @Deprecated
-    public void setOnMismatch(ArgumentMismatchEventListener listener) {
-        //this.mismatchListener = listener;
-    }
-
-    /**
-     * Gets the argument mismatch listener
-     *
-     * @return {@link Optional#empty()} when argument mismatch listener is not specified,
-     * otherwise {@link Optional#of(Object)} with the listener
-     */
-    @Deprecated
-    public Optional<ArgumentMismatchEventListener> getMismatchListener() {
-        //return Optional.ofNullable(mismatchListener);
-        return Optional.empty();
-    }
-
 }

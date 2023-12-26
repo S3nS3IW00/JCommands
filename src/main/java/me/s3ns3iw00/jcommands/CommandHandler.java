@@ -522,17 +522,6 @@ public class CommandHandler {
     }
 
     /**
-     * Registers a converter for the given type
-     *
-     * @param clazz     the class of the type
-     * @param converter the converter
-     *
-     * @deprecated use {@link InputArgument#convertResult(ArgumentResultConverter)}
-     */
-    @Deprecated
-    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {}
-
-    /**
      * @return the discord api
      */
     public static DiscordApi getApi() {
