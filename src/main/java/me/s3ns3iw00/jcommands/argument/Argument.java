@@ -18,11 +18,8 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
-import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
-
-import java.util.Optional;
 
 /**
  * Represents an argument
@@ -54,10 +51,10 @@ public abstract class Argument<O> {
         this.type = type;
 
         if (!name.matches("^[-_\\p{L}\\p{N}\\p{sc=Deva}\\p{sc=Thai}]{1,32}$")) {
-            throw new IllegalArgumentException("Command's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
+            throw new IllegalArgumentException("Argument's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
         }
 
-        if (description.length() < 1 || description.length() > 100) {
+        if (description.isEmpty() || description.length() > 100) {
             throw new IllegalArgumentException("Description's length must between 1 and 100");
         }
     }
