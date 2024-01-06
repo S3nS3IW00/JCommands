@@ -39,6 +39,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,15 @@ public class CommandHandler {
                     }
                 }
 
+                AtomicInteger i = new AtomicInteger(0);
+                resultOptional.get().keySet().forEach(argument -> {
+                    if (argument instanceof SubArgument) {
+                        List<ArgumentResult> subResults = results.subList(i.incrementAndGet(), results.size());
+
+                        ((SubArgument<?, ?>) argument).getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
+                                new CommandResponder(interaction), channel.orElse(null), subResults.toArray(new ArgumentResult[0]))));
+                    }
+                });
                 command.getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
                         new CommandResponder(interaction), channel.orElse(null), results.toArray(new ArgumentResult[0]))));
             }
