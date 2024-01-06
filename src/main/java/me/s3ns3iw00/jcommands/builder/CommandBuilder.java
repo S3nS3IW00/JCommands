@@ -20,6 +20,7 @@ package me.s3ns3iw00.jcommands.builder;
 
 import me.s3ns3iw00.jcommands.Command;
 import me.s3ns3iw00.jcommands.argument.Argument;
+import me.s3ns3iw00.jcommands.argument.InputArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import org.javacord.api.entity.permission.PermissionType;
@@ -46,7 +47,7 @@ public abstract class CommandBuilder<B extends CommandBuilder<B>> {
     }
 
     /**
-     * Calls {@link Command#addConcatenator(Concatenator, Argument...)} on every element of the list
+     * Calls {@link Command#addConcatenator(Concatenator, me.s3ns3iw00.jcommands.argument.InputArgument...)} on every element of the list
      *
      * @return this class
      */
@@ -82,14 +83,14 @@ public abstract class CommandBuilder<B extends CommandBuilder<B>> {
     public abstract Command getCommand();
 
     /**
-     * A nested class that unifies parameters of {@link Command#addConcatenator(Concatenator, Argument...)} for {@link CommandBuilder#concatenators(ConcatenatorBuilder...)}
+     * A nested class that unifies parameters of {@link Command#addConcatenator(Concatenator, InputArgument...)} for {@link CommandBuilder#concatenators(ConcatenatorBuilder...)}
      */
     public static class ConcatenatorBuilder {
 
         final Concatenator concatenator;
-        final Argument[] arguments;
+        final InputArgument[] arguments;
 
-        public ConcatenatorBuilder(Concatenator concatenator, Argument... arguments) {
+        public ConcatenatorBuilder(Concatenator concatenator, InputArgument... arguments) {
             this.concatenator = concatenator;
             this.arguments = arguments;
         }

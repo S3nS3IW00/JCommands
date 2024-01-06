@@ -40,7 +40,7 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
-    private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
+    private final Map<Concatenator, LinkedList<InputArgument>> concatenators = new LinkedHashMap<>();
 
     private final Set<PermissionType> defaultPermissions = new HashSet<>();
 
@@ -120,7 +120,7 @@ public class Command {
      * @param concatenator the concatenator
      * @param arguments    the list of arguments
      */
-    public void addConcatenator(Concatenator concatenator, Argument... arguments) {
+    public void addConcatenator(Concatenator concatenator, InputArgument... arguments) {
         if (!concatenators.containsKey(concatenator)) {
             concatenators.put(concatenator, new LinkedList<>());
         }
@@ -185,7 +185,7 @@ public class Command {
     /**
      * @return the map of concatenators
      */
-    public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
+    public Map<Concatenator, LinkedList<InputArgument>> getConcatenators() {
         return concatenators;
     }
 
