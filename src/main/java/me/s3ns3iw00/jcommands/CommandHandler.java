@@ -39,6 +39,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -150,6 +151,15 @@ public class CommandHandler {
                     }
                 }
 
+                AtomicInteger i = new AtomicInteger(0);
+                resultOptional.get().keySet().forEach(argument -> {
+                    if (argument instanceof SubArgument) {
+                        List<ArgumentResult> subResults = results.subList(i.incrementAndGet(), results.size());
+
+                        ((SubArgument<?, ?>) argument).getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
+                                new CommandResponder(interaction), channel.orElse(null), subResults.toArray(new ArgumentResult[0]))));
+                    }
+                });
                 command.getActionListener().ifPresent(listener -> listener.onAction(new CommandActionEvent(command, sender,
                         new CommandResponder(interaction), channel.orElse(null), results.toArray(new ArgumentResult[0]))));
             }
@@ -171,44 +181,62 @@ public class CommandHandler {
 
             User sender = interaction.getUser();
             Optional<TextChannel> channel = interaction.getChannel();
-            List<Argument> allArguments = collectArguments(command.getArguments());
-            Optional<Argument> argumentOptional = allArguments.stream()
-                    .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
-                    .findFirst();
-            argumentOptional.ifPresent(argument -> {
-                if (argument instanceof AutocompletableInputArgument) {
-                    AutocompletableInputArgument<?, ?> autocompletable = (AutocompletableInputArgument) argument;
-                    AutocompleteState autocompleteState = new AutocompleteState(
-                            command,
-                            channel.orElse(null),
-                            sender,
-                            argument,
-                            getOptionValue(option, argument.getType()),
-                            interaction.getArguments().stream()
-                                    .collect(Collectors.toMap(
-                                            key -> allArguments.stream()
-                                                    .filter(arg -> arg.getName().equalsIgnoreCase(key.getName()))
-                                                    .findFirst().orElse(null),
-                                            value -> value
-                                    ))
-                                    .entrySet().stream()
-                                    .collect(Collectors.toMap(
-                                            Map.Entry::getKey,
-                                            value -> getOptionValue(value.getValue(), value.getKey().getType())
-                                    )));
 
-                    /* Collect results from autocompletes and construct the list */
-                    List<Choice> choices = autocompletable.getAutocompletes().stream()
-                            .map(autocomplete -> autocomplete.getResult(autocompleteState))
-                            .filter(Objects::nonNull)
-                            .flatMap(List::stream)
-                            .collect(Collectors.toList());
+            // Going through options and arguments to identify the proper subcommand that contains the argument
+            List<Argument> arguments = command.getArguments();
+            List<SlashCommandInteractionOption> options = interaction.getOptions();
+            Map<Argument, Optional<?>> argumentValues = new HashMap<>();
+            while (!options.get(0).getOptions().isEmpty()) {
+                SlashCommandInteractionOption firstOption = options.get(0);
+                SubArgument subArgument = (SubArgument) arguments.stream()
+                        .filter(argument -> argument.getName().equals(firstOption.getName()))
+                        .findFirst()
+                        .orElse(null);
 
-                    if (choices.size() > 0) {
-                        interaction.respondWithChoices(choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
-                    }
+                argumentValues.put(subArgument, Optional.of(subArgument.getName()));
+
+                arguments = subArgument.getArguments();
+                options = options.get(0).getOptions();
+            }
+
+            // Identifying argument and collecting specified values
+            Argument argument = null;
+            for (Argument arg : arguments) {
+                if (arg.getName().equals(option.getName())) {
+                    argument = arg;
                 }
-            });
+                argumentValues.put(
+                        arg,
+                        getOptionValue(
+                                options.stream()
+                                        .filter(opt -> opt.getName().equals(arg.getName()))
+                                        .findFirst()
+                                        .orElse(null),
+                                arg.getType()
+                        )
+                );
+            }
+
+            AutocompletableInputArgument<?, ?> autocompletable = (AutocompletableInputArgument) argument;
+            AutocompleteState autocompleteState = new AutocompleteState(
+                    command,
+                    channel.orElse(null),
+                    sender,
+                    argument,
+                    getOptionValue(option, argument.getType()),
+                    argumentValues
+            );
+
+            /* Collect results from autocompletes and construct the list */
+            List<Choice> choices = autocompletable.getAutocompletes().stream()
+                    .map(autocomplete -> autocomplete.getResult(autocompleteState))
+                    .filter(Objects::nonNull)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            if (choices.size() > 0) {
+                interaction.respondWithChoices(choices.stream().map(Choice::getChoice).collect(Collectors.toList()));
+            }
         });
     }
 
@@ -315,20 +343,6 @@ public class CommandHandler {
             default:
                  return Optional.empty();
         }
-    }
-
-    /**
-     * Returns the {@link Argument} of {@link Command} by {@link SlashCommandInteractionOption}
-     *
-     * @param command the command
-     * @param option  the option
-     * @return an {@link Optional} with the {@link Argument} in it if found,
-     * otherwise an empty {@link Optional}
-     */
-    private static Optional<Argument> getArgumentByOption(Command command, SlashCommandInteractionOption option) {
-        return collectArguments(command.getArguments()).stream()
-                .filter(arg -> arg.getName().equalsIgnoreCase(option.getName()))
-                .findFirst();
     }
 
     /**
@@ -520,17 +534,6 @@ public class CommandHandler {
         }
         return false;
     }
-
-    /**
-     * Registers a converter for the given type
-     *
-     * @param clazz     the class of the type
-     * @param converter the converter
-     *
-     * @deprecated use {@link InputArgument#convertResult(ArgumentResultConverter)}
-     */
-    @Deprecated
-    public static void registerArgumentConverter(Class<?> clazz, ArgumentResultConverter converter) {}
 
     /**
      * @return the discord api

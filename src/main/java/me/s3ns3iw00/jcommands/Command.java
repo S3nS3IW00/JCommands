@@ -20,6 +20,7 @@ package me.s3ns3iw00.jcommands;
 
 import me.s3ns3iw00.jcommands.argument.Argument;
 import me.s3ns3iw00.jcommands.argument.InputArgument;
+import me.s3ns3iw00.jcommands.argument.SubArgument;
 import me.s3ns3iw00.jcommands.argument.concatenation.Concatenator;
 import me.s3ns3iw00.jcommands.event.listener.ArgumentMismatchEventListener;
 import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
@@ -39,7 +40,7 @@ public class Command {
      */
     private final String name, description;
     private final LinkedList<Argument> arguments = new LinkedList<>();
-    private final Map<Concatenator, LinkedList<Argument>> concatenators = new LinkedHashMap<>();
+    private final Map<Concatenator, LinkedList<InputArgument>> concatenators = new LinkedHashMap<>();
 
     private final Set<PermissionType> defaultPermissions = new HashSet<>();
 
@@ -47,7 +48,6 @@ public class Command {
     private boolean nsfw = false;
 
     private CommandActionEventListener actionListener;
-    private ArgumentMismatchEventListener argumentMismatchListener;
 
     /**
      * Default constructor
@@ -69,7 +69,7 @@ public class Command {
             throw new IllegalArgumentException("Command's name is invalid, it should contain only word characters, '-' and '_' character, and its length must between 1 and 32");
         }
 
-        if (description.length() < 1 || description.length() > 100) {
+        if (description.isEmpty() || description.length() > 100) {
             throw new IllegalArgumentException("Description's length must between 1 and 100");
         }
     }
@@ -80,11 +80,25 @@ public class Command {
      * @param argument the argument
      */
     public void addArgument(Argument argument) {
-        if (arguments.size() > 0 &&
-                (arguments.getLast() instanceof InputArgument) &&
-                ((InputArgument) arguments.getLast()).isOptional() &&
-                !((InputArgument) argument).isOptional()) {
-            throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
+        if (!arguments.isEmpty()) {
+            // Unique name checking
+            if (arguments.stream().anyMatch(arg -> arg.getName().equals(argument.getName()))) {
+                throw new IllegalStateException("Arguments must have unique name in the same scope!");
+            }
+
+            // SubArgument and InputArgument mix checking
+            if ((argument instanceof SubArgument && arguments.stream().anyMatch(arg -> arg instanceof InputArgument)) ||
+                    (argument instanceof InputArgument && arguments.stream().anyMatch(arg -> arg instanceof SubArgument))) {
+                throw new IllegalStateException("SubArguments and InputArguments cannot be mixed in the same scope!");
+            }
+
+            // Optional and non-optional argument order checking
+            if (argument instanceof InputArgument &&
+                    !((InputArgument) argument).isOptional() &&
+                    arguments.getLast() instanceof InputArgument &&
+                    ((InputArgument) arguments.getLast()).isOptional()) {
+                throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
+            }
         }
 
         this.arguments.add(argument);
@@ -106,7 +120,7 @@ public class Command {
      * @param concatenator the concatenator
      * @param arguments    the list of arguments
      */
-    public void addConcatenator(Concatenator concatenator, Argument... arguments) {
+    public void addConcatenator(Concatenator concatenator, InputArgument... arguments) {
         if (!concatenators.containsKey(concatenator)) {
             concatenators.put(concatenator, new LinkedList<>());
         }
@@ -171,7 +185,7 @@ public class Command {
     /**
      * @return the map of concatenators
      */
-    public Map<Concatenator, LinkedList<Argument>> getConcatenators() {
+    public Map<Concatenator, LinkedList<InputArgument>> getConcatenators() {
         return concatenators;
     }
 

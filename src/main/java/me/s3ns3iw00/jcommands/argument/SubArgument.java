@@ -18,9 +18,11 @@
  */
 package me.s3ns3iw00.jcommands.argument;
 
+import me.s3ns3iw00.jcommands.event.listener.CommandActionEventListener;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Represents a sub argument
@@ -31,6 +33,8 @@ import java.util.LinkedList;
 public abstract class SubArgument<T extends Argument, R> extends Argument<R> {
 
     private final LinkedList<T> arguments = new LinkedList<>();
+
+    private CommandActionEventListener actionListener;
 
     /**
      * Constructs the argument with the default requirements
@@ -53,4 +57,24 @@ public abstract class SubArgument<T extends Argument, R> extends Argument<R> {
      * @param argument the argument
      */
     public abstract void addArgument(T argument);
+
+    /**
+     * Gets the action listener
+     *
+     * @return {@link Optional#empty()} when action listener is not specified,
+     * otherwise {@link Optional#ofNullable(Object)} with the listener
+     */
+    public Optional<CommandActionEventListener> getActionListener() {
+        return Optional.ofNullable(actionListener);
+    }
+
+    /**
+     * Sets the action listener
+     *
+     * @param listener the listener
+     */
+    public void setOnAction(CommandActionEventListener listener) {
+        this.actionListener = listener;
+    }
+
 }

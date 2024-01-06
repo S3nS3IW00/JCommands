@@ -54,11 +54,17 @@ public class ConstantArgument extends SubArgument<InputArgument, String> {
      * @param argument the argument
      */
     public void addArgument(InputArgument argument) {
-        if (getArguments().size() > 0 &&
-                (getArguments().getLast() != null) &&
-                getArguments().getLast().isOptional() &&
-                !argument.isOptional()) {
-            throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
+        if (!getArguments().isEmpty()) {
+            // Unique name checking
+            if (getArguments().stream().anyMatch(arg -> arg.getName().equals(argument.getName()))) {
+                throw new IllegalStateException("Arguments must have unique name in the same scope!");
+            }
+
+            // Optional and non-optional argument order checking
+            if (!argument.isOptional() &&
+                    getArguments().getLast().isOptional()) {
+                throw new IllegalStateException("Cannot add non-optional argument after an optional argument!");
+            }
         }
 
         getArguments().add(argument);
