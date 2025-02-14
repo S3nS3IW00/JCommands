@@ -1,3 +1,6 @@
+## ⚠️ Discontinued due to the cessation of Javacord’s development ⚠️
+Javacord will receive only critical bug fixes until the end of 2025, no new features will be implemented, including in JCommands. The last version of JCommands will remain available, and the repository will be archived soon. More info can be found [here](https://github.com/Javacord/Javacord).
+
 # JCommands [![Maven Central](https://img.shields.io/maven-central/v/io.github.s3ns3iw00/jcommands?label=Latest%20version)](https://github.com/S3nS3IW00/JCommands/releases/latest) [![](https://img.shields.io/badge/Javadoc-Latest-green)](https://javadoc.io/doc/io.github.s3ns3iw00/jcommands/latest) [![](https://img.shields.io/badge/Javacord-3.8.0-blue)](https://github.com/Javacord/Javacord)
 
 With this Javacord extension you can create Slash Commands on your Discord server within 1 minute with built-in
